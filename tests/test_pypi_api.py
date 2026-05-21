@@ -15,6 +15,7 @@ from spip import pypi_api
 from spip.pypi_api import (
     BOOTSTRAP_PROJECT_NAMES,
     DEFAULT_PYPI_BASE_URL,
+    DEFAULT_JSON_API_TIMEOUT_SECONDS,
     OfficialPyPIClient,
     client_from_pip_args,
     resolve_index_url,
@@ -198,6 +199,38 @@ class OfficialPyPIClientTests(unittest.TestCase):
         ):
             self.assertTrue(client.project_exists_with_fallback("requests"))
             self.assertFalse(client.project_exists_with_fallback("pandas"))
+
+    def test_release_upload_time_cache_round_trip(self) -> None:
+        tmpdir = self.make_temp_dir()
+        cache_path = tmpdir / "release-times.json"
+        client = OfficialPyPIClient(release_cache_path=cache_path)
+        published_at = datetime(2026, 5, 19, 10, 0, tzinfo=timezone.utc)
+
+        client.store_cached_release_upload_time(
+            "demo",
+            "1.0.0",
+            published_at,
+            download_url="https://files.example/demo.whl",
+            filename="demo.whl",
+        )
+
+        hit, loaded = client.load_cached_release_upload_time(
+            "demo",
+            "1.0.0",
+            download_url="https://files.example/demo.whl",
+            filename="demo.whl",
+        )
+
+        self.assertTrue(hit)
+        self.assertEqual(loaded, published_at)
+
+    def test_fetch_release_metadata_uses_shorter_timeout(self) -> None:
+        client = OfficialPyPIClient(base_url="https://example.test")
+
+        with patch("spip.pypi_api.urlopen", return_value=FakeHTTPResponse({"urls": []})) as mocked:
+            client.fetch_release_metadata("demo", "1.0.0")
+
+        self.assertEqual(mocked.call_args.kwargs["timeout"], DEFAULT_JSON_API_TIMEOUT_SECONDS)
 
     def test_fetch_release_upload_time_prefers_download_url_match(self) -> None:
         client = OfficialPyPIClient()

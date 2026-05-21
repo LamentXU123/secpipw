@@ -1,14 +1,21 @@
 from __future__ import annotations
 
+import threading
+import time
 import unittest
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
+import shutil
+import uuid
+from unittest.mock import patch
 
 from spip.release_checks import (
     _RELEASE_LOOKUP_CACHE,
     detect_recent_release_alerts,
     detect_zero_version_alerts,
 )
+from spip.pypi_api import OfficialPyPIClient
 from spip.severity import Severity
 
 
@@ -37,10 +44,43 @@ class FakePyPIClient:
         self.calls.append((name, version, download_url, filename))
         return self.upload_times.get((name, version, download_url, filename))
 
+    def load_cached_release_upload_time(
+        self,
+        name: str,
+        version: str,
+        *,
+        download_url: str | None = None,
+        filename: str | None = None,
+    ) -> tuple[bool, datetime | None]:
+        return False, None
+
+    def store_cached_release_upload_time(
+        self,
+        name: str,
+        version: str,
+        published_at: datetime | None,
+        *,
+        download_url: str | None = None,
+        filename: str | None = None,
+    ) -> None:
+        return None
+
+    @property
+    def base_url(self) -> str:
+        return "https://pypi.org"
+
 
 class ReleaseCheckTests(unittest.TestCase):
     def setUp(self) -> None:
         _RELEASE_LOOKUP_CACHE.clear()
+
+    def make_temp_dir(self) -> Path:
+        root = Path.cwd() / ".tmp-tests"
+        root.mkdir(exist_ok=True)
+        path = root / f"release-checks-{uuid.uuid4().hex}"
+        path.mkdir()
+        self.addCleanup(shutil.rmtree, path, True)
+        return path
 
     def test_recent_release_raises_medium_alert(self) -> None:
         now = datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc)
@@ -208,6 +248,81 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertEqual(len(alerts), 1)
         self.assertEqual(client.calls, [("demo", "1.0.0", first.download_url, first.artifact_name)])
 
+    def test_recent_release_uses_disk_cache_before_network(self) -> None:
+        now = datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc)
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+        )
+
+        tmpdir = self.make_temp_dir()
+        client = OfficialPyPIClient(release_cache_path=tmpdir / "release-times.json")
+        client.store_cached_release_upload_time(
+            "demo",
+            "1.0.0",
+            now - timedelta(hours=3),
+            download_url=package.download_url,
+            filename=package.artifact_name,
+        )
+
+        with patch.object(
+            OfficialPyPIClient,
+            "fetch_release_upload_time",
+            side_effect=AssertionError("network should not be used"),
+        ):
+            alerts = detect_recent_release_alerts([package], client=client, now=now)
+
+        self.assertEqual(len(alerts), 1)
+        self.assertEqual(alerts[0].severity, Severity.MEDIUM)
+
+    def test_recent_release_runs_lookups_concurrently(self) -> None:
+        now = datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc)
+        packages = [
+            FakePackage(
+                name=f"demo-{index}",
+                version="1.0.0",
+                download_url=f"https://files.pythonhosted.org/packages/demo-{index}-1.0.0.whl",
+                artifact_name=f"demo-{index}-1.0.0.whl",
+            )
+            for index in range(3)
+        ]
+
+        class SlowClient:
+            def __init__(self) -> None:
+                self.active = 0
+                self.max_active = 0
+                self.lock = threading.Lock()
+
+            @property
+            def base_url(self) -> str:
+                return "https://pypi.org"
+
+            def load_cached_release_upload_time(self, *args, **kwargs):
+                return False, None
+
+            def store_cached_release_upload_time(self, *args, **kwargs):
+                return None
+
+            def fetch_release_upload_time(self, *args, **kwargs):
+                with self.lock:
+                    self.active += 1
+                    self.max_active = max(self.max_active, self.active)
+                try:
+                    time.sleep(0.05)
+                    return now - timedelta(hours=4)
+                finally:
+                    with self.lock:
+                        self.active -= 1
+
+        client = SlowClient()
+
+        alerts = detect_recent_release_alerts(packages, client=client, now=now)
+
+        self.assertEqual(len(alerts), 3)
+        self.assertGreater(client.max_active, 1)
+
     def test_recent_release_ignores_client_errors(self) -> None:
         now = datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc)
         package = FakePackage(
@@ -218,6 +333,16 @@ class ReleaseCheckTests(unittest.TestCase):
         )
 
         class FailingClient:
+            @property
+            def base_url(self) -> str:
+                return "https://pypi.org"
+
+            def load_cached_release_upload_time(self, *args, **kwargs):
+                return False, None
+
+            def store_cached_release_upload_time(self, *args, **kwargs):
+                return None
+
             def fetch_release_upload_time(self, *args, **kwargs):
                 raise TimeoutError("timed out")
 

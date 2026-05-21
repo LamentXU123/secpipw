@@ -4,6 +4,7 @@ import configparser
 import json
 import os
 import socket
+import threading
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -12,6 +13,8 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 DEFAULT_PYPI_BASE_URL = "https://pypi.org"
+DEFAULT_JSON_API_TIMEOUT_SECONDS = 2.5
+_RELEASE_CACHE_LOCK = threading.RLock()
 BOOTSTRAP_CACHE_PATH = Path(__file__).resolve().parent / "data" / "pypi-project-names.json"
 BOOTSTRAP_PROJECT_NAMES = [
     "black",
@@ -62,10 +65,15 @@ def _default_cache_path() -> Path:
     return Path.cwd() / ".spip-cache" / "pypi-project-names.json"
 
 
+def _default_release_cache_path() -> Path:
+    return Path.cwd() / ".spip-cache" / "pypi-release-times.json"
+
+
 @dataclass(frozen=True)
 class OfficialPyPIClient:
     base_url: str = DEFAULT_PYPI_BASE_URL
     cache_path: Path = field(default_factory=_default_cache_path)
+    release_cache_path: Path = field(default_factory=_default_release_cache_path)
 
     def fetch_reference_package_names(self) -> list[str]:
         request = Request(
@@ -144,7 +152,7 @@ class OfficialPyPIClient:
             headers={"Accept": "application/json"},
         )
         try:
-            with urlopen(request, timeout=10) as response:
+            with urlopen(request, timeout=DEFAULT_JSON_API_TIMEOUT_SECONDS) as response:
                 return json.loads(response.read().decode("utf-8"))
         except Exception as exc:
             if self.base_url == DEFAULT_PYPI_BASE_URL or _is_timeout_error(exc):
@@ -153,7 +161,7 @@ class OfficialPyPIClient:
             f"{DEFAULT_PYPI_BASE_URL}/pypi/{name}/{version}/json",
             headers={"Accept": "application/json"},
         )
-        with urlopen(fallback, timeout=10) as response:
+        with urlopen(fallback, timeout=DEFAULT_JSON_API_TIMEOUT_SECONDS) as response:
             return json.loads(response.read().decode("utf-8"))
 
     def fetch_release_upload_time(
@@ -186,6 +194,86 @@ class OfficialPyPIClient:
         if selected is None:
             return None
         return _parse_upload_time(selected.get("upload_time_iso_8601"))
+
+    def load_cached_release_upload_time(
+        self,
+        name: str,
+        version: str,
+        *,
+        download_url: str | None = None,
+        filename: str | None = None,
+    ) -> tuple[bool, datetime | None]:
+        payload = self._load_release_cache_payload()
+        key = self._release_cache_key(
+            name,
+            version,
+            download_url=download_url,
+            filename=filename,
+        )
+        if key not in payload:
+            return False, None
+        return True, _parse_upload_time(payload[key])
+
+    def store_cached_release_upload_time(
+        self,
+        name: str,
+        version: str,
+        published_at: datetime | None,
+        *,
+        download_url: str | None = None,
+        filename: str | None = None,
+    ) -> None:
+        payload = self._load_release_cache_payload()
+        key = self._release_cache_key(
+            name,
+            version,
+            download_url=download_url,
+            filename=filename,
+        )
+        with _RELEASE_CACHE_LOCK:
+            payload = self._load_release_cache_payload()
+            payload[key] = (
+                published_at.isoformat() if published_at is not None else None
+            )
+            self.release_cache_path.parent.mkdir(parents=True, exist_ok=True)
+            self.release_cache_path.write_text(
+                json.dumps(payload, indent=2, sort_keys=True),
+                encoding="utf-8",
+            )
+
+    def _load_release_cache_payload(self) -> dict[str, str | None]:
+        with _RELEASE_CACHE_LOCK:
+            if not self.release_cache_path.exists():
+                return {}
+            try:
+                payload = json.loads(self.release_cache_path.read_text(encoding="utf-8"))
+            except Exception:
+                return {}
+        entries = payload.get("entries") if isinstance(payload, dict) else None
+        if isinstance(entries, dict):
+            return entries
+        if isinstance(payload, dict):
+            return payload
+        return {}
+
+    def _release_cache_key(
+        self,
+        name: str,
+        version: str,
+        *,
+        download_url: str | None = None,
+        filename: str | None = None,
+    ) -> str:
+        return json.dumps(
+            {
+                "base_url": self.base_url.rstrip("/").lower(),
+                "name": name.lower(),
+                "version": version,
+                "download_url": download_url or "",
+                "filename": filename or "",
+            },
+            sort_keys=True,
+        )
 
 
 def _is_timeout_error(exc: Exception) -> bool:

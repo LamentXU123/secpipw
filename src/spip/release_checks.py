@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import socket
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Iterable, Protocol
@@ -13,7 +14,8 @@ from spip.severity import Severity
 from spip.terminal import colorize
 
 RECENT_RELEASE_THRESHOLD = timedelta(days=2)
-_RELEASE_LOOKUP_CACHE: dict[tuple[str, str], "_ReleaseLookupResult"] = {}
+RECENT_RELEASE_MAX_WORKERS = 8
+_RELEASE_LOOKUP_CACHE: dict[tuple[str, str, str, str, str], "_ReleaseLookupResult"] = {}
 
 
 class PackageLike(Protocol):
@@ -57,11 +59,22 @@ def detect_recent_release_alerts(
     client = client or OfficialPyPIClient()
     now = datetime.now(timezone.utc) if now is None else now
     alerts: list[ReleaseAgeAlert] = []
+    candidates = [
+        package
+        for package in _unique_packages_for_recent_release_check(packages)
+        if _looks_like_pypi_download(package.download_url)
+    ]
 
-    for package in _unique_packages_for_recent_release_check(packages):
-        if not _looks_like_pypi_download(package.download_url):
-            continue
-        lookup = _fetch_release_lookup_result(package, client)
+    if not candidates:
+        return alerts
+
+    max_workers = min(RECENT_RELEASE_MAX_WORKERS, len(candidates))
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        lookups = list(
+            executor.map(lambda package: _fetch_release_lookup_result(package, client), candidates)
+        )
+
+    for package, lookup in zip(candidates, lookups):
         if lookup.timed_out:
             alerts.append(
                 ReleaseAgeAlert(
@@ -169,10 +182,30 @@ def _fetch_release_lookup_result(
     package: PackageLike,
     client: OfficialPyPIClient,
 ) -> _ReleaseLookupResult:
-    key = (package.name.lower(), package.version)
+    key = (
+        client.base_url.rstrip("/").lower(),
+        package.name.lower(),
+        package.version,
+        package.download_url or "",
+        package.artifact_name or "",
+    )
     cached = _RELEASE_LOOKUP_CACHE.get(key)
     if cached is not None:
         return cached
+
+    cached_hit, cached_published_at = client.load_cached_release_upload_time(
+        package.name,
+        package.version,
+        download_url=package.download_url,
+        filename=package.artifact_name,
+    )
+    if cached_hit:
+        result = _ReleaseLookupResult(
+            timed_out=False,
+            published_at=cached_published_at,
+        )
+        _RELEASE_LOOKUP_CACHE[key] = result
+        return result
 
     try:
         published_at = client.fetch_release_upload_time(
@@ -188,6 +221,13 @@ def _fetch_release_lookup_result(
             result = _ReleaseLookupResult(timed_out=False, published_at=None)
     else:
         result = _ReleaseLookupResult(timed_out=False, published_at=published_at)
+        client.store_cached_release_upload_time(
+            package.name,
+            package.version,
+            published_at,
+            download_url=package.download_url,
+            filename=package.artifact_name,
+        )
 
     _RELEASE_LOOKUP_CACHE[key] = result
     return result
