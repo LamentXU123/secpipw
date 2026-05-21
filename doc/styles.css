@@ -196,6 +196,22 @@ pre {
   margin: 0;
 }
 
+.hero-message-note {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.9em;
+  line-height: 1.55;
+}
+
+.hero-message-note a {
+  color: var(--blue);
+}
+
+.hero-message-note a:hover {
+  color: #7cc7ff;
+}
+
 .hero-message.is-visible {
   opacity: 1;
   transform: translateY(0);
