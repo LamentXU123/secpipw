@@ -111,16 +111,23 @@ pre {
   align-items: center;
   gap: 1.25rem;
   color: var(--muted);
-  font-size: 1rem;
+  font-family: var(--mono);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .site-nav a {
-  transition: color 160ms ease;
+  padding: 0.18rem 0;
+  transition: color 160ms ease, text-shadow 160ms ease, transform 160ms ease;
 }
 
 .site-nav a[aria-current="page"],
 .site-nav a:hover {
   color: var(--blue);
+  text-shadow: 0 0 16px rgba(58, 146, 255, 0.24);
+  transform: translateY(-1px);
 }
 
 .home-main {
