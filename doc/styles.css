@@ -295,6 +295,12 @@ a.hero-message-safe:hover {
   flex: 0 1 auto;
 }
 
+.command-shell.is-prefixing .terminal-caret {
+  background: var(--panel);
+  box-shadow: 0 0 0 0.12em var(--panel);
+  border-radius: 0.04em;
+}
+
 .command-text {
   display: inline-block;
 }
@@ -838,15 +844,17 @@ a.hero-message-safe:hover {
   .site-header {
     flex-direction: column;
     align-items: flex-start;
+    gap: 0.55rem;
+    padding: 1rem 1rem 0.9rem;
   }
 
   .site-nav {
     gap: 0.95rem;
-    font-size: 0.95rem;
+    font-size: 0.82rem;
   }
 
   .brand {
-    font-size: 1.72rem;
+    font-size: 1.55rem;
   }
 
   .home-main {
@@ -855,18 +863,78 @@ a.hero-message-safe:hover {
 
   .home-hero {
     width: min(1220px, calc(100% - 2rem));
-    gap: 2.4rem;
+    gap: 1.65rem;
+    min-height: calc(100vh - 76px);
+    padding: 1.4rem 0 2rem;
   }
 
   .download-section {
     width: min(1220px, calc(100% - 2rem));
+    padding: 1.5rem 0 3rem;
   }
 
   .closing-section {
     width: min(1220px, calc(100% - 2rem));
+    min-height: calc(100vh - 120px);
   }
 
   .hero-copy-top h1 {
     white-space: normal;
+    font-size: clamp(1.25rem, 8vw, 2rem);
+    line-height: 1.12;
+  }
+
+  .hero-message {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .terminal-window {
+    width: 100%;
+  }
+
+  .terminal-top {
+    gap: 0.55rem;
+    padding: 0.9rem 1rem;
+  }
+
+  .terminal-top span {
+    width: 0.82rem;
+    height: 0.82rem;
+  }
+
+  .terminal-stage {
+    min-height: 158px;
+    padding: 1.15rem 0.95rem;
+  }
+
+  .terminal-line {
+    width: 100%;
+    font-size: clamp(0.98rem, 7vw, 1.45rem);
+    line-height: 1.08;
+  }
+
+  .prompt {
+    width: 1.1ch;
+    margin-right: 0.48ch;
+  }
+
+  .command-shell {
+    min-width: 0;
+  }
+
+  .command-shell.is-prefixing .terminal-caret {
+    box-shadow: 0 0 0 0.18em var(--panel);
+  }
+
+  .download-copy h2,
+  .closing-copy h2 {
+    line-height: 1.08;
+  }
+
+  .download-copy p,
+  .download-message,
+  .closing-copy p {
+    font-size: 1rem;
   }
 }
