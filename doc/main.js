@@ -63,11 +63,12 @@ const runScene = async (scene) => {
   const copy = scene.querySelector('[data-command-copy]')
   const message = scene.querySelector('[data-command-message]')
   const scrollCue = scene.querySelector('[data-command-scroll]')
+  const terminalWindow = scene.querySelector('.terminal-window')
   const guides = document.querySelectorAll('[data-command-guides]')
   const base = scene.getAttribute('data-command-base') || 'pip install packages'
   const finalText = scene.getAttribute('data-command-final') || `s${base}`
 
-  if (!commandText || !measure || !caret || !copy) {
+  if (!commandText || !measure || !caret || !copy || !terminalWindow) {
     return
   }
 
@@ -94,6 +95,7 @@ const runScene = async (scene) => {
   stopBlink()
   setCommand('')
   setCaret('')
+  terminalWindow.classList.remove('is-armed')
 
   for (let i = 1; i <= base.length; i += 1) {
     const next = base.slice(0, i)
@@ -124,6 +126,8 @@ const runScene = async (scene) => {
     setCaret(prefix.slice(0, i))
     await sleep(54)
   }
+
+  terminalWindow.classList.add('is-armed')
 
   document.body.classList.remove('home-prelude')
   copy.classList.add('is-visible')

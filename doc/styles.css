@@ -216,9 +216,17 @@ a.hero-message-safe:hover {
 .terminal-window {
   width: min(1020px, 100%);
   background: var(--panel);
-  border: 2px solid rgba(58, 146, 255, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.06);
   border-radius: 18px;
   overflow: hidden;
+  box-shadow: var(--shadow);
+  transition:
+    border-color 320ms ease,
+    box-shadow 360ms ease;
+}
+
+.terminal-window.is-armed {
+  border-color: rgba(58, 146, 255, 0.9);
   box-shadow:
     0 0 0 1px rgba(58, 146, 255, 0.14),
     0 0 42px rgba(58, 146, 255, 0.14),
@@ -254,14 +262,14 @@ a.hero-message-safe:hover {
 .terminal-stage {
   min-height: 245px;
   display: grid;
-  place-items: center;
+  align-items: center;
   padding: 2.3rem 2rem;
 }
 
 .terminal-line {
   display: flex;
   align-items: baseline;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0;
   width: min(940px, 100%);
   font-family: var(--mono);
@@ -275,13 +283,16 @@ a.hero-message-safe:hover {
 .prompt {
   color: var(--text);
   flex: 0 0 auto;
-  margin-right: 0.18ch;
+  width: 1.25ch;
+  margin-right: 0.65ch;
+  text-align: left;
 }
 
 .command-shell {
   position: relative;
   display: inline-block;
   min-width: 1ch;
+  flex: 0 1 auto;
 }
 
 .command-text {
