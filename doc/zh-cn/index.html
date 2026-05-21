@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>secured_pip</title>
+    <meta
+      name="description"
+      content="更安全的 Python 包安装体验，尽量保持和原始 pip 一样自然。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="page-home">
+    <div class="site-frame page-home-shell">
+      <header class="site-header">
+        <a class="brand brand-mark" href="../">secured_pip</a>
+        <nav class="site-nav">
+          <a href="../">English</a>
+          <a href="./" aria-current="page">中文</a>
+        </nav>
+      </header>
+
+      <main class="home-main">
+        <section
+          class="home-hero"
+          data-command-scene
+          data-command-base="pip install packages"
+          data-command-final="spip install packages"
+        >
+          <div class="hero-copy hero-copy-top" data-command-copy>
+            <h1><span class="title-accent">secured_pip</span>：避免 PyPI 供应链攻击，最好用也最省事的方式。</h1>
+          </div>
+
+          <div class="terminal-window" aria-label="command demo">
+            <div class="terminal-top">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <div class="terminal-stage">
+              <div class="terminal-line">
+                <span class="prompt">$</span>
+                <span class="command-shell">
+                  <span class="command-text" data-command-text></span>
+                  <span class="command-measure" data-command-measure aria-hidden="true"></span>
+                  <span class="terminal-caret" data-command-caret></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-message" data-command-message>
+            <p>不用学习，</p>
+            <p>不用配置，</p>
+            <p>不用改变使用习惯，</p>
+            <p>不用承受性能损失，</p>
+            <p>装上 spip，像原来的 pip 一样用，</p>
+            <p>但会更加 <a class="hero-message-safe" href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">安全</a>。</p>
+          </div>
+
+          <button class="scroll-cue" type="button" aria-label="向下滚动" data-command-scroll>
+            <span>向下看</span>
+            <span class="scroll-cue-arrow"></span>
+          </button>
+        </section>
+
+        <section class="download-section" data-download-section>
+          <div class="download-copy">
+            <h2>开始<span class="title-accent">安装</span>。</h2>
+            <p>先安装 <code>secured_pip</code>，再用 <code>spip</code> 命令，你原来的工作流基本不用变。</p>
+          </div>
+
+          <div class="install-guides" data-command-guides>
+            <article class="install-guide">
+              <div class="install-guide-head">
+                <h2>PowerShell（Windows）</h2>
+                <button class="copy-button" type="button" data-copy-target="copy-powershell-zh">复制</button>
+              </div>
+              <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secured_pip</span>
+<span class="code-keyword">if</span> (!(<span class="code-command">Test-Path</span> <span class="code-var">$PROFILE</span>)) {
+  <span class="code-command">ni</span> <span class="code-var">$PROFILE</span> <span class="code-arg">-Force</span>
+}
+<span class="code-string">'function pip { spip @args }'</span> <span class="code-operator">&gt;&gt;</span> <span class="code-var">$PROFILE</span>
+<span class="code-command">.</span> <span class="code-var">$PROFILE</span></code></pre>
+              <textarea class="copy-buffer" id="copy-powershell-zh" readonly>pip install secured_pip
+if (!(Test-Path $PROFILE)) {
+  ni $PROFILE -Force
+}
+'function pip { spip @args }' >> $PROFILE
+. $PROFILE</textarea>
+            </article>
+
+            <article class="install-guide">
+              <div class="install-guide-head">
+                <h2>Bash（Linux）</h2>
+                <button class="copy-button" type="button" data-copy-target="copy-bash-zh">复制</button>
+              </div>
+              <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secured_pip</span>
+<span class="code-command">echo</span> <span class="code-string">"alias pip='spip'"</span> <span class="code-operator">&gt;&gt;</span> <span class="code-path">~/.bashrc</span>
+<span class="code-command">source</span> <span class="code-path">~/.bashrc</span></code></pre>
+              <textarea class="copy-buffer" id="copy-bash-zh" readonly>pip install secured_pip
+echo "alias pip='spip'" >> ~/.bashrc
+source ~/.bashrc</textarea>
+            </article>
+
+            <article class="install-guide">
+              <div class="install-guide-head">
+                <h2>Zsh（macOS）</h2>
+                <button class="copy-button" type="button" data-copy-target="copy-zsh-zh">复制</button>
+              </div>
+              <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secured_pip</span>
+<span class="code-command">echo</span> <span class="code-string">"alias pip='spip'"</span> <span class="code-operator">&gt;&gt;</span> <span class="code-path">~/.zshrc</span>
+<span class="code-command">source</span> <span class="code-path">~/.zshrc</span></code></pre>
+              <textarea class="copy-buffer" id="copy-zsh-zh" readonly>pip install secured_pip
+echo "alias pip='spip'" >> ~/.zshrc
+source ~/.zshrc</textarea>
+            </article>
+          </div>
+
+          <div class="download-message">
+            <p>尽量无痛地帮你避开 LiteLLM、dspy、colorama 等这类供应链投毒风险。</p>
+          </div>
+
+          <button class="scroll-cue scroll-cue-secondary is-visible" type="button" aria-label="继续向下" data-scroll-next>
+            <span>继续</span>
+            <span class="scroll-cue-arrow"></span>
+          </button>
+        </section>
+
+        <section class="closing-section">
+          <div class="closing-copy">
+            <h2>就这样<span class="title-accent">搞定</span>。</h2>
+            <p>现在当你输入 <code>pip install</code> 的时候，会安全很多 :)</p>
+            <p><a class="hero-message-safe" href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">看看它是怎么工作的</a></p>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div>
+          Made with passion ❤ by Weilin Du (LamentXU) |
+          <a
+            href="https://github.com/LamentXU123/spip"
+            target="_blank"
+            rel="noreferrer"
+            >GitHub</a
+          >
+        </div>
+      </footer>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

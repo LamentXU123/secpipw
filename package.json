@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "build": "vite build",
+    "docs:dev": "vite",
+    "docs:build": "vite build",
+    "docs:preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "7.1.3"
+  }
+}
