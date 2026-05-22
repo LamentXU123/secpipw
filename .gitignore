@@ -3,6 +3,9 @@
 .vitepress/cache
 node_modules
 
+# tests
+fixtures/
+
 # Python bytecode and caches
 __pycache__/
 *.py[cod]

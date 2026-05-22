@@ -13,6 +13,7 @@ const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms))
 const scenes = document.querySelectorAll('[data-command-scene]')
 const copyButtons = document.querySelectorAll('[data-copy-target]')
 const scrollButtons = document.querySelectorAll('[data-command-scroll]')
+const installButtons = document.querySelectorAll('[data-scroll-install]')
 const nextButtons = document.querySelectorAll('[data-scroll-next]')
 const topButtons = document.querySelectorAll('[data-scroll-top]')
 
@@ -192,6 +193,15 @@ for (const button of copyButtons) {
 }
 
 for (const button of scrollButtons) {
+  button.addEventListener('click', () => {
+    const section = document.querySelector('[data-why-section]')
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  })
+}
+
+for (const button of installButtons) {
   button.addEventListener('click', () => {
     const section = document.querySelector('[data-download-section]')
     if (section) {

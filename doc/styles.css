@@ -392,6 +392,79 @@ a.hero-message-safe:hover {
   scroll-snap-stop: always;
 }
 
+.compare-section {
+  width: min(1220px, calc(100% - 3rem));
+  min-height: 100vh;
+  margin: 0 auto;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 1.8rem;
+  padding: 2rem 0 4rem;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.compare-copy {
+  max-width: 920px;
+  text-align: center;
+  color: var(--muted);
+  font-size: clamp(1.1rem, 1.75vw, 1.4rem);
+  line-height: 1.65;
+}
+
+.compare-copy h2 {
+  margin: 0 0 0.8rem;
+  color: var(--text);
+  font-size: clamp(2rem, 3vw, 3rem);
+  letter-spacing: -0.05em;
+}
+
+.compare-copy p {
+  margin: 0;
+}
+
+.title-caret {
+  display: inline-block;
+  margin-left: 0.14em;
+  color: var(--orange);
+  animation: blink-fade 1.05s ease-in-out infinite;
+}
+
+.title-caret::before {
+  content: "█";
+}
+
+.compare-points {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+
+.compare-point {
+  padding: 1.1rem 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(19, 26, 35, 0.48);
+  text-align: left;
+  box-shadow: var(--shadow);
+}
+
+.compare-point h3 {
+  margin: 0 0 0.55rem;
+  color: var(--text);
+  font-size: clamp(1.2rem, 2vw, 1.65rem);
+  letter-spacing: -0.04em;
+}
+
+.compare-point-accent {
+  color: var(--green);
+}
+
+.compare-point p + p {
+  margin-top: 0.35rem;
+}
+
 .closing-section {
   width: min(1220px, calc(100% - 3rem));
   min-height: calc(100vh - 160px);
@@ -445,6 +518,19 @@ a.hero-message-safe:hover {
 
 .download-message p {
   margin: 0;
+}
+
+.download-message-compare {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 1rem 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(19, 26, 35, 0.44);
+}
+
+.download-message-compare strong {
+  color: var(--text);
 }
 
 .scroll-cue {
@@ -889,6 +975,11 @@ a.hero-message-safe:hover {
     padding: 1.5rem 0 3rem;
   }
 
+  .compare-section {
+    width: min(1220px, calc(100% - 2rem));
+    padding: 1.5rem 0 3rem;
+  }
+
   .closing-section {
     width: min(1220px, calc(100% - 2rem));
     min-height: calc(100vh - 120px);
@@ -949,8 +1040,13 @@ a.hero-message-safe:hover {
   }
 
   .download-copy p,
+  .compare-copy,
   .download-message,
   .closing-copy p {
     font-size: 1rem;
+  }
+
+  .compare-point {
+    padding: 1rem;
   }
 }

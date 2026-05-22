@@ -60,6 +60,20 @@ The `secured_pip` project will actively check for all the supply chain risks and
 
 Except for the `install` commands, the project behaves exactly the same as the original `pip` program. That is, you can always use `spip` instead of `pip` in any case :)
 
+## Why not SFW / GuardDog?
+
+There are already good supply-chain tools out there. `secured_pip` is not trying to replace all of them. The point is different: keep the protection path as light as possible for everyday Python installs.
+
+- Compared with Socket Firewall (`sfw`): Socket Firewall works as a wrapper/proxy layer in front of package-manager network requests and uses Socket's security intelligence to block packages before download. `secured_pip` is much smaller in scope: it is a local Python-only `pip` wrapper, with no proxy service, no organization dashboard, and no extra infrastructure to run. Official Socket docs: <https://docs.socket.dev/docs/socket-firewall-overview>
+- Compared with GuardDog: GuardDog is a scanning CLI that downloads package source archives and applies source-code and metadata heuristics, including Semgrep-based rules. `secured_pip` is intentionally lighter: it stays close to `pip install`, does quick local checks around the install flow, and does not try to be a full package-code scanner. Official GuardDog README: <https://github.com/DataDog/guarddog>
+
+In short, `secured_pip` optimizes for:
+
+- near-drop-in use with `spip install`
+- local, lightweight checks
+- minimal workflow change
+- Python / pip focus instead of broad multi-ecosystem coverage
+
 Current minimum Python version: `3.10`
 
 We currently have three install warning policies:
