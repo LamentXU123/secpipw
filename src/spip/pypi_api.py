@@ -19,8 +19,12 @@ _RELEASE_CACHE_LOCK = threading.RLock()
 _METADATA_CACHE_LOCK = threading.RLock()
 _METADATA_CACHE: dict[tuple[str, str, str], dict] = {}
 BOOTSTRAP_CACHE_PATH = Path(__file__).resolve().parent / "data" / "pypi-project-names.json"
-DISPOSABLE_EMAIL_DOMAINS_PATH = (
-    Path(__file__).resolve().parent / "data" / "disposable-email-domains.json"
+BOOTSTRAP_DISPOSABLE_EMAIL_DOMAINS_PATH = (
+    Path(__file__).resolve().parent / "data" / "disposable-email-domains-strict.txt"
+)
+DISPOSABLE_EMAIL_DOMAINS_SOURCE_URL = (
+    "https://raw.githubusercontent.com/disposable/disposable-email-domains/master/"
+    "domains_strict.txt"
 )
 BOOTSTRAP_PROJECT_NAMES = [
     "black",
@@ -68,8 +72,12 @@ BOOTSTRAP_PROJECT_NAMES = [
 
 
 def load_disposable_email_domains() -> set[str]:
-    payload = json.loads(DISPOSABLE_EMAIL_DOMAINS_PATH.read_text(encoding="utf-8"))
-    return {domain.strip().lower() for domain in payload.get("domains", []) if domain.strip()}
+    return set(
+        _load_disposable_email_domains_from_paths(
+            _default_disposable_email_cache_path(),
+            BOOTSTRAP_DISPOSABLE_EMAIL_DOMAINS_PATH,
+        )
+    )
 
 
 def _default_cache_path() -> Path:
@@ -80,11 +88,16 @@ def _default_release_cache_path() -> Path:
     return Path.cwd() / ".spip-cache" / "pypi-release-times.json"
 
 
+def _default_disposable_email_cache_path() -> Path:
+    return Path.cwd() / ".spip-cache" / "disposable-email-domains-strict.txt"
+
+
 @dataclass(frozen=True)
 class OfficialPyPIClient:
     base_url: str = DEFAULT_PYPI_BASE_URL
     cache_path: Path = field(default_factory=_default_cache_path)
     release_cache_path: Path = field(default_factory=_default_release_cache_path)
+    disposable_email_cache_path: Path = field(default_factory=_default_disposable_email_cache_path)
 
     def fetch_reference_package_names(self) -> list[str]:
         request = Request(
@@ -135,6 +148,32 @@ class OfficialPyPIClient:
             encoding="utf-8",
         )
         return len(names)
+
+    def fetch_disposable_email_domains(self) -> list[str]:
+        request = Request(
+            DISPOSABLE_EMAIL_DOMAINS_SOURCE_URL,
+            headers={"Accept": "text/plain"},
+        )
+        with urlopen(request, timeout=20) as response:
+            body = response.read().decode("utf-8")
+        return _normalize_disposable_domains_text(body)
+
+    def load_disposable_email_domains(self) -> set[str]:
+        return set(
+            _load_disposable_email_domains_from_paths(
+                self.disposable_email_cache_path,
+                BOOTSTRAP_DISPOSABLE_EMAIL_DOMAINS_PATH,
+            )
+        )
+
+    def refresh_disposable_email_domain_cache(self) -> int:
+        domains = self.fetch_disposable_email_domains()
+        self.disposable_email_cache_path.parent.mkdir(parents=True, exist_ok=True)
+        self.disposable_email_cache_path.write_text(
+            "\n".join(domains) + "\n",
+            encoding="utf-8",
+        )
+        return len(domains)
 
     def project_exists(self, name: str) -> bool:
         request = Request(
@@ -326,6 +365,29 @@ def _parse_upload_time(value: str | None) -> datetime | None:
         return None
     normalized = value.replace("Z", "+00:00")
     return datetime.fromisoformat(normalized)
+
+
+def _load_disposable_email_domains_from_paths(*paths: Path) -> list[str]:
+    for path in paths:
+        if not path.exists():
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except Exception:
+            continue
+        domains = _normalize_disposable_domains_text(text)
+        if domains:
+            return domains
+    return []
+
+
+def _normalize_disposable_domains_text(text: str) -> list[str]:
+    domains = {
+        line.strip().lower()
+        for line in text.splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    }
+    return sorted(domains)
 
 
 def client_from_pip_args(

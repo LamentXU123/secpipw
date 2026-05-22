@@ -384,7 +384,11 @@ def _email_uses_disposable_domain(email: str, disposable_domains: set[str]) -> b
     if "@" not in address:
         return False
     domain = address.rsplit("@", 1)[1].strip().lower()
-    return domain in disposable_domains
+    parts = domain.split(".")
+    for index in range(len(parts) - 1):
+        if ".".join(parts[index:]) in disposable_domains:
+            return True
+    return False
 
 
 def _format_age(age: timedelta) -> str:

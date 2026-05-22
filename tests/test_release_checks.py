@@ -11,7 +11,9 @@ import uuid
 from unittest.mock import patch
 
 from spip.release_checks import (
+    _DISPOSABLE_EMAIL_LOOKUP_CACHE,
     _RELEASE_LOOKUP_CACHE,
+    detect_disposable_email_alerts,
     detect_recent_release_alerts,
     detect_zero_version_alerts,
 )
@@ -29,8 +31,9 @@ class FakePackage:
 
 
 class FakePyPIClient:
-    def __init__(self, upload_times):
+    def __init__(self, upload_times, contact_emails=None):
         self.upload_times = dict(upload_times)
+        self.contact_emails = dict(contact_emails or {})
         self.calls = []
 
     def fetch_release_upload_time(
@@ -43,6 +46,9 @@ class FakePyPIClient:
     ):
         self.calls.append((name, version, download_url, filename))
         return self.upload_times.get((name, version, download_url, filename))
+
+    def fetch_release_contact_emails(self, name: str, version: str) -> tuple[str, ...]:
+        return self.contact_emails.get((name, version), ())
 
     def load_cached_release_upload_time(
         self,
@@ -73,6 +79,7 @@ class FakePyPIClient:
 class ReleaseCheckTests(unittest.TestCase):
     def setUp(self) -> None:
         _RELEASE_LOOKUP_CACHE.clear()
+        _DISPOSABLE_EMAIL_LOOKUP_CACHE.clear()
 
     def make_temp_dir(self) -> Path:
         root = Path.cwd() / ".tmp-tests"
@@ -369,6 +376,71 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertEqual(len(alerts), 1)
         self.assertEqual(alerts[0].severity, Severity.LOW)
         self.assertIn("zero release version", alerts[0].message)
+
+    def test_disposable_email_raises_low_alert(self) -> None:
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+        )
+        client = FakePyPIClient(
+            {},
+            contact_emails={("demo", "1.0.0"): ("author@mailinator.com",)},
+        )
+
+        alerts = detect_disposable_email_alerts(
+            [package],
+            client=client,
+            disposable_domains={"mailinator.com"},
+        )
+
+        self.assertEqual(len(alerts), 1)
+        self.assertEqual(alerts[0].severity, Severity.LOW)
+        self.assertIn("disposable email", alerts[0].message)
+        self.assertIn("mailinator.com", alerts[0].message)
+
+    def test_disposable_email_matches_parent_domain_suffix(self) -> None:
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+        )
+        client = FakePyPIClient(
+            {},
+            contact_emails={("demo", "1.0.0"): ("author@foo.mailinator.com",)},
+        )
+
+        alerts = detect_disposable_email_alerts(
+            [package],
+            client=client,
+            disposable_domains={"mailinator.com"},
+        )
+
+        self.assertEqual(len(alerts), 1)
+
+    def test_disposable_email_timeout_raises_low_alert(self) -> None:
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+        )
+
+        class TimeoutClient(FakePyPIClient):
+            def fetch_release_contact_emails(self, name: str, version: str) -> tuple[str, ...]:
+                raise TimeoutError("timed out")
+
+        alerts = detect_disposable_email_alerts(
+            [package],
+            client=TimeoutClient({}),
+            disposable_domains={"mailinator.com"},
+        )
+
+        self.assertEqual(len(alerts), 1)
+        self.assertEqual(alerts[0].severity, Severity.LOW)
+        self.assertIn("PyPI timed out", alerts[0].message)
 
     def test_non_zero_major_zero_version_does_not_alert(self) -> None:
         package = FakePackage(

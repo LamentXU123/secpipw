@@ -62,6 +62,12 @@ The `secured_pip` project will actively check for all the supply chain risks and
 
 Except for the `install` commands, the project behaves exactly the same as the original `pip` program. That is, you can always use `spip` instead of `pip` in any case :)
 
+If you want to refresh local caches used by `spip`, run:
+
+```bash
+spip refresh-cache
+```
+
 ## Why not SFW / GuardDog?
 
 There are already good supply-chain tools out there. `secured_pip` is not trying to replace all of them. The point is different: keep the protection path as light as possible for everyday Python installs.
@@ -93,6 +99,7 @@ For now, the project has several major check points:
     - Medium severity: `pandaz` vs `pandas`
     - Low severity: `sixth` vs `six`
 - [x] Fresh release checks: If the selected PyPI release was published less than 2 days ago, `spip` will raise a `MEDIUM` warning.
+- [x] Disposable email checks: If the PyPI release metadata uses a known disposable author or maintainer email domain, `spip` will raise a `LOW` warning. The built-in blocklist is vendored from `disposable/disposable-email-domains` strict mode.
 - [x] Zero-version checks: If the selected package version is `0.0` or `0.0.0`, `spip` will raise a `LOW` warning.
 - [x] `.pth` file detection: Instead of directly injecting malicious code inside the package, today most hackers will place their bad stuff under a `.pth` file, with an `import` as the beginning. `spip` only checks the installed file-system diff after installation. The warning level is always `MEDIUM`, and `spip` will ask whether to delete the suspicious installed `.pth` file.
 - [ ] TODO ...

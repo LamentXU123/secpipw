@@ -36,4 +36,4 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.setuptools.package-data]
-spip = ["data/*.json"]
+spip = ["data/*.json", "data/*.txt"]

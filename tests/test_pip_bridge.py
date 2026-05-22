@@ -84,9 +84,10 @@ class PipBridgeTests(unittest.TestCase):
         ):
             with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[alert]):
                 with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
-                        with patch("sys.stderr", stderr):
-                            rc = cli.main(["install", "requsets==2.31.0"])
+                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
+                        with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
+                            with patch("sys.stderr", stderr):
+                                rc = cli.main(["install", "requsets==2.31.0"])
 
         self.assertEqual(rc, 2)
         self.assertIn("[HIGH] typo-suspect:", stderr.getvalue())
@@ -106,9 +107,10 @@ class PipBridgeTests(unittest.TestCase):
         ):
             with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[alert]):
                 with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
-                        with patch("sys.stderr", stderr):
-                            rc = cli.main(["install", "requsets==2.31.0", "--ignore-warning"])
+                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
+                        with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
+                            with patch("sys.stderr", stderr):
+                                rc = cli.main(["install", "requsets==2.31.0", "--ignore-warning"])
 
         self.assertEqual(rc, 0)
         self.assertIn("[HIGH] typo-suspect:", stderr.getvalue())
@@ -128,9 +130,10 @@ class PipBridgeTests(unittest.TestCase):
         ):
             with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[alert]):
                 with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
-                        with patch("sys.stderr", stderr), patch("sys.stdin", stdin):
-                            rc = cli.main(["install", "reqeusts==2.31.0"])
+                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
+                        with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
+                            with patch("sys.stderr", stderr), patch("sys.stdin", stdin):
+                                rc = cli.main(["install", "reqeusts==2.31.0"])
 
         self.assertEqual(rc, 0)
         self.assertIn("continue install? enter y/n [y/N]:", stderr.getvalue())
@@ -150,9 +153,10 @@ class PipBridgeTests(unittest.TestCase):
         ):
             with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[alert]):
                 with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
-                        with patch("sys.stderr", stderr), patch("sys.stdin", stdin):
-                            rc = cli.main(["install", "reqeusts==2.31.0"])
+                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
+                        with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
+                            with patch("sys.stderr", stderr), patch("sys.stdin", stdin):
+                                rc = cli.main(["install", "reqeusts==2.31.0"])
 
         self.assertEqual(rc, 1)
         self.assertIn("installation cancelled.", stderr.getvalue())
@@ -171,9 +175,10 @@ class PipBridgeTests(unittest.TestCase):
         ):
             with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[alert]):
                 with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
-                        with patch("sys.stderr", stderr), patch("sys.stdin", stdin):
-                            rc = cli.main(["install", "reqeusts==2.31.0"])
+                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
+                        with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
+                            with patch("sys.stderr", stderr), patch("sys.stdin", stdin):
+                                rc = cli.main(["install", "reqeusts==2.31.0"])
 
         self.assertEqual(rc, 2)
         self.assertIn("run interactively and answer y/n", stderr.getvalue())
@@ -191,9 +196,10 @@ class PipBridgeTests(unittest.TestCase):
         ):
             with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[alert]):
                 with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
-                        with patch("sys.stderr", stderr):
-                            rc = cli.main(["install", "reqeusts==2.31.0", "--ignore-warning"])
+                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
+                        with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
+                            with patch("sys.stderr", stderr):
+                                rc = cli.main(["install", "reqeusts==2.31.0", "--ignore-warning"])
 
         self.assertEqual(rc, 0)
         install_plan.assert_called_once()
@@ -225,19 +231,20 @@ class PipBridgeTests(unittest.TestCase):
         ):
             with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[]):
                 with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
-                        rc = cli.main(
-                            [
-                                "install",
-                                "-r",
-                                "requirements.txt",
-                                "--upgrade",
-                                "--upgrade-strategy",
-                                "eager",
-                                "--target",
-                                "vendor",
-                            ]
-                        )
+                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
+                        with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
+                            rc = cli.main(
+                                [
+                                    "install",
+                                    "-r",
+                                    "requirements.txt",
+                                    "--upgrade",
+                                    "--upgrade-strategy",
+                                    "eager",
+                                    "--target",
+                                    "vendor",
+                                ]
+                            )
 
         self.assertEqual(rc, 0)
         install_plan.assert_called_once_with(
@@ -269,8 +276,9 @@ class PipBridgeTests(unittest.TestCase):
         with patch("spip.cli.resolve_install_plan", return_value=_plan()):
             with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[]):
                 with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli.run_pip", return_value=0) as run_pip:
-                        rc = cli.main(["install", "requests"])
+                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
+                        with patch("spip.cli.run_pip", return_value=0) as run_pip:
+                            rc = cli.main(["install", "requests"])
 
         self.assertEqual(rc, 0)
         run_pip.assert_called_once_with(["install", "requests"])
@@ -288,14 +296,19 @@ class PipBridgeTests(unittest.TestCase):
         stdout = io.StringIO()
         fake_client = SimpleNamespace(
             cache_path="cache.json",
-            refresh_project_name_cache=lambda: 123,
+            disposable_email_cache_path="disposable.txt",
         )
-        with patch("spip.cli.OfficialPyPIClient", return_value=fake_client):
-            with patch("sys.stdout", stdout):
-                rc = cli.main(["refresh-package-cache"])
+        with patch("spip.cli.refresh_all_caches", return_value=[
+            SimpleNamespace(description="PyPI project name cache", count=123, location="cache.json"),
+            SimpleNamespace(description="disposable email domain cache", count=456, location="disposable.txt"),
+        ]):
+            with patch("spip.cli.OfficialPyPIClient", return_value=fake_client):
+                with patch("sys.stdout", stdout):
+                    rc = cli.main(["refresh-cache"])
 
         self.assertEqual(rc, 0)
-        self.assertIn("refreshed local package cache with 123 project names", stdout.getvalue())
+        self.assertIn("refreshed PyPI project name cache with 123 entries", stdout.getvalue())
+        self.assertIn("refreshed disposable email domain cache with 456 entries", stdout.getvalue())
 
     def test_collect_pip_output_invokes_python_m_pip(self) -> None:
         completed = type(
@@ -326,9 +339,10 @@ class PipBridgeTests(unittest.TestCase):
         ):
             with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[]):
                 with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli._install_resolved_plan", return_value=0):
-                        with patch("sys.stderr", stderr):
-                            rc = cli.main(["install", "requests==2.31.0"])
+                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
+                        with patch("spip.cli._install_resolved_plan", return_value=0):
+                            with patch("sys.stderr", stderr):
+                                rc = cli.main(["install", "requests==2.31.0"])
 
         self.assertEqual(rc, 0)
         self.assertNotIn("resolved packages to download (2)", stderr.getvalue())
@@ -344,9 +358,10 @@ class PipBridgeTests(unittest.TestCase):
         ):
             with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[]):
                 with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli._install_resolved_plan", return_value=0):
-                        with patch("sys.stderr", stderr):
-                            rc = cli.main(["install", "requests==2.31.0", "--debug"])
+                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
+                        with patch("spip.cli._install_resolved_plan", return_value=0):
+                            with patch("sys.stderr", stderr):
+                                rc = cli.main(["install", "requests==2.31.0", "--debug"])
 
         self.assertEqual(rc, 0)
         self.assertIn("resolved packages to download (2)", stderr.getvalue())
