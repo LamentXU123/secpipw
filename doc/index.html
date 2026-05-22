@@ -86,21 +86,13 @@
           <div class="install-guides" data-command-guides>
             <article class="install-guide">
               <div class="install-guide-head">
-                <h2>PowerShell (Windows)</h2>
+                <h2>Command Prompt (Windows)</h2>
                 <button class="copy-button" type="button" data-copy-target="copy-powershell">Copy</button>
               </div>
               <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secured_pip</span>
-<span class="code-keyword">if</span> (!(<span class="code-command">Test-Path</span> <span class="code-var">$PROFILE</span>)) {
-  <span class="code-command">ni</span> <span class="code-var">$PROFILE</span> <span class="code-arg">-Force</span>
-}
-<span class="code-string">'function pip { spip @args }'</span> <span class="code-operator">&gt;&gt;</span> <span class="code-var">$PROFILE</span>
-<span class="code-command">.</span> <span class="code-var">$PROFILE</span></code></pre>
+<span class="code-command">doskey</span> pip=<span class="code-package">spip</span> $*</code></pre>
               <textarea class="copy-buffer" id="copy-powershell" readonly>pip install secured_pip
-if (!(Test-Path $PROFILE)) {
-  ni $PROFILE -Force
-}
-'function pip { spip @args }' >> $PROFILE
-. $PROFILE</textarea>
+doskey pip=spip $*</textarea>
             </article>
 
             <article class="install-guide">

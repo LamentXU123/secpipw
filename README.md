@@ -36,12 +36,10 @@ In other words, you can completely replace `pip install` with `spip install` to 
 
 If you want a near drop-in experience, you can set a shell alias from `pip` to `spip`.
 
-PowerShell (Windows):
+Command Prompt (Windows):
 
-```powershell
-if (!(Test-Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }
-Add-Content $PROFILE 'function pip { spip @args }'
-. $PROFILE
+```cmd
+doskey pip=spip $*
 ```
 
 Bash (Linux):
