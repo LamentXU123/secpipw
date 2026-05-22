@@ -4,18 +4,20 @@ import socket
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from email.utils import parseaddr
 from typing import Iterable, Protocol
 from urllib.error import URLError
 
 from packaging.version import InvalidVersion, Version
 
-from spip.pypi_api import OfficialPyPIClient
+from spip.pypi_api import OfficialPyPIClient, load_disposable_email_domains
 from spip.severity import Severity
 from spip.terminal import colorize
 
 RECENT_RELEASE_THRESHOLD = timedelta(days=2)
 RECENT_RELEASE_MAX_WORKERS = 8
 _RELEASE_LOOKUP_CACHE: dict[tuple[str, str, str, str, str], "_ReleaseLookupResult"] = {}
+_DISPOSABLE_EMAIL_LOOKUP_CACHE: dict[tuple[str, str, str], "_DisposableEmailLookupResult"] = {}
 
 
 class PackageLike(Protocol):
@@ -45,9 +47,24 @@ class VersionAlert:
 
 
 @dataclass(frozen=True)
+class DisposableEmailAlert:
+    severity: Severity
+    package_name: str
+    version: str
+    email: str
+    message: str
+
+
+@dataclass(frozen=True)
 class _ReleaseLookupResult:
     timed_out: bool
     published_at: datetime | None
+
+
+@dataclass(frozen=True)
+class _DisposableEmailLookupResult:
+    timed_out: bool
+    matched_emails: tuple[str, ...]
 
 
 def detect_recent_release_alerts(
@@ -133,6 +150,68 @@ def detect_zero_version_alerts(
     return alerts
 
 
+def detect_disposable_email_alerts(
+    packages: Iterable[PackageLike],
+    *,
+    client: OfficialPyPIClient | None = None,
+    disposable_domains: set[str] | None = None,
+) -> list[DisposableEmailAlert]:
+    client = client or OfficialPyPIClient()
+    disposable_domains = (
+        load_disposable_email_domains()
+        if disposable_domains is None
+        else {domain.lower() for domain in disposable_domains}
+    )
+    alerts: list[DisposableEmailAlert] = []
+    candidates = _unique_packages_for_recent_release_check(packages)
+
+    if not candidates:
+        return alerts
+
+    max_workers = min(RECENT_RELEASE_MAX_WORKERS, len(candidates))
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        lookups = list(
+            executor.map(
+                lambda package: _fetch_disposable_email_lookup_result(
+                    package,
+                    client,
+                    disposable_domains=disposable_domains,
+                ),
+                candidates,
+            )
+        )
+
+    for package, lookup in zip(candidates, lookups):
+        if lookup.timed_out:
+            alerts.append(
+                DisposableEmailAlert(
+                    severity=Severity.LOW,
+                    package_name=package.name,
+                    version=package.version,
+                    email="",
+                    message=(
+                        f"could not verify whether '{package.name}=={package.version}' "
+                        "uses a disposable maintainer email because PyPI timed out"
+                    ),
+                )
+            )
+            continue
+        for email in lookup.matched_emails:
+            alerts.append(
+                DisposableEmailAlert(
+                    severity=Severity.LOW,
+                    package_name=package.name,
+                    version=package.version,
+                    email=email,
+                    message=(
+                        f"'{package.name}=={package.version}' publishes metadata with "
+                        f"disposable email '{email}'"
+                    ),
+                )
+            )
+    return alerts
+
+
 def render_release_age_alerts(alerts: Iterable[ReleaseAgeAlert]) -> str:
     lines = []
     for alert in alerts:
@@ -151,6 +230,18 @@ def render_version_alerts(alerts: Iterable[VersionAlert]) -> str:
         lines.append(
             colorize(
                 f"[{alert.severity.label.upper()}] zero-version: {alert.message}",
+                alert.severity,
+            )
+        )
+    return "\n".join(lines)
+
+
+def render_disposable_email_alerts(alerts: Iterable[DisposableEmailAlert]) -> str:
+    lines = []
+    for alert in alerts:
+        lines.append(
+            colorize(
+                f"[{alert.severity.label.upper()}] disposable-email: {alert.message}",
                 alert.severity,
             )
         )
@@ -233,6 +324,43 @@ def _fetch_release_lookup_result(
     return result
 
 
+def _fetch_disposable_email_lookup_result(
+    package: PackageLike,
+    client: OfficialPyPIClient,
+    *,
+    disposable_domains: set[str],
+) -> _DisposableEmailLookupResult:
+    key = (
+        client.base_url.rstrip("/").lower(),
+        package.name.lower(),
+        package.version,
+    )
+    cached = _DISPOSABLE_EMAIL_LOOKUP_CACHE.get(key)
+    if cached is not None:
+        return cached
+
+    try:
+        emails = client.fetch_release_contact_emails(package.name, package.version)
+    except Exception as exc:
+        if _is_timeout_error(exc):
+            result = _DisposableEmailLookupResult(timed_out=True, matched_emails=())
+        else:
+            result = _DisposableEmailLookupResult(timed_out=False, matched_emails=())
+    else:
+        matched_emails = tuple(
+            email
+            for email in emails
+            if _email_uses_disposable_domain(email, disposable_domains)
+        )
+        result = _DisposableEmailLookupResult(
+            timed_out=False,
+            matched_emails=matched_emails,
+        )
+
+    _DISPOSABLE_EMAIL_LOOKUP_CACHE[key] = result
+    return result
+
+
 def _is_timeout_error(exc: Exception) -> bool:
     if isinstance(exc, (TimeoutError, socket.timeout)):
         return True
@@ -249,6 +377,14 @@ def _is_zero_version(version: str) -> bool:
         return False
     release = parsed.release
     return len(release) >= 2 and all(component == 0 for component in release)
+
+
+def _email_uses_disposable_domain(email: str, disposable_domains: set[str]) -> bool:
+    _, address = parseaddr(email)
+    if "@" not in address:
+        return False
+    domain = address.rsplit("@", 1)[1].strip().lower()
+    return domain in disposable_domains
 
 
 def _format_age(age: timedelta) -> str:

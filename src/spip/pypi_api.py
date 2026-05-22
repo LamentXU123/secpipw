@@ -5,6 +5,7 @@ import json
 import os
 import socket
 import threading
+from email.utils import getaddresses
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -15,7 +16,12 @@ from urllib.request import Request, urlopen
 DEFAULT_PYPI_BASE_URL = "https://pypi.org"
 DEFAULT_JSON_API_TIMEOUT_SECONDS = 2.5
 _RELEASE_CACHE_LOCK = threading.RLock()
+_METADATA_CACHE_LOCK = threading.RLock()
+_METADATA_CACHE: dict[tuple[str, str, str], dict] = {}
 BOOTSTRAP_CACHE_PATH = Path(__file__).resolve().parent / "data" / "pypi-project-names.json"
+DISPOSABLE_EMAIL_DOMAINS_PATH = (
+    Path(__file__).resolve().parent / "data" / "disposable-email-domains.json"
+)
 BOOTSTRAP_PROJECT_NAMES = [
     "black",
     "build",
@@ -59,6 +65,11 @@ BOOTSTRAP_PROJECT_NAMES = [
     "virtualenv",
     "wheel",
 ]
+
+
+def load_disposable_email_domains() -> set[str]:
+    payload = json.loads(DISPOSABLE_EMAIL_DOMAINS_PATH.read_text(encoding="utf-8"))
+    return {domain.strip().lower() for domain in payload.get("domains", []) if domain.strip()}
 
 
 def _default_cache_path() -> Path:
@@ -147,22 +158,30 @@ class OfficialPyPIClient:
             return name.lower() in {project.lower() for project in self.load_cached_project_names()}
 
     def fetch_release_metadata(self, name: str, version: str) -> dict:
+        cache_key = (self.base_url.rstrip("/").lower(), name.lower(), version)
+        with _METADATA_CACHE_LOCK:
+            cached = _METADATA_CACHE.get(cache_key)
+        if cached is not None:
+            return cached
         request = Request(
             f"{self.base_url}/pypi/{name}/{version}/json",
             headers={"Accept": "application/json"},
         )
         try:
             with urlopen(request, timeout=DEFAULT_JSON_API_TIMEOUT_SECONDS) as response:
-                return json.loads(response.read().decode("utf-8"))
+                payload = json.loads(response.read().decode("utf-8"))
         except Exception as exc:
             if self.base_url == DEFAULT_PYPI_BASE_URL or _is_timeout_error(exc):
                 raise
-        fallback = Request(
-            f"{DEFAULT_PYPI_BASE_URL}/pypi/{name}/{version}/json",
-            headers={"Accept": "application/json"},
-        )
-        with urlopen(fallback, timeout=DEFAULT_JSON_API_TIMEOUT_SECONDS) as response:
-            return json.loads(response.read().decode("utf-8"))
+            fallback = Request(
+                f"{DEFAULT_PYPI_BASE_URL}/pypi/{name}/{version}/json",
+                headers={"Accept": "application/json"},
+            )
+            with urlopen(fallback, timeout=DEFAULT_JSON_API_TIMEOUT_SECONDS) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+        with _METADATA_CACHE_LOCK:
+            _METADATA_CACHE[cache_key] = payload
+        return payload
 
     def fetch_release_upload_time(
         self,
@@ -194,6 +213,23 @@ class OfficialPyPIClient:
         if selected is None:
             return None
         return _parse_upload_time(selected.get("upload_time_iso_8601"))
+
+    def fetch_release_contact_emails(self, name: str, version: str) -> tuple[str, ...]:
+        payload = self.fetch_release_metadata(name, version)
+        info = payload.get("info") or {}
+        raw_values = [
+            info.get("author_email") or "",
+            info.get("maintainer_email") or "",
+        ]
+        emails: list[str] = []
+        seen: set[str] = set()
+        for _, address in getaddresses(raw_values):
+            normalized = address.strip().lower()
+            if not normalized or "@" not in normalized or normalized in seen:
+                continue
+            seen.add(normalized)
+            emails.append(normalized)
+        return tuple(emails)
 
     def load_cached_release_upload_time(
         self,
