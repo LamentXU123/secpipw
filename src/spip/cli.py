@@ -30,15 +30,10 @@ def main(argv: list[str] | None = None) -> int:
         try:
             plan = resolve_install_plan(pip_args)
         except InstallPlanError as exc:
-            if exc.stderr:
-                sys.stderr.write(exc.stderr)
-            if exc.stdout:
-                sys.stdout.write(exc.stdout)
-            sys.stderr.write(
-                "spip could not resolve the install plan. try the original command with "
-                f"`pip install {' '.join(pip_args)}`.\n"
-            )
-            return exc.returncode
+            return run_pip(["install", *pip_args])
+        except Exception as exc:
+            sys.stderr.write(f"ERROR: spip failed to resolve the install plan: {exc}\n")
+            return 1
 
         if debug:
             sys.stderr.write(render_install_plan(plan) + "\n")

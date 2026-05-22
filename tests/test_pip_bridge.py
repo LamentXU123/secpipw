@@ -369,34 +369,43 @@ class PipBridgeTests(unittest.TestCase):
         self.assertIn("urllib3==2.2.1", stderr.getvalue())
 
     def test_cli_install_returns_resolution_error_code(self) -> None:
-        stderr = io.StringIO()
         from spip.install_plan import InstallPlanError
 
         with patch(
             "spip.cli.resolve_install_plan",
             side_effect=InstallPlanError(2, "resolve failed\n", ""),
-        ):
-            with patch("sys.stderr", stderr):
-                rc = cli.main(["install", "badpkg"])
+        ), patch("spip.cli.run_pip", return_value=2) as run_pip:
+            rc = cli.main(["install", "badpkg"])
 
         self.assertEqual(rc, 2)
-        self.assertIn("resolve failed", stderr.getvalue())
-        self.assertIn("pip install badpkg", stderr.getvalue())
+        run_pip.assert_called_once_with(["install", "badpkg"])
 
-    def test_cli_install_suggests_plain_pip_when_resolution_fails(self) -> None:
+    def test_cli_install_resolution_failure_does_not_print_spip_suggestion(self) -> None:
         stderr = io.StringIO()
         from spip.install_plan import InstallPlanError
 
         with patch(
             "spip.cli.resolve_install_plan",
             side_effect=InstallPlanError(1, "No matching distribution found\n", ""),
+        ), patch("spip.cli.run_pip", return_value=1):
+            with patch("sys.stderr", stderr):
+                rc = cli.main(["install", "badpkg"])
+
+        self.assertEqual(rc, 1)
+        self.assertNotIn("spip could not resolve the install plan", stderr.getvalue())
+
+    def test_cli_install_internal_resolve_error_uses_spip_error_prefix(self) -> None:
+        stderr = io.StringIO()
+
+        with patch(
+            "spip.cli.resolve_install_plan",
+            side_effect=RuntimeError("boom"),
         ):
             with patch("sys.stderr", stderr):
                 rc = cli.main(["install", "badpkg"])
 
         self.assertEqual(rc, 1)
-        self.assertIn("No matching distribution found", stderr.getvalue())
-        self.assertIn("pip install badpkg", stderr.getvalue())
+        self.assertIn("ERROR: spip failed to resolve the install plan: boom", stderr.getvalue())
 
     def test_run_pip_uses_direct_passthrough_execution(self) -> None:
         completed = type("Completed", (), {"returncode": 9})()
