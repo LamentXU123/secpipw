@@ -4,12 +4,22 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "secured_pip"
-version = "0.2.0"
+version = "0.2.1"
 description = "A defensive pip wrapper with supply-chain preflight checks."
 readme = "README.md"
 requires-python = ">=3.10"
+classifiers = [
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
 authors = [
-  { name = "secured_pip" }
+  { name = "Weilin Du (LamentXU)" }
 ]
 dependencies = [
   "packaging==24.2",
