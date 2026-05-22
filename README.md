@@ -3,7 +3,7 @@
 # secured_pip
 
 [![Test](https://github.com/LamentXU123/spip/actions/workflows/test.yml/badge.svg)](https://github.com/LamentXU123/spip/actions/workflows/test.yml)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Python_version](https://img.shields.io/pypi/pyversions/secured_pip.svg?logo=python&logoColor=FBE072)
 ![PyPI Version](https://img.shields.io/pypi/v/secured_pip)
 [![Codecov](https://codecov.io/gh/LamentXU123/spip/graph/badge.svg)](https://codecov.io/gh/LamentXU123/spip)
