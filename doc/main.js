@@ -17,6 +17,7 @@ const installButtons = document.querySelectorAll('[data-scroll-install]')
 const nextButtons = document.querySelectorAll('[data-scroll-next]')
 const topButtons = document.querySelectorAll('[data-scroll-top]')
 const animatedCharts = document.querySelectorAll('[data-chart-animate]')
+const languageSwitches = document.querySelectorAll('[data-language-switch]')
 
 if (scenes.length > 0) {
   if ('scrollRestoration' in history) {
@@ -248,5 +249,13 @@ for (const button of nextButtons) {
 for (const button of topButtons) {
   button.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  })
+}
+
+for (const select of languageSwitches) {
+  select.addEventListener('change', () => {
+    if (select.value) {
+      window.location.href = select.value
+    }
   })
 }
