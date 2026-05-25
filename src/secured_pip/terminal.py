@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from spip.severity import Severity
+from secured_pip.severity import Severity
 
 ANSI_RESET = "\033[0m"
 ANSI_COLORS = {

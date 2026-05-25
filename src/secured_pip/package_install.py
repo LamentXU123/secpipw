@@ -4,13 +4,13 @@ import shutil
 from dataclasses import dataclass
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from urllib.parse import unquote, urlparse
+from urllib.parse import unquote, urlparse, urlunparse
 from urllib.request import url2pathname, urlopen
 
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.utils import canonicalize_name
 
-from spip.install_plan import ResolvedPackage
+from secured_pip.install_plan import ResolvedPackage
 
 INSTALL_OPTIONS_WITH_VALUE = {
     "-t",
@@ -63,6 +63,28 @@ class DownloadedArtifact:
     path: Path
 
 
+def install_resolved_packages(
+    packages: tuple[ResolvedPackage, ...] | list[ResolvedPackage],
+    pip_args: list[str],
+) -> int:
+    package_list = tuple(packages)
+    if not package_list:
+        return 0
+
+    install_inputs = [
+        _install_input_for(package)
+        for package in topological_install_order(package_list)
+    ]
+    command = [
+        "install",
+        "--disable-pip-version-check",
+        "--no-deps",
+        *forwarded_install_args(pip_args),
+        *install_inputs,
+    ]
+    return _run_pip_internal(command)
+
+
 def topological_install_order(
     packages: tuple[ResolvedPackage, ...] | list[ResolvedPackage],
 ) -> tuple[ResolvedPackage, ...]:
@@ -77,7 +99,10 @@ def topological_install_order(
     }
     incoming = {name: len(deps) for name, deps in dependency_names.items()}
     reverse_edges: dict[str, list[str]] = {name: [] for name in by_name}
-    order_index = {canonicalize_name(package.name): index for index, package in enumerate(package_list)}
+    order_index = {
+        canonicalize_name(package.name): index
+        for index, package in enumerate(package_list)
+    }
 
     for package_name, deps in dependency_names.items():
         for dep_name in deps:
@@ -102,9 +127,10 @@ def topological_install_order(
         return tuple(ordered)
 
     remaining = [
-        package for package in package_list if canonicalize_name(package.name) not in {
-            canonicalize_name(item.name) for item in ordered
-        }
+        package
+        for package in package_list
+        if canonicalize_name(package.name)
+        not in {canonicalize_name(item.name) for item in ordered}
     ]
     return tuple([*ordered, *remaining])
 
@@ -142,10 +168,14 @@ def forwarded_install_args(pip_args: list[str]) -> list[str]:
     return forwarded
 
 
-def download_artifact(package: ResolvedPackage, destination: Path) -> DownloadedArtifact:
+def download_artifact(
+    package: ResolvedPackage, destination: Path
+) -> DownloadedArtifact:
     download_url = package.download_url
     if not download_url:
-        raise RuntimeError(f"missing download URL for {package.name}=={package.version}")
+        raise RuntimeError(
+            f"missing download URL for {package.name}=={package.version}"
+        )
 
     parsed = urlparse(download_url)
     artifact_name = package.artifact_name or _artifact_name_from_path(parsed.path)
@@ -186,3 +216,26 @@ def _artifact_name_from_path(path: str) -> str:
     if not name:
         raise RuntimeError(f"could not derive artifact filename from URL path: {path}")
     return name
+
+
+def _install_input_for(package: ResolvedPackage) -> str:
+    if package.download_url:
+        return _url_with_archive_hash(package.download_url, package.archive_hash)
+    raise RuntimeError(
+        f"missing download URL for resolved package {package.name}=={package.version}"
+    )
+
+
+def _run_pip_internal(argv: list[str]) -> int:
+    from pip._internal.cli.main import main as pip_main
+
+    return int(pip_main(argv))
+
+
+def _url_with_archive_hash(download_url: str, archive_hash: str | None) -> str:
+    if not archive_hash:
+        return download_url
+    parsed = urlparse(download_url)
+    if parsed.fragment:
+        return download_url
+    return urlunparse(parsed._replace(fragment=archive_hash))

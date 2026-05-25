@@ -31,7 +31,7 @@ jobs:
     - name: Run tests
       run: |
         pip install coverage
-        coverage run --source ./src/spip -m unittest discover -s tests -v
+        coverage run --source ./src/secured_pip -m unittest discover -s tests -v
         coverage xml -i
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3

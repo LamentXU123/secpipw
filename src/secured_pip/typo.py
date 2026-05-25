@@ -8,9 +8,9 @@ from typing import Iterable, Protocol
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.utils import canonicalize_name
 
-from spip.pypi_api import BOOTSTRAP_PROJECT_NAMES, OfficialPyPIClient
-from spip.severity import Severity
-from spip.terminal import colorize
+from secured_pip.pypi_api import BOOTSTRAP_PROJECT_NAMES, OfficialPyPIClient
+from secured_pip.severity import Severity
+from secured_pip.terminal import colorize
 
 try:
     from Levenshtein import distance as levenshtein_distance
@@ -170,7 +170,8 @@ class TypoDetector:
         candidate_names = sorted(set(BOOTSTRAP_PROJECT_NAMES))
         candidates: list[_Candidate] = []
         project_name_set: set[str] = {
-            canonicalize_name(name) for name in set(names).union(BOOTSTRAP_PROJECT_NAMES)
+            canonicalize_name(name)
+            for name in set(names).union(BOOTSTRAP_PROJECT_NAMES)
         }
         first_char_index: dict[str, list[_Candidate]] = {}
         last_char_index: dict[str, list[_Candidate]] = {}
@@ -373,8 +374,7 @@ def _search_best_match(
             _ratio(requested, candidate),
         )
         if score > best_score or (
-            score == best_score
-            and (distance < best_distance or best_name is None)
+            score == best_score and (distance < best_distance or best_name is None)
         ):
             best_name = reference
             best_score = score

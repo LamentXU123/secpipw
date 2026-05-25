@@ -5,7 +5,12 @@ import unittest
 from pathlib import Path
 from uuid import uuid4
 
-from spip.package_install import download_artifact, forwarded_install_args, topological_install_order
+from secured_pip.package_install import (
+    download_artifact,
+    forwarded_install_args,
+    install_resolved_packages,
+    topological_install_order,
+)
 
 
 class FakePackage:
@@ -16,12 +21,14 @@ class FakePackage:
         *,
         download_url: str | None = None,
         artifact_name: str | None = None,
+        archive_hash: str | None = None,
         requires_dist: tuple[str, ...] = (),
     ) -> None:
         self.name = name
         self.version = version
         self.download_url = download_url
         self.artifact_name = artifact_name
+        self.archive_hash = archive_hash
         self.requires_dist = requires_dist
 
 
@@ -87,6 +94,67 @@ class PackageInstallTests(unittest.TestCase):
         finally:
             if root.exists():
                 shutil.rmtree(root, ignore_errors=True)
+
+    def test_install_resolved_packages_installs_exact_report_urls_without_deps(
+        self,
+    ) -> None:
+        requests = FakePackage(
+            "requests",
+            "2.31.0",
+            download_url="https://files.pythonhosted.org/packages/requests.whl",
+            archive_hash="sha256=reqhash",
+            requires_dist=("urllib3>=2",),
+        )
+        urllib3 = FakePackage(
+            "urllib3",
+            "2.2.1",
+            download_url="https://files.pythonhosted.org/packages/urllib3.whl",
+            archive_hash="sha256=urlhash",
+        )
+
+        from unittest.mock import patch
+
+        with patch("secured_pip.package_install._run_pip_internal", return_value=0) as run:
+            rc = install_resolved_packages(
+                [requests, urllib3],
+                [
+                    "requests",
+                    "--target",
+                    "vendor",
+                    "--index-url",
+                    "https://example/simple",
+                ],
+            )
+
+        self.assertEqual(rc, 0)
+        run.assert_called_once_with(
+            [
+                "install",
+                "--disable-pip-version-check",
+                "--no-deps",
+                "--target",
+                "vendor",
+                "https://files.pythonhosted.org/packages/urllib3.whl#sha256=urlhash",
+                "https://files.pythonhosted.org/packages/requests.whl#sha256=reqhash",
+            ]
+        )
+
+    def test_install_resolved_packages_noops_when_plan_is_empty(self) -> None:
+        from unittest.mock import patch
+
+        with patch("secured_pip.package_install._run_pip_internal") as run:
+            rc = install_resolved_packages([], ["requests"])
+
+        self.assertEqual(rc, 0)
+        run.assert_not_called()
+
+    def test_install_resolved_packages_requires_report_download_url(self) -> None:
+        package = FakePackage("demo", "1.0.0")
+
+        with self.assertRaises(RuntimeError) as context:
+            install_resolved_packages([package], [])
+
+        self.assertIn("missing download URL", str(context.exception))
 
 
 if __name__ == "__main__":

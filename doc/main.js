@@ -16,6 +16,7 @@ const scrollButtons = document.querySelectorAll('[data-command-scroll]')
 const installButtons = document.querySelectorAll('[data-scroll-install]')
 const nextButtons = document.querySelectorAll('[data-scroll-next]')
 const topButtons = document.querySelectorAll('[data-scroll-top]')
+const animatedCharts = document.querySelectorAll('[data-chart-animate]')
 
 if (scenes.length > 0) {
   if ('scrollRestoration' in history) {
@@ -152,6 +153,31 @@ const runScene = async (scene) => {
 
 for (const scene of scenes) {
   runScene(scene)
+}
+
+if (animatedCharts.length > 0) {
+  if ('IntersectionObserver' in window) {
+    const chartObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) {
+            continue
+          }
+          entry.target.classList.add('is-chart-visible')
+          chartObserver.unobserve(entry.target)
+        }
+      },
+      { threshold: 0.35 },
+    )
+
+    for (const chart of animatedCharts) {
+      chartObserver.observe(chart)
+    }
+  } else {
+    for (const chart of animatedCharts) {
+      chart.classList.add('is-chart-visible')
+    }
+  }
 }
 
 for (const button of copyButtons) {

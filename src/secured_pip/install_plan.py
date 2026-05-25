@@ -7,9 +7,9 @@ from dataclasses import dataclass
 from pathlib import PurePosixPath
 from urllib.parse import unquote, urlparse
 
-from spip.pip_bridge import build_pip_command
-from spip.severity import Severity
-from spip.terminal import colorize
+from secured_pip.pip_bridge import build_pip_command
+from secured_pip.severity import Severity
+from secured_pip.terminal import colorize
 
 
 @dataclass(frozen=True)
@@ -20,7 +20,9 @@ class ResolvedPackage:
     is_direct: bool
     download_url: str | None
     artifact_name: str | None
+    archive_hash: str | None
     requires_dist: tuple[str, ...]
+    metadata: dict
 
 
 @dataclass(frozen=True)
@@ -63,13 +65,16 @@ def resolve_install_plan(pip_args: list[str]) -> InstallPlan:
             stdout=completed.stdout,
         )
 
-    payload = json.loads(completed.stdout)
+    return install_plan_from_report(json.loads(completed.stdout))
+
+
+def install_plan_from_report(report: dict) -> InstallPlan:
     packages = tuple(
         package
-        for item in payload.get("install", [])
+        for item in report.get("install", [])
         if (package := _package_from_report_item(item)) is not None
     )
-    return InstallPlan(packages=packages, raw_report=payload)
+    return InstallPlan(packages=packages, raw_report=report)
 
 
 def render_install_plan(plan: InstallPlan) -> str:
@@ -96,6 +101,7 @@ def _package_from_report_item(item: dict) -> ResolvedPackage | None:
 
     download_info = item.get("download_info") or {}
     download_url = download_info.get("url")
+    archive_hash = _archive_hash_from_download_info(download_info)
     requires_dist = tuple(metadata.get("requires_dist") or ())
     return ResolvedPackage(
         name=name,
@@ -104,7 +110,9 @@ def _package_from_report_item(item: dict) -> ResolvedPackage | None:
         is_direct=bool(item.get("is_direct")),
         download_url=download_url,
         artifact_name=_artifact_name_from_url(download_url),
+        archive_hash=archive_hash,
         requires_dist=requires_dist,
+        metadata=dict(metadata),
     )
 
 
@@ -115,6 +123,22 @@ def _artifact_name_from_url(download_url: str | None) -> str | None:
     if not parsed.path:
         return None
     return unquote(PurePosixPath(parsed.path).name) or None
+
+
+def _archive_hash_from_download_info(download_info: dict) -> str | None:
+    archive_info = download_info.get("archive_info") or {}
+    value = archive_info.get("hash")
+    if isinstance(value, str) and value:
+        return value
+    hashes = archive_info.get("hashes") or {}
+    if isinstance(hashes, dict):
+        sha256 = hashes.get("sha256")
+        if isinstance(sha256, str) and sha256:
+            return f"sha256={sha256}"
+        for algorithm, digest in hashes.items():
+            if isinstance(algorithm, str) and isinstance(digest, str) and digest:
+                return f"{algorithm}={digest}"
+    return None
 
 
 def _strip_conflicting_report_args(args: list[str]) -> list[str]:

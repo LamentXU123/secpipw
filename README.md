@@ -60,6 +60,8 @@ source ~/.zshrc
 
 The `secured_pip` project will actively check for all the supply chain risks and avoid you installing potentially malicious packages when typing `spip install`
 
+For `install`, `spip` uses pip's own resolver and then checks the selected install plan before pip builds or installs the resolved distributions. If the checks pass, the same pip install flow continues; `spip` does not run a second `pip install` for the already-resolved packages.
+
 Except for the `install` commands, the project behaves exactly the same as the original `pip` program. That is, you can always use `spip` instead of `pip` in any case :)
 
 If you want to refresh local caches used by `spip`, run:
@@ -90,6 +92,12 @@ We currently have three install warning policies:
 - `MEDIUM`: prompt `y/n` before continuing
 - `LOW`: warn and continue
 
+The default sensitivity is `low`, which uses the policy above. You can make
+the gate stricter with `--sensitivity medium` or `--sensitivity high`:
+
+- `--sensitivity medium`: `MEDIUM` and above pause installation; `LOW` prompts.
+- `--sensitivity high`: `LOW` and above pause installation.
+
 When `spip` detects a potential risk, a warning will be raised, with the level depending on the severity the risk is.
 
 For now, the project has several major check points:
@@ -98,8 +106,13 @@ For now, the project has several major check points:
     - Medium severity: `requsets` vs `requests`
     - Medium severity: `pandaz` vs `pandas`
     - Low severity: `sixth` vs `six`
+- [x] Direct URL dependency checks: If the install target or a resolved dependency uses a direct URL, VCS URL, or PEP 508 direct reference, `spip` will raise a `MEDIUM` warning.
 - [x] Fresh release checks: If the selected PyPI release was published less than 2 days ago, `spip` will raise a `MEDIUM` warning.
 - [x] Disposable email checks: If the PyPI release metadata uses a known disposable author or maintainer email domain, `spip` will raise a `LOW` warning. The built-in blocklist is vendored from `disposable/disposable-email-domains` strict mode.
+- [x] Empty description checks: If the selected PyPI release metadata has no summary and no long description, `spip` will raise a `LOW` warning.
+- [x] Suspicious metadata URL checks: If PyPI metadata points to a shortener, raw IP, suspicious TLD, embedded credentials, or similar suspicious URL, `spip` will raise a `LOW` warning.
+- [x] Repository mismatch checks: If PyPI metadata points to a GitHub/GitLab repository whose repo name appears unrelated to the package name, `spip` will raise a `LOW` warning.
+- [x] Maintainer email domain drift checks: If a package's maintainer email domain changes compared with the local `spip` history cache, `spip` will raise a `LOW` warning.
 - [x] Zero-version checks: If the selected package version is `0.0` or `0.0.0`, `spip` will raise a `LOW` warning.
 - [x] `.pth` file detection: Instead of directly injecting malicious code inside the package, today most hackers will place their bad stuff under a `.pth` file, with an `import` as the beginning. `spip` only checks the installed file-system diff after installation. The warning level is always `MEDIUM`, and `spip` will ask whether to delete the suspicious installed `.pth` file.
 - [ ] TODO ...

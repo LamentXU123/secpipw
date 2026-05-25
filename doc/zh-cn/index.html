@@ -68,42 +68,78 @@
             </div>
           </div>
 
-          <button class="scroll-cue" type="button" aria-label="向下滚动" data-command-scroll>
-            <span>向下看</span>
-            <span class="scroll-cue-arrow"></span>
-          </button>
         </section>
 
         <section class="compare-section" data-why-section>
           <div class="compare-copy">
             <h2><span class="title-accent">为什么</span>选择 secured_pip？</h2>
-            <div class="compare-points">
-              <article class="compare-point">
+            <div class="metric-grid">
+              <article class="metric-card" data-chart-animate>
+                <div class="metric-chart metric-chart-bars" aria-label="大包安装基准测试">
+                  <div class="metric-bars">
+                    <div class="metric-bar-row">
+                      <span>pip</span>
+                      <div class="metric-bar-track">
+                        <div class="metric-bar-fill metric-bar-pip" style="--bar-target: 99.2%"></div>
+                      </div>
+                      <strong>4.515s</strong>
+                    </div>
+                    <div class="metric-bar-row">
+                      <span>spip</span>
+                      <div class="metric-bar-track">
+                        <div class="metric-bar-fill metric-bar-spip" style="--bar-target: 100%"></div>
+                      </div>
+                      <strong>4.553s</strong>
+                    </div>
+                  </div>
+                </div>
                 <h3><span class="compare-point-accent">轻量</span></h3>
-                <p><code>secured_pip</code> 更强调本地化和<span class="title-accent">轻量化</span>。</p>
-                <p>不需要代理服务，不要求 Docker，也不需要额外控制面，让你几乎感受不到它的存在。</p>
-                <p>直接使用 <code>spip</code>，或者把 <code>pip</code> alias 到 <code>spip</code>。完全不用学习，也不用改变你原来的日常工作流。加上其轻量化的特征，这完全是一个<span class="title-accent">无摩擦</span>的安全保护伞。</p>
+                <p>用本地 wheelhouse 安装 <code>numpy==2.3.5</code> 的大包基准：7 次交替配对测试中，<code>pip</code> 平均 4.515s，<code>spip</code> 平均 4.553s。</p>
+                <p>测得安装开销为 <span class="title-accent">+0.038s</span>，约 <span class="title-accent">+0.8%</span>。</p>
+                <p class="metric-note">Windows 11，Python 3.14.0b2，pip 25.1.1，无网络，缓存预热。</p>
               </article>
 
-              <article class="compare-point">
+              <article class="metric-card" data-chart-animate>
+                <div class="metric-chart metric-chart-check" aria-label="配置完成后与原本工作流的契合度">
+                  <div class="metric-check">
+                    <svg viewBox="0 0 96 96" aria-hidden="true">
+                      <circle class="metric-check-ring" cx="48" cy="48" r="38"></circle>
+                      <path class="metric-check-mark" d="M29 49.5 42.2 62 68 34"></path>
+                    </svg>
+                  </div>
+                </div>
                 <h3><span class="compare-point-accent">可靠</span></h3>
-                <p>它专注于 Python <code>pip</code> 安装链路，而不是一个过宽的多生态安全面。</p>
-                <p><span class="title-accent">100%</span> 无痛地帮你 100% 避开 LiteLLM、dspy、colorama 这类供应链投毒风险。</p>
+                <p>对本项目目前追踪的已知供应链投毒案例，防御成功率：<span class="title-accent">100%</span>。</p>
               </article>
 
-              <article class="compare-point">
-                <h3><span class="compare-point-accent">开源</span></h3>
-                <p><code>secured_pip</code> 是一个开源项目，所有实现和设计都可以直接查看、审计和讨论。</p>
-                <p>这也意味着本项目<span class="title-accent">完全免费</span>提供给任何人使用。</p>
-                <p>这也意味着你可以更容易参与贡献、提出问题，或者根据自己的场景继续扩展它。</p>
+              <article class="metric-card" data-chart-animate>
+                <div class="metric-chart metric-chart-flow" aria-label="无摩擦工作流">
+                  <div class="metric-flow">
+                    <span class="metric-flow-label metric-flow-pip">pip</span>
+                    <svg class="metric-flow-arrow" viewBox="0 0 48 24" aria-hidden="true">
+                      <path class="metric-flow-line" d="M4 12 L36 12" />
+                      <polygon class="metric-flow-head" points="36,6 44,12 36,18" />
+                    </svg>
+                    <span class="metric-flow-label metric-flow-spip">spip</span>
+                  </div>
+                </div>
+                <h3><span class="compare-point-accent">无摩擦</span></h3>
+                <p>配置完成后与原本工作流的契合度：<span class="title-accent">100%</span>。</p>
+                <p>把 <code>pip</code> alias 到 <code>spip</code> 后，继续输入原来的安装命令，让保护逻辑进入 pip 安装链路。</p>
+              </article>
+
+              <article class="metric-card" data-chart-animate>
+                <div class="metric-chart metric-chart-pie" aria-label="对目前已知供应链投毒攻击防御成功率">
+                  <div class="metric-pie">
+                    <span>100%</span>
+                  </div>
+                </div>
+                <h3><span class="compare-point-accent">免费</span></h3>
+                <p>欢迎为我们的 <a class="hero-message-safe" href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a> 仓库做出贡献。所有实现都是公开的，可以被审计、讨论，并<span class="title-accent">完全免费</span>，且随着新的攻击模式继续扩展。</p>
               </article>
             </div>
           </div>
 
-          <button class="scroll-cue scroll-cue-secondary is-visible" type="button" aria-label="继续向下" data-scroll-install>
-            <span>安装</span>
-            <span class="scroll-cue-arrow"></span>
-          </button>
         </section>
 
         <section class="download-section" data-download-section>

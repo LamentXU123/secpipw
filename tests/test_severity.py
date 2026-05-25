@@ -1,11 +1,14 @@
 import unittest
 
-from spip import Severity, parse_severity
+from secured_pip import Severity, parse_severity
 
 
 class SeverityTests(unittest.TestCase):
     def test_has_four_levels_with_info(self) -> None:
-        self.assertEqual(list(Severity), [Severity.INFO, Severity.LOW, Severity.MEDIUM, Severity.HIGH])
+        self.assertEqual(
+            list(Severity),
+            [Severity.INFO, Severity.LOW, Severity.MEDIUM, Severity.HIGH],
+        )
 
     def test_levels_are_ordered(self) -> None:
         self.assertLess(Severity.INFO, Severity.LOW)

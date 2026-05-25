@@ -11,9 +11,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Iterable, TextIO
 
-from spip.severity import Severity
-from spip.terminal import colorize
-from spip.warning_gate import GateDecision
+from secured_pip.severity import Severity
+from secured_pip.terminal import colorize
+from secured_pip.warning_gate import GateDecision
 
 IMPORT_LINE_RE = re.compile(r"^\s*import\b")
 PIP_OPTIONS_WITH_VALUE = {
@@ -95,7 +95,8 @@ def handle_suspicious_pth_alerts(
         )
         stderr.write(
             colorize(
-                "run interactively to choose deletion, or rerun with --ignore-warning.\n",
+                "run interactively to choose deletion, or rerun with --ignore-warning "
+                "to ignore this warning.\n",
                 Severity.MEDIUM,
             )
         )
@@ -103,7 +104,8 @@ def handle_suspicious_pth_alerts(
 
     stderr.write(
         colorize(
-            "delete suspicious .pth file(s)? enter y/n [y/N]: ",
+            "delete suspicious .pth file(s)? enter y/n [y/N] "
+            "(rerun with --ignore-warning to ignore this warning): ",
             Severity.MEDIUM,
         )
     )

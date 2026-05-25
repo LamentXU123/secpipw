@@ -2,14 +2,19 @@ from __future__ import annotations
 
 import io
 import unittest
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import ANY, patch
 
-from spip import Severity
-from spip import cli
-from spip.install_plan import InstallPlan
-from spip.pip_bridge import OutputEvent, build_pip_command, collect_pip_output, replay_events
+from secured_pip import Severity
+from secured_pip import cli
+from secured_pip.install_plan import InstallPlan
+from secured_pip.pip_bridge import (
+    OutputEvent,
+    build_pip_command,
+    collect_pip_output,
+    replay_events,
+)
 
 
 class TtyInput(io.StringIO):
@@ -26,10 +31,21 @@ class FakePackage:
     download_url: str | None = None
     artifact_name: str | None = None
     requires_dist: tuple[str, ...] = ()
+    metadata: dict = field(default_factory=dict)
 
 
 def _plan(*packages: FakePackage) -> InstallPlan:
     return InstallPlan(packages=tuple(packages), raw_report={"install": []})
+
+
+def _guarded_install_for(plan: InstallPlan, returncode: int = 0):
+    def run_guarded(pip_args, plan_hook):
+        decision = plan_hook(plan)
+        if not decision.allow_install:
+            return decision.exit_code
+        return returncode
+
+    return run_guarded
 
 
 class PipBridgeTests(unittest.TestCase):
@@ -44,13 +60,21 @@ class PipBridgeTests(unittest.TestCase):
             },
         )()
 
-        with patch("spip.pip_bridge.subprocess.run", return_value=completed):
+        with patch("secured_pip.pip_bridge.subprocess.run", return_value=completed):
             result = collect_pip_output(["--version"])
 
         self.assertEqual(result.returncode, 0)
-        self.assertEqual([event.severity for event in result.events], [Severity.INFO, Severity.INFO, Severity.INFO])
-        self.assertEqual([event.stream for event in result.events], ["stdout", "stdout", "stderr"])
-        self.assertEqual([event.text for event in result.events], ["line one\n", "line two\n", "warning\n"])
+        self.assertEqual(
+            [event.severity for event in result.events],
+            [Severity.INFO, Severity.INFO, Severity.INFO],
+        )
+        self.assertEqual(
+            [event.stream for event in result.events], ["stdout", "stdout", "stderr"]
+        )
+        self.assertEqual(
+            [event.text for event in result.events],
+            ["line one\n", "line two\n", "warning\n"],
+        )
 
     def test_replay_events_writes_to_matching_streams(self) -> None:
         stdout = io.StringIO()
@@ -66,7 +90,7 @@ class PipBridgeTests(unittest.TestCase):
         self.assertEqual(stderr.getvalue(), "warn\n")
 
     def test_cli_forwards_to_bridge(self) -> None:
-        with patch("spip.cli.run_pip", return_value=7) as run_pip:
+        with patch("secured_pip.cli.run_pip", return_value=7) as run_pip:
             rc = cli.main(["--version"])
 
         self.assertEqual(rc, 7)
@@ -74,18 +98,33 @@ class PipBridgeTests(unittest.TestCase):
 
     def test_cli_install_emits_typo_alerts_before_bridge(self) -> None:
         stderr = io.StringIO()
+        plan = _plan(FakePackage(name="requsets", version="2.31.0", requested=True))
         alert = SimpleNamespace(
             severity=Severity.HIGH,
             message="'requsets' is similar to popular package 'requests'",
         )
-        with patch(
-            "spip.cli.resolve_install_plan",
-            return_value=_plan(FakePackage(name="requsets", version="2.31.0", requested=True)),
-        ):
-            with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[alert]):
-                with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
-                        with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
+        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+            with patch(
+                "secured_pip.install_checks.detect_typos_in_resolved_packages",
+                return_value=[alert],
+            ):
+                with patch(
+                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                ):
+                    with (
+                        patch(
+                            "secured_pip.install_checks.detect_disposable_email_alerts",
+                            return_value=[],
+                        ),
+                        patch(
+                            "secured_pip.install_checks.detect_empty_description_alerts",
+                            return_value=[],
+                        ),
+                    ):
+                        with patch(
+                            "secured_pip.cli.run_guarded_pip_install",
+                            side_effect=_guarded_install_for(plan),
+                        ) as guarded:
                             with patch("sys.stderr", stderr):
                                 rc = cli.main(["install", "requsets==2.31.0"])
 
@@ -93,146 +132,342 @@ class PipBridgeTests(unittest.TestCase):
         self.assertIn("[HIGH] typo-suspect:", stderr.getvalue())
         self.assertIn("rerun with --ignore-warning", stderr.getvalue())
         self.assertIn("\x1b[", stderr.getvalue())
-        install_plan.assert_not_called()
+        guarded.assert_called_once()
 
     def test_cli_install_high_warning_can_be_ignored(self) -> None:
         stderr = io.StringIO()
+        plan = _plan(FakePackage(name="requsets", version="2.31.0", requested=True))
         alert = SimpleNamespace(
             severity=Severity.HIGH,
             message="'requsets' is similar to popular package 'requests'",
         )
-        with patch(
-            "spip.cli.resolve_install_plan",
-            return_value=_plan(FakePackage(name="requsets", version="2.31.0", requested=True)),
-        ):
-            with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[alert]):
-                with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
-                        with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
+        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+            with patch(
+                "secured_pip.install_checks.detect_typos_in_resolved_packages",
+                return_value=[alert],
+            ):
+                with patch(
+                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                ):
+                    with (
+                        patch(
+                            "secured_pip.install_checks.detect_disposable_email_alerts",
+                            return_value=[],
+                        ),
+                        patch(
+                            "secured_pip.install_checks.detect_empty_description_alerts",
+                            return_value=[],
+                        ),
+                    ):
+                        with patch(
+                            "secured_pip.cli.run_guarded_pip_install",
+                            side_effect=_guarded_install_for(plan),
+                        ) as guarded:
                             with patch("sys.stderr", stderr):
-                                rc = cli.main(["install", "requsets==2.31.0", "--ignore-warning"])
+                                rc = cli.main(
+                                    ["install", "requsets==2.31.0", "--ignore-warning"]
+                                )
 
         self.assertEqual(rc, 0)
         self.assertIn("[HIGH] typo-suspect:", stderr.getvalue())
         self.assertIn("\x1b[", stderr.getvalue())
-        install_plan.assert_called_once()
+        guarded.assert_called_once()
 
     def test_cli_install_medium_warning_prompts_and_continues_on_yes(self) -> None:
         stderr = io.StringIO()
         stdin = TtyInput("y\n")
+        plan = _plan(FakePackage(name="reqeusts", version="2.31.0", requested=True))
         alert = SimpleNamespace(
             severity=Severity.MEDIUM,
             message="'reqeusts' is similar to popular package 'requests'",
         )
-        with patch(
-            "spip.cli.resolve_install_plan",
-            return_value=_plan(FakePackage(name="reqeusts", version="2.31.0", requested=True)),
-        ):
-            with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[alert]):
-                with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
-                        with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
+        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+            with patch(
+                "secured_pip.install_checks.detect_typos_in_resolved_packages",
+                return_value=[alert],
+            ):
+                with patch(
+                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                ):
+                    with (
+                        patch(
+                            "secured_pip.install_checks.detect_disposable_email_alerts",
+                            return_value=[],
+                        ),
+                        patch(
+                            "secured_pip.install_checks.detect_empty_description_alerts",
+                            return_value=[],
+                        ),
+                    ):
+                        with patch(
+                            "secured_pip.cli.run_guarded_pip_install",
+                            side_effect=_guarded_install_for(plan),
+                        ) as guarded:
                             with patch("sys.stderr", stderr), patch("sys.stdin", stdin):
                                 rc = cli.main(["install", "reqeusts==2.31.0"])
 
         self.assertEqual(rc, 0)
-        self.assertIn("continue install? enter y/n [y/N]:", stderr.getvalue())
+        self.assertIn(
+            "continue install? enter y/n [y/N] "
+            "(rerun with --ignore-warning to ignore this warning):",
+            stderr.getvalue(),
+        )
         self.assertIn("\x1b[", stderr.getvalue())
-        install_plan.assert_called_once()
+        guarded.assert_called_once()
 
     def test_cli_install_medium_warning_cancels_on_no(self) -> None:
         stderr = io.StringIO()
         stdin = TtyInput("n\n")
+        plan = _plan(FakePackage(name="reqeusts", version="2.31.0", requested=True))
         alert = SimpleNamespace(
             severity=Severity.MEDIUM,
             message="'reqeusts' is similar to popular package 'requests'",
         )
-        with patch(
-            "spip.cli.resolve_install_plan",
-            return_value=_plan(FakePackage(name="reqeusts", version="2.31.0", requested=True)),
-        ):
-            with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[alert]):
-                with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
-                        with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
+        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+            with patch(
+                "secured_pip.install_checks.detect_typos_in_resolved_packages",
+                return_value=[alert],
+            ):
+                with patch(
+                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                ):
+                    with (
+                        patch(
+                            "secured_pip.install_checks.detect_disposable_email_alerts",
+                            return_value=[],
+                        ),
+                        patch(
+                            "secured_pip.install_checks.detect_empty_description_alerts",
+                            return_value=[],
+                        ),
+                    ):
+                        with patch(
+                            "secured_pip.cli.run_guarded_pip_install",
+                            side_effect=_guarded_install_for(plan),
+                        ) as guarded:
                             with patch("sys.stderr", stderr), patch("sys.stdin", stdin):
                                 rc = cli.main(["install", "reqeusts==2.31.0"])
 
         self.assertEqual(rc, 1)
         self.assertIn("installation cancelled.", stderr.getvalue())
-        install_plan.assert_not_called()
+        guarded.assert_called_once()
 
     def test_cli_install_medium_warning_blocks_when_not_interactive(self) -> None:
         stderr = io.StringIO()
         stdin = io.StringIO("y\n")
+        plan = _plan(FakePackage(name="reqeusts", version="2.31.0", requested=True))
         alert = SimpleNamespace(
             severity=Severity.MEDIUM,
             message="'reqeusts' is similar to popular package 'requests'",
         )
-        with patch(
-            "spip.cli.resolve_install_plan",
-            return_value=_plan(FakePackage(name="reqeusts", version="2.31.0", requested=True)),
-        ):
-            with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[alert]):
-                with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
-                        with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
+        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+            with patch(
+                "secured_pip.install_checks.detect_typos_in_resolved_packages",
+                return_value=[alert],
+            ):
+                with patch(
+                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                ):
+                    with (
+                        patch(
+                            "secured_pip.install_checks.detect_disposable_email_alerts",
+                            return_value=[],
+                        ),
+                        patch(
+                            "secured_pip.install_checks.detect_empty_description_alerts",
+                            return_value=[],
+                        ),
+                    ):
+                        with patch(
+                            "secured_pip.cli.run_guarded_pip_install",
+                            side_effect=_guarded_install_for(plan),
+                        ) as guarded:
                             with patch("sys.stderr", stderr), patch("sys.stdin", stdin):
                                 rc = cli.main(["install", "reqeusts==2.31.0"])
 
         self.assertEqual(rc, 2)
         self.assertIn("run interactively and answer y/n", stderr.getvalue())
-        install_plan.assert_not_called()
+        guarded.assert_called_once()
 
-    def test_cli_install_medium_warning_can_be_ignored_without_prompt(self) -> None:
+    def test_cli_install_medium_sensitivity_blocks_medium_warning(self) -> None:
         stderr = io.StringIO()
+        plan = _plan(FakePackage(name="reqeusts", version="2.31.0", requested=True))
         alert = SimpleNamespace(
             severity=Severity.MEDIUM,
             message="'reqeusts' is similar to popular package 'requests'",
         )
-        with patch(
-            "spip.cli.resolve_install_plan",
-            return_value=_plan(FakePackage(name="reqeusts", version="2.31.0", requested=True)),
-        ):
-            with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[alert]):
-                with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
-                        with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
+        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+            with patch(
+                "secured_pip.install_checks.detect_typos_in_resolved_packages",
+                return_value=[alert],
+            ):
+                with patch(
+                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                ):
+                    with (
+                        patch(
+                            "secured_pip.install_checks.detect_disposable_email_alerts",
+                            return_value=[],
+                        ),
+                        patch(
+                            "secured_pip.install_checks.detect_empty_description_alerts",
+                            return_value=[],
+                        ),
+                    ):
+                        with patch(
+                            "secured_pip.cli.run_guarded_pip_install",
+                            side_effect=_guarded_install_for(plan),
+                        ) as guarded:
                             with patch("sys.stderr", stderr):
-                                rc = cli.main(["install", "reqeusts==2.31.0", "--ignore-warning"])
+                                rc = cli.main(
+                                    [
+                                        "install",
+                                        "reqeusts==2.31.0",
+                                        "--sensitivity",
+                                        "medium",
+                                    ]
+                                )
+
+        self.assertEqual(rc, 2)
+        self.assertIn("medium severity warning detected", stderr.getvalue())
+        guarded.assert_called_once()
+
+    def test_cli_install_medium_warning_can_be_ignored_without_prompt(self) -> None:
+        stderr = io.StringIO()
+        plan = _plan(FakePackage(name="reqeusts", version="2.31.0", requested=True))
+        alert = SimpleNamespace(
+            severity=Severity.MEDIUM,
+            message="'reqeusts' is similar to popular package 'requests'",
+        )
+        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+            with patch(
+                "secured_pip.install_checks.detect_typos_in_resolved_packages",
+                return_value=[alert],
+            ):
+                with patch(
+                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                ):
+                    with (
+                        patch(
+                            "secured_pip.install_checks.detect_disposable_email_alerts",
+                            return_value=[],
+                        ),
+                        patch(
+                            "secured_pip.install_checks.detect_empty_description_alerts",
+                            return_value=[],
+                        ),
+                    ):
+                        with patch(
+                            "secured_pip.cli.run_guarded_pip_install",
+                            side_effect=_guarded_install_for(plan),
+                        ) as guarded:
+                            with patch("sys.stderr", stderr):
+                                rc = cli.main(
+                                    ["install", "reqeusts==2.31.0", "--ignore-warning"]
+                                )
 
         self.assertEqual(rc, 0)
-        install_plan.assert_called_once()
+        guarded.assert_called_once()
 
     def test_split_wrapper_args_removes_ignore_warning(self) -> None:
-        pip_args, ignore_warning, debug = cli._split_wrapper_args(
-            ["requests==2.31.0", "--ignore-warning", "--target", "vendor"]
+        pip_args, ignore_warning, debug, spip_status, sensitivity = (
+            cli._split_wrapper_args(
+                ["requests==2.31.0", "--ignore-warning", "--target", "vendor"]
+            )
         )
         self.assertEqual(pip_args, ["requests==2.31.0", "--target", "vendor"])
         self.assertTrue(ignore_warning)
         self.assertFalse(debug)
+        self.assertFalse(spip_status)
+        self.assertEqual(sensitivity, Severity.LOW)
 
     def test_split_wrapper_args_removes_debug(self) -> None:
-        pip_args, ignore_warning, debug = cli._split_wrapper_args(
-            ["requests==2.31.0", "--debug", "--target", "vendor"]
+        pip_args, ignore_warning, debug, spip_status, sensitivity = (
+            cli._split_wrapper_args(
+                ["requests==2.31.0", "--debug", "--target", "vendor"]
+            )
         )
         self.assertEqual(pip_args, ["requests==2.31.0", "--target", "vendor"])
         self.assertFalse(ignore_warning)
         self.assertTrue(debug)
+        self.assertFalse(spip_status)
+        self.assertEqual(sensitivity, Severity.LOW)
 
-    def test_cli_install_preserves_requirements_and_dependency_related_args(self) -> None:
+    def test_split_wrapper_args_removes_spip_status(self) -> None:
+        pip_args, ignore_warning, debug, spip_status, sensitivity = (
+            cli._split_wrapper_args(
+                ["requests==2.31.0", "--spip-status", "--target", "vendor"]
+            )
+        )
+        self.assertEqual(pip_args, ["requests==2.31.0", "--target", "vendor"])
+        self.assertFalse(ignore_warning)
+        self.assertFalse(debug)
+        self.assertTrue(spip_status)
+        self.assertEqual(sensitivity, Severity.LOW)
+
+    def test_split_wrapper_args_removes_sensitivity(self) -> None:
+        pip_args, ignore_warning, debug, spip_status, sensitivity = (
+            cli._split_wrapper_args(
+                ["requests==2.31.0", "--sensitivity", "medium", "--target", "vendor"]
+            )
+        )
+        self.assertEqual(pip_args, ["requests==2.31.0", "--target", "vendor"])
+        self.assertFalse(ignore_warning)
+        self.assertFalse(debug)
+        self.assertFalse(spip_status)
+        self.assertEqual(sensitivity, Severity.MEDIUM)
+
+    def test_split_wrapper_args_removes_sensitivity_equals(self) -> None:
+        pip_args, ignore_warning, debug, spip_status, sensitivity = (
+            cli._split_wrapper_args(["requests==2.31.0", "--sensitivity=high"])
+        )
+        self.assertEqual(pip_args, ["requests==2.31.0"])
+        self.assertFalse(ignore_warning)
+        self.assertFalse(debug)
+        self.assertFalse(spip_status)
+        self.assertEqual(sensitivity, Severity.HIGH)
+
+    def test_split_wrapper_args_rejects_invalid_sensitivity(self) -> None:
+        with self.assertRaises(ValueError):
+            cli._split_wrapper_args(["requests==2.31.0", "--sensitivity", "info"])
+
+    def test_cli_install_rejects_invalid_sensitivity(self) -> None:
+        stderr = io.StringIO()
+
+        with patch("sys.stderr", stderr):
+            rc = cli.main(["install", "requests", "--sensitivity", "info"])
+
+        self.assertEqual(rc, 2)
+        self.assertIn("--sensitivity must be low, medium, or high", stderr.getvalue())
+
+    def test_cli_install_preserves_requirements_and_dependency_related_args(
+        self,
+    ) -> None:
         plan = _plan(
             FakePackage(name="requests", version="2.31.0", requested=True),
             FakePackage(name="urllib3", version="2.2.1"),
         )
-        with patch(
-            "spip.cli.resolve_install_plan",
-            return_value=plan,
-        ):
-            with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[]):
-                with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
-                        with patch("spip.cli._install_resolved_plan", return_value=0) as install_plan:
+        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+            with patch(
+                "secured_pip.install_checks.detect_typos_in_resolved_packages", return_value=[]
+            ):
+                with patch(
+                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                ):
+                    with (
+                        patch(
+                            "secured_pip.install_checks.detect_disposable_email_alerts",
+                            return_value=[],
+                        ),
+                        patch(
+                            "secured_pip.install_checks.detect_empty_description_alerts",
+                            return_value=[],
+                        ),
+                    ):
+                        with patch(
+                            "secured_pip.cli.run_guarded_pip_install",
+                            side_effect=_guarded_install_for(plan),
+                        ) as guarded:
                             rc = cli.main(
                                 [
                                     "install",
@@ -247,45 +482,70 @@ class PipBridgeTests(unittest.TestCase):
                             )
 
         self.assertEqual(rc, 0)
-        install_plan.assert_called_once_with(
-            plan,
-            ["-r", "requirements.txt", "--upgrade", "--upgrade-strategy", "eager", "--target", "vendor"],
-            ignore_warning=False,
-            debug=False,
+        guarded.assert_called_once()
+        self.assertEqual(
+            guarded.call_args.args[0],
+            [
+                "-r",
+                "requirements.txt",
+                "--upgrade",
+                "--upgrade-strategy",
+                "eager",
+                "--target",
+                "vendor",
+            ],
         )
 
-    def test_install_resolved_plan_runs_plain_pip_once_then_checks_pth(self) -> None:
+    def test_install_with_guard_uses_guarded_pip_then_checks_pth(self) -> None:
         monitor = SimpleNamespace(inspect=lambda: ["alert"])
-        with patch("spip.cli._create_pth_monitor", return_value=monitor):
-            with patch("spip.cli.run_pip", return_value=0) as run_pip:
-                with patch("spip.cli.handle_suspicious_pth_alerts") as handle_post:
+        with patch("secured_pip.cli._create_pth_monitor", return_value=monitor):
+            with patch("secured_pip.cli.run_guarded_pip_install", return_value=0) as guarded:
+                with patch("secured_pip.cli.handle_suspicious_pth_alerts") as handle_post:
                     handle_post.return_value = SimpleNamespace(exit_code=0)
 
-                    rc = cli._install_resolved_plan(
-                        _plan(FakePackage(name="requests", version="2.31.0", requested=True)),
+                    rc = cli._install_with_guard(
                         ["requests", "--target", "vendor"],
                         ignore_warning=False,
                         debug=False,
+                        sensitivity=Severity.LOW,
                     )
 
         self.assertEqual(rc, 0)
-        run_pip.assert_called_once_with(["install", "requests", "--target", "vendor"])
+        guarded.assert_called_once_with(["requests", "--target", "vendor"], ANY)
         handle_post.assert_called_once_with(["alert"], ignore_warning=False)
 
-    def test_cli_install_falls_back_to_plain_pip_when_plan_is_empty(self) -> None:
-        with patch("spip.cli.resolve_install_plan", return_value=_plan()):
-            with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[]):
-                with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
-                        with patch("spip.cli.run_pip", return_value=0) as run_pip:
+    def test_cli_install_allows_empty_plan(self) -> None:
+        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+            with patch(
+                "secured_pip.install_checks.detect_typos_in_resolved_packages", return_value=[]
+            ):
+                with patch(
+                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                ):
+                    with (
+                        patch(
+                            "secured_pip.install_checks.detect_disposable_email_alerts",
+                            return_value=[],
+                        ),
+                        patch(
+                            "secured_pip.install_checks.detect_empty_description_alerts",
+                            return_value=[],
+                        ),
+                    ):
+                        with patch(
+                            "secured_pip.cli.run_guarded_pip_install",
+                            side_effect=_guarded_install_for(_plan()),
+                        ) as guarded:
                             rc = cli.main(["install", "requests"])
 
         self.assertEqual(rc, 0)
-        run_pip.assert_called_once_with(["install", "requests"])
+        guarded.assert_called_once()
 
     def test_cli_create_pth_monitor_falls_back_to_none_on_error(self) -> None:
         stderr = io.StringIO()
-        with patch("spip.cli.PthMonitor.from_install_args", side_effect=RuntimeError("boom")):
+        with patch(
+            "secured_pip.cli.PthMonitor.from_install_args", side_effect=RuntimeError("boom")
+        ):
             with patch("sys.stderr", stderr):
                 monitor = cli._create_pth_monitor(["requests==2.31.0"], debug=True)
 
@@ -298,17 +558,33 @@ class PipBridgeTests(unittest.TestCase):
             cache_path="cache.json",
             disposable_email_cache_path="disposable.txt",
         )
-        with patch("spip.cli.refresh_all_caches", return_value=[
-            SimpleNamespace(description="PyPI project name cache", count=123, location="cache.json"),
-            SimpleNamespace(description="disposable email domain cache", count=456, location="disposable.txt"),
-        ]):
-            with patch("spip.cli.OfficialPyPIClient", return_value=fake_client):
+        with patch(
+            "secured_pip.cli.refresh_all_caches",
+            return_value=[
+                SimpleNamespace(
+                    description="PyPI project name cache",
+                    count=123,
+                    location="cache.json",
+                ),
+                SimpleNamespace(
+                    description="disposable email domain cache",
+                    count=456,
+                    location="disposable.txt",
+                ),
+            ],
+        ):
+            with patch("secured_pip.cli.OfficialPyPIClient", return_value=fake_client):
                 with patch("sys.stdout", stdout):
                     rc = cli.main(["refresh-cache"])
 
         self.assertEqual(rc, 0)
-        self.assertIn("refreshed PyPI project name cache with 123 entries", stdout.getvalue())
-        self.assertIn("refreshed disposable email domain cache with 456 entries", stdout.getvalue())
+        self.assertIn(
+            "refreshed PyPI project name cache with 123 entries", stdout.getvalue()
+        )
+        self.assertIn(
+            "refreshed disposable email domain cache with 456 entries",
+            stdout.getvalue(),
+        )
 
     def test_collect_pip_output_invokes_python_m_pip(self) -> None:
         completed = type(
@@ -321,7 +597,7 @@ class PipBridgeTests(unittest.TestCase):
             },
         )()
 
-        with patch("spip.pip_bridge.subprocess.run", return_value=completed) as run:
+        with patch("secured_pip.pip_bridge.subprocess.run", return_value=completed) as run:
             collect_pip_output(["list"])
 
         command = run.call_args.args[0]
@@ -330,38 +606,103 @@ class PipBridgeTests(unittest.TestCase):
 
     def test_cli_install_prints_resolved_packages_before_checks(self) -> None:
         stderr = io.StringIO()
-        with patch(
-            "spip.cli.resolve_install_plan",
-            return_value=_plan(
-                FakePackage(name="requests", version="2.31.0", requested=True),
-                FakePackage(name="urllib3", version="2.2.1"),
-            ),
-        ):
-            with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[]):
-                with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
-                        with patch("spip.cli._install_resolved_plan", return_value=0):
+        plan = _plan(
+            FakePackage(name="requests", version="2.31.0", requested=True),
+            FakePackage(name="urllib3", version="2.2.1"),
+        )
+        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+            with patch(
+                "secured_pip.install_checks.detect_typos_in_resolved_packages", return_value=[]
+            ):
+                with patch(
+                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                ):
+                    with (
+                        patch(
+                            "secured_pip.install_checks.detect_disposable_email_alerts",
+                            return_value=[],
+                        ),
+                        patch(
+                            "secured_pip.install_checks.detect_empty_description_alerts",
+                            return_value=[],
+                        ),
+                    ):
+                        with patch(
+                            "secured_pip.cli.run_guarded_pip_install",
+                            side_effect=_guarded_install_for(plan),
+                        ):
                             with patch("sys.stderr", stderr):
                                 rc = cli.main(["install", "requests==2.31.0"])
 
         self.assertEqual(rc, 0)
         self.assertNotIn("resolved packages to download (2)", stderr.getvalue())
+        self.assertNotIn("guard enabled", stderr.getvalue())
+
+    def test_cli_install_prints_guard_status_only_when_requested(self) -> None:
+        stderr = io.StringIO()
+        plan = _plan(FakePackage(name="requests", version="2.31.0", requested=True))
+        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+            with patch(
+                "secured_pip.install_checks.detect_typos_in_resolved_packages", return_value=[]
+            ):
+                with patch(
+                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                ):
+                    with (
+                        patch(
+                            "secured_pip.install_checks.detect_disposable_email_alerts",
+                            return_value=[],
+                        ),
+                        patch(
+                            "secured_pip.install_checks.detect_empty_description_alerts",
+                            return_value=[],
+                        ),
+                    ):
+                        with patch(
+                            "secured_pip.cli.run_guarded_pip_install",
+                            side_effect=_guarded_install_for(plan),
+                        ) as guarded:
+                            with patch("sys.stderr", stderr):
+                                rc = cli.main(
+                                    ["install", "requests==2.31.0", "--spip-status"]
+                                )
+
+        self.assertEqual(rc, 0)
+        self.assertIn("spip 0.4.1 guard enabled.", stderr.getvalue())
+        guarded.assert_called_once()
+        self.assertEqual(guarded.call_args.args[0], ["requests==2.31.0"])
 
     def test_cli_install_prints_resolved_packages_in_debug_mode(self) -> None:
         stderr = io.StringIO()
-        with patch(
-            "spip.cli.resolve_install_plan",
-            return_value=_plan(
-                FakePackage(name="requests", version="2.31.0", requested=True),
-                FakePackage(name="urllib3", version="2.2.1"),
-            ),
-        ):
-            with patch("spip.cli.detect_typos_in_resolved_packages", return_value=[]):
-                with patch("spip.cli.detect_recent_release_alerts", return_value=[]):
-                    with patch("spip.cli.detect_disposable_email_alerts", return_value=[]):
-                        with patch("spip.cli._install_resolved_plan", return_value=0):
+        plan = _plan(
+            FakePackage(name="requests", version="2.31.0", requested=True),
+            FakePackage(name="urllib3", version="2.2.1"),
+        )
+        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+            with patch(
+                "secured_pip.install_checks.detect_typos_in_resolved_packages", return_value=[]
+            ):
+                with patch(
+                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                ):
+                    with (
+                        patch(
+                            "secured_pip.install_checks.detect_disposable_email_alerts",
+                            return_value=[],
+                        ),
+                        patch(
+                            "secured_pip.install_checks.detect_empty_description_alerts",
+                            return_value=[],
+                        ),
+                    ):
+                        with patch(
+                            "secured_pip.cli.run_guarded_pip_install",
+                            side_effect=_guarded_install_for(plan),
+                        ):
                             with patch("sys.stderr", stderr):
-                                rc = cli.main(["install", "requests==2.31.0", "--debug"])
+                                rc = cli.main(
+                                    ["install", "requests==2.31.0", "--debug"]
+                                )
 
         self.assertEqual(rc, 0)
         self.assertIn("resolved packages to download (2)", stderr.getvalue())
@@ -369,56 +710,56 @@ class PipBridgeTests(unittest.TestCase):
         self.assertIn("urllib3==2.2.1", stderr.getvalue())
 
     def test_cli_install_returns_resolution_error_code(self) -> None:
-        from spip.install_plan import InstallPlanError
-
-        with patch(
-            "spip.cli.resolve_install_plan",
-            side_effect=InstallPlanError(2, "resolve failed\n", ""),
-        ), patch("spip.cli.run_pip", return_value=2) as run_pip:
-            rc = cli.main(["install", "badpkg"])
+        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+            with patch("secured_pip.cli.run_guarded_pip_install", return_value=2) as guarded:
+                rc = cli.main(["install", "badpkg"])
 
         self.assertEqual(rc, 2)
-        run_pip.assert_called_once_with(["install", "badpkg"])
+        guarded.assert_called_once()
+        self.assertEqual(guarded.call_args.args[0], ["badpkg"])
 
-    def test_cli_install_resolution_failure_does_not_print_spip_suggestion(self) -> None:
+    def test_cli_install_resolution_failure_does_not_print_spip_suggestion(
+        self,
+    ) -> None:
         stderr = io.StringIO()
-        from spip.install_plan import InstallPlanError
 
-        with patch(
-            "spip.cli.resolve_install_plan",
-            side_effect=InstallPlanError(1, "No matching distribution found\n", ""),
-        ), patch("spip.cli.run_pip", return_value=1):
-            with patch("sys.stderr", stderr):
-                rc = cli.main(["install", "badpkg"])
+        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+            with patch("secured_pip.cli.run_guarded_pip_install", return_value=1):
+                with patch("sys.stderr", stderr):
+                    rc = cli.main(["install", "badpkg"])
 
         self.assertEqual(rc, 1)
         self.assertNotIn("spip could not resolve the install plan", stderr.getvalue())
 
-    def test_cli_install_internal_resolve_error_uses_spip_error_prefix(self) -> None:
+    def test_cli_install_internal_guard_error_uses_spip_error_prefix(self) -> None:
         stderr = io.StringIO()
 
-        with patch(
-            "spip.cli.resolve_install_plan",
-            side_effect=RuntimeError("boom"),
-        ):
-            with patch("sys.stderr", stderr):
-                rc = cli.main(["install", "badpkg"])
+        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+            with patch(
+                "secured_pip.cli.run_guarded_pip_install", side_effect=RuntimeError("boom")
+            ):
+                with patch("sys.stderr", stderr):
+                    rc = cli.main(["install", "badpkg"])
 
         self.assertEqual(rc, 1)
-        self.assertIn("ERROR: spip failed to resolve the install plan: boom", stderr.getvalue())
+        self.assertIn(
+            "ERROR: spip failed to run guarded pip install: boom", stderr.getvalue()
+        )
 
     def test_run_pip_uses_direct_passthrough_execution(self) -> None:
         completed = type("Completed", (), {"returncode": 9})()
 
-        with patch("spip.pip_bridge.subprocess.run", return_value=completed) as run:
-            from spip.pip_bridge import run_pip
+        with patch("secured_pip.pip_bridge.subprocess.run", return_value=completed) as run:
+            from secured_pip.pip_bridge import run_pip
 
             rc = run_pip(["install", "-r", "requirements.txt", "--target", "vendor"])
 
         self.assertEqual(rc, 9)
         self.assertEqual(
             run.call_args.args[0],
-            build_pip_command(["install", "-r", "requirements.txt", "--target", "vendor"]),
+            build_pip_command(
+                ["install", "-r", "requirements.txt", "--target", "vendor"]
+            ),
         )
         self.assertNotIn("capture_output", run.call_args.kwargs)
 

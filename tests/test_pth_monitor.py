@@ -5,8 +5,8 @@ import uuid
 from contextlib import contextmanager
 from pathlib import Path
 
-from spip import Severity
-from spip.pth_monitor import (
+from secured_pip import Severity
+from secured_pip.pth_monitor import (
     PthMonitor,
     find_import_lines,
     handle_suspicious_pth_alerts,
@@ -98,7 +98,11 @@ class PthMonitorTests(unittest.TestCase):
         self.assertTrue(decision.allow_install)
         self.assertEqual(decision.exit_code, 0)
         self.assertFalse(path.exists())
-        self.assertIn("delete suspicious .pth file(s)? enter y/n [y/N]:", stderr.getvalue())
+        self.assertIn(
+            "delete suspicious .pth file(s)? enter y/n [y/N] "
+            "(rerun with --ignore-warning to ignore this warning):",
+            stderr.getvalue(),
+        )
         self.assertIn("deleted 1 suspicious .pth file(s).", stderr.getvalue())
         self.assertIn("\x1b[", stderr.getvalue())
         self.assertEqual(stderr.flush_calls, 1)
@@ -143,7 +147,11 @@ class PthMonitorTests(unittest.TestCase):
 
         self.assertFalse(decision.allow_install)
         self.assertEqual(decision.exit_code, 2)
-        self.assertIn("installation completed, but suspicious .pth files were found.", stderr.getvalue())
+        self.assertIn(
+            "installation completed, but suspicious .pth files were found.",
+            stderr.getvalue(),
+        )
+        self.assertIn("--ignore-warning to ignore this warning", stderr.getvalue())
         self.assertIn("\x1b[", stderr.getvalue())
 
     def test_handle_alerts_ignore_warning_skips_prompt(self) -> None:
@@ -153,7 +161,9 @@ class PthMonitorTests(unittest.TestCase):
             alert = _alert_for(path)
             stderr = io.StringIO()
 
-            decision = handle_suspicious_pth_alerts([alert], ignore_warning=True, stderr=stderr)
+            decision = handle_suspicious_pth_alerts(
+                [alert], ignore_warning=True, stderr=stderr
+            )
             exists_after = path.exists()
 
         self.assertTrue(decision.allow_install)
@@ -169,7 +179,7 @@ class PthMonitorTests(unittest.TestCase):
             path = tmp / "evil.pth"
             alert = _alert_for(path)
 
-            from spip.pth_monitor import render_suspicious_pth_alerts
+            from secured_pip.pth_monitor import render_suspicious_pth_alerts
 
             rendered = render_suspicious_pth_alerts([alert])
 
@@ -177,7 +187,7 @@ class PthMonitorTests(unittest.TestCase):
 
 
 def _alert_for(path: Path):
-    from spip.pth_monitor import SuspiciousPthAlert
+    from secured_pip.pth_monitor import SuspiciousPthAlert
 
     return SuspiciousPthAlert(
         severity=Severity.MEDIUM,

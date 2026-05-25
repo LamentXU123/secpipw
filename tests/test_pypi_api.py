@@ -11,8 +11,8 @@ from pathlib import Path
 from urllib.error import HTTPError, URLError
 from unittest.mock import patch
 
-from spip import pypi_api
-from spip.pypi_api import (
+from secured_pip import pypi_api
+from secured_pip.pypi_api import (
     BOOTSTRAP_PROJECT_NAMES,
     BOOTSTRAP_DISPOSABLE_EMAIL_DOMAINS_PATH,
     DEFAULT_PYPI_BASE_URL,
@@ -75,18 +75,23 @@ class OfficialPyPIClientTests(unittest.TestCase):
         self.assertIn("requests", names)
         self.assertEqual(names, sorted(set(names)))
 
-    def test_load_reference_package_names_falls_back_to_cached_names_on_timeout(self) -> None:
+    def test_load_reference_package_names_falls_back_to_cached_names_on_timeout(
+        self,
+    ) -> None:
         client = OfficialPyPIClient()
 
-        with patch.object(
-            OfficialPyPIClient,
-            "fetch_reference_package_names",
-            side_effect=URLError(socket.timeout("timed out")),
-        ), patch.object(
-            OfficialPyPIClient,
-            "load_cached_project_names",
-            return_value=["cached-project"],
-        ) as load_cached:
+        with (
+            patch.object(
+                OfficialPyPIClient,
+                "fetch_reference_package_names",
+                side_effect=URLError(socket.timeout("timed out")),
+            ),
+            patch.object(
+                OfficialPyPIClient,
+                "load_cached_project_names",
+                return_value=["cached-project"],
+            ) as load_cached,
+        ):
             names = client.load_reference_package_names()
 
         self.assertEqual(names, ["cached-project"])
@@ -107,7 +112,9 @@ class OfficialPyPIClientTests(unittest.TestCase):
         client = OfficialPyPIClient(base_url="https://example.test")
         payload = {"projects": [{"name": "zeta"}, {"name": "alpha"}]}
 
-        with patch("spip.pypi_api.urlopen", return_value=FakeHTTPResponse(payload)) as mocked:
+        with patch(
+            "secured_pip.pypi_api.urlopen", return_value=FakeHTTPResponse(payload)
+        ) as mocked:
             names = client.fetch_all_project_names()
 
         self.assertEqual(names, ["alpha", "zeta"])
@@ -141,11 +148,15 @@ class OfficialPyPIClientTests(unittest.TestCase):
 
         self.assertEqual(names, ["alpha", "zeta"])
 
-    def test_load_cached_project_names_falls_back_to_embedded_bootstrap_names(self) -> None:
+    def test_load_cached_project_names_falls_back_to_embedded_bootstrap_names(
+        self,
+    ) -> None:
         tmpdir = self.make_temp_dir()
         client = OfficialPyPIClient(cache_path=tmpdir / "missing.json")
 
-        with patch.object(pypi_api, "BOOTSTRAP_CACHE_PATH", tmpdir / "also-missing.json"):
+        with patch.object(
+            pypi_api, "BOOTSTRAP_CACHE_PATH", tmpdir / "also-missing.json"
+        ):
             names = client.load_cached_project_names()
 
         self.assertEqual(names, sorted(BOOTSTRAP_PROJECT_NAMES))
@@ -172,20 +183,26 @@ class OfficialPyPIClientTests(unittest.TestCase):
     def test_load_disposable_email_domains_prefers_explicit_cache(self) -> None:
         tmpdir = self.make_temp_dir()
         cache_path = tmpdir / "disposable.txt"
-        cache_path.write_text("Mailinator.com\n# comment\ntrashmail.com\n", encoding="utf-8")
+        cache_path.write_text(
+            "Mailinator.com\n# comment\ntrashmail.com\n", encoding="utf-8"
+        )
         client = OfficialPyPIClient(disposable_email_cache_path=cache_path)
 
         domains = client.load_disposable_email_domains()
 
         self.assertEqual(domains, {"mailinator.com", "trashmail.com"})
 
-    def test_load_disposable_email_domains_module_helper_uses_bootstrap_file(self) -> None:
+    def test_load_disposable_email_domains_module_helper_uses_bootstrap_file(
+        self,
+    ) -> None:
         domains = load_disposable_email_domains()
 
         self.assertIn("mailinator.com", domains)
         self.assertTrue(BOOTSTRAP_DISPOSABLE_EMAIL_DOMAINS_PATH.exists())
 
-    def test_refresh_disposable_email_domain_cache_writes_expected_payload(self) -> None:
+    def test_refresh_disposable_email_domain_cache_writes_expected_payload(
+        self,
+    ) -> None:
         tmpdir = self.make_temp_dir()
         cache_path = tmpdir / "disposable.txt"
         client = OfficialPyPIClient(disposable_email_cache_path=cache_path)
@@ -207,7 +224,7 @@ class OfficialPyPIClientTests(unittest.TestCase):
         client = OfficialPyPIClient()
 
         with patch(
-            "spip.pypi_api.urlopen",
+            "secured_pip.pypi_api.urlopen",
             return_value=FakeHTTPResponse(b"Mailinator.com\ntrashmail.com\n"),
         ) as mocked:
             domains = client.fetch_disposable_email_domains()
@@ -219,33 +236,36 @@ class OfficialPyPIClientTests(unittest.TestCase):
     def test_project_exists_returns_true_when_json_endpoint_resolves(self) -> None:
         client = OfficialPyPIClient(base_url="https://example.test")
 
-        with patch("spip.pypi_api.urlopen", return_value=FakeHTTPResponse()):
+        with patch("secured_pip.pypi_api.urlopen", return_value=FakeHTTPResponse()):
             self.assertTrue(client.project_exists("demo"))
 
     def test_project_exists_returns_false_on_404(self) -> None:
         client = OfficialPyPIClient()
 
-        with patch("spip.pypi_api.urlopen", side_effect=build_http_error(404)):
+        with patch("secured_pip.pypi_api.urlopen", side_effect=build_http_error(404)):
             self.assertFalse(client.project_exists("missing"))
 
     def test_project_exists_reraises_non_404_http_errors(self) -> None:
         client = OfficialPyPIClient()
 
-        with patch("spip.pypi_api.urlopen", side_effect=build_http_error(500)):
+        with patch("secured_pip.pypi_api.urlopen", side_effect=build_http_error(500)):
             with self.assertRaises(HTTPError):
                 client.project_exists("broken")
 
     def test_project_exists_with_fallback_uses_cache_on_timeout(self) -> None:
         client = OfficialPyPIClient()
 
-        with patch.object(
-            OfficialPyPIClient,
-            "project_exists",
-            side_effect=URLError(socket.timeout("timed out")),
-        ), patch.object(
-            OfficialPyPIClient,
-            "load_cached_project_names",
-            return_value=["Requests", "NumPy"],
+        with (
+            patch.object(
+                OfficialPyPIClient,
+                "project_exists",
+                side_effect=URLError(socket.timeout("timed out")),
+            ),
+            patch.object(
+                OfficialPyPIClient,
+                "load_cached_project_names",
+                return_value=["Requests", "NumPy"],
+            ),
         ):
             self.assertTrue(client.project_exists_with_fallback("requests"))
             self.assertFalse(client.project_exists_with_fallback("pandas"))
@@ -274,13 +294,39 @@ class OfficialPyPIClientTests(unittest.TestCase):
         self.assertTrue(hit)
         self.assertEqual(loaded, published_at)
 
+    def test_email_domain_history_round_trip(self) -> None:
+        tmpdir = self.make_temp_dir()
+        history_path = tmpdir / "email-domains.json"
+        client = OfficialPyPIClient(email_domain_history_path=history_path)
+
+        client.store_email_domain_history(
+            {
+                "Demo": {"Example.org", "example.org"},
+                "other": {"maintainer.example"},
+            }
+        )
+
+        history = client.load_email_domain_history()
+
+        self.assertEqual(
+            history,
+            {
+                "demo": ("example.org",),
+                "other": ("maintainer.example",),
+            },
+        )
+
     def test_fetch_release_metadata_uses_shorter_timeout(self) -> None:
         client = OfficialPyPIClient(base_url="https://example.test")
 
-        with patch("spip.pypi_api.urlopen", return_value=FakeHTTPResponse({"urls": []})) as mocked:
+        with patch(
+            "secured_pip.pypi_api.urlopen", return_value=FakeHTTPResponse({"urls": []})
+        ) as mocked:
             client.fetch_release_metadata("demo", "1.0.0")
 
-        self.assertEqual(mocked.call_args.kwargs["timeout"], DEFAULT_JSON_API_TIMEOUT_SECONDS)
+        self.assertEqual(
+            mocked.call_args.kwargs["timeout"], DEFAULT_JSON_API_TIMEOUT_SECONDS
+        )
 
     def test_fetch_release_upload_time_prefers_download_url_match(self) -> None:
         client = OfficialPyPIClient()
@@ -376,7 +422,9 @@ class OfficialPyPIClientTests(unittest.TestCase):
             datetime(2026, 5, 19, 10, 0, tzinfo=timezone.utc),
         )
 
-    def test_fetch_release_upload_time_returns_none_when_release_has_no_files(self) -> None:
+    def test_fetch_release_upload_time_returns_none_when_release_has_no_files(
+        self,
+    ) -> None:
         client = OfficialPyPIClient()
 
         with patch.object(
@@ -388,14 +436,38 @@ class OfficialPyPIClientTests(unittest.TestCase):
 
         self.assertIsNone(upload_time)
 
-    def test_fetch_release_metadata_falls_back_to_official_pypi_for_non_timeout_mirror_error(self) -> None:
+    def test_fetch_release_description_fields_reads_summary_and_description(
+        self,
+    ) -> None:
+        client = OfficialPyPIClient()
+
+        with patch.object(
+            OfficialPyPIClient,
+            "fetch_release_metadata",
+            return_value={
+                "info": {
+                    "summary": "Short summary",
+                    "description": "Long description",
+                }
+            },
+        ):
+            summary, description = client.fetch_release_description_fields(
+                "demo", "1.0.0"
+            )
+
+        self.assertEqual(summary, "Short summary")
+        self.assertEqual(description, "Long description")
+
+    def test_fetch_release_metadata_falls_back_to_official_pypi_for_non_timeout_mirror_error(
+        self,
+    ) -> None:
         client = OfficialPyPIClient(base_url="https://mirror.example/simple")
         responses = [
             build_http_error(404),
             FakeHTTPResponse({"urls": []}),
         ]
 
-        with patch("spip.pypi_api.urlopen", side_effect=responses) as mocked:
+        with patch("secured_pip.pypi_api.urlopen", side_effect=responses) as mocked:
             payload = client.fetch_release_metadata("demo", "1.0.0")
 
         self.assertEqual(payload, {"urls": []})
@@ -413,7 +485,9 @@ class OfficialPyPIClientTests(unittest.TestCase):
     def test_resolve_index_url_prefers_cli_over_env_and_config(self) -> None:
         tmpdir = self.make_temp_dir()
         config_path = tmpdir / "pip.conf"
-        config_path.write_text("[global]\nindex-url = https://config.example/simple\n", encoding="utf-8")
+        config_path.write_text(
+            "[global]\nindex-url = https://config.example/simple\n", encoding="utf-8"
+        )
 
         index_url = resolve_index_url(
             ["install", "-i", "https://cli.example/simple"],
@@ -428,7 +502,9 @@ class OfficialPyPIClientTests(unittest.TestCase):
     def test_resolve_index_url_reads_pip_config_file(self) -> None:
         tmpdir = self.make_temp_dir()
         config_path = tmpdir / "pip.ini"
-        config_path.write_text("[install]\nindex-url = https://config.example/simple\n", encoding="utf-8")
+        config_path.write_text(
+            "[install]\nindex-url = https://config.example/simple\n", encoding="utf-8"
+        )
 
         index_url = resolve_index_url([], env={"PIP_CONFIG_FILE": str(config_path)})
 
@@ -439,7 +515,9 @@ class OfficialPyPIClientTests(unittest.TestCase):
         appdata = tmpdir / "AppData" / "Roaming"
         pip_ini = appdata / "pip" / "pip.ini"
         pip_ini.parent.mkdir(parents=True, exist_ok=True)
-        pip_ini.write_text("[global]\nindex-url = https://mirror.example/simple\n", encoding="utf-8")
+        pip_ini.write_text(
+            "[global]\nindex-url = https://mirror.example/simple\n", encoding="utf-8"
+        )
 
         index_url = resolve_index_url(
             [],

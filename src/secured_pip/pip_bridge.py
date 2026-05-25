@@ -5,7 +5,7 @@ import sys
 from dataclasses import dataclass
 from typing import Iterable, TextIO
 
-from spip.severity import Severity
+from secured_pip.severity import Severity
 
 
 @dataclass(frozen=True)

@@ -38,7 +38,6 @@ body {
 }
 
 body.page-home {
-  scroll-snap-type: y mandatory;
 }
 
 body.home-prelude {
@@ -138,15 +137,12 @@ pre {
 
 .home-hero {
   width: min(1220px, calc(100% - 3rem));
-  min-height: calc(100vh - 84px);
   margin: 0 auto;
   display: grid;
   justify-items: center;
   align-content: center;
   gap: 2.2rem;
-  padding: 2rem 0 3rem;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
+  padding: 3rem 0 3rem;
 }
 
 .hero-copy {
@@ -382,27 +378,21 @@ a.hero-message-safe:hover {
 
 .download-section {
   width: min(1220px, calc(100% - 3rem));
-  min-height: 100vh;
   margin: 0 auto;
   display: grid;
   align-content: center;
   gap: 1.6rem;
-  padding: 2rem 0 4rem;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
+  padding: 4rem 0 4rem;
 }
 
 .compare-section {
   width: min(1220px, calc(100% - 3rem));
-  min-height: 100vh;
   margin: 0 auto;
   display: grid;
   align-content: center;
   justify-items: center;
   gap: 1.8rem;
-  padding: 2rem 0 4rem;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
+  padding: 4rem 0 4rem;
 }
 
 .compare-copy {
@@ -465,6 +455,266 @@ a.hero-message-safe:hover {
   margin-top: 0.35rem;
 }
 
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2rem;
+  margin-top: 1.2rem;
+}
+
+.metric-card {
+  min-height: 30rem;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(19, 26, 35, 0.48);
+  text-align: left;
+  box-shadow: var(--shadow);
+}
+
+.metric-card h3 {
+  margin: 0 0 0.55rem;
+  color: var(--text);
+  font-size: clamp(1.2rem, 2vw, 1.65rem);
+  letter-spacing: -0.04em;
+}
+
+.metric-card p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.58;
+}
+
+.metric-card p + p {
+  margin-top: 0.45rem;
+}
+
+.metric-note {
+  color: #718198;
+  font-size: 0.82rem !important;
+}
+
+.metric-chart {
+  height: 14rem;
+  display: grid;
+  place-items: center;
+  margin-bottom: 1rem;
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(225, 138, 36, 0.08), transparent),
+    rgba(6, 9, 14, 0.52);
+  overflow: hidden;
+}
+
+.metric-bars {
+  width: min(100%, 19rem);
+  display: grid;
+  gap: 1rem;
+  padding: 0 0.2rem;
+}
+
+.metric-bar-row {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr) 4.6rem;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+}
+
+.metric-bar-row span {
+  color: var(--muted);
+}
+
+.metric-bar-row strong {
+  color: var(--text);
+  text-align: right;
+  font-weight: 700;
+}
+
+.metric-bar-track {
+  height: 1.1rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.metric-bar-fill {
+  width: 0;
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ffaa3d, var(--orange));
+  box-shadow: 0 0 22px rgba(225, 138, 36, 0.28);
+}
+
+.metric-bar-pip {
+  background: linear-gradient(90deg, rgba(147, 160, 181, 0.82), rgba(244, 247, 251, 0.82));
+  box-shadow: none;
+}
+
+.metric-card.is-chart-visible .metric-bar-fill {
+  animation: metric-bar-grow 980ms cubic-bezier(0.2, 0.85, 0.25, 1) forwards;
+}
+
+.metric-check {
+  width: 10.6rem;
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  opacity: 0;
+  transform: translateY(16px) scale(0.84);
+}
+
+.metric-check svg {
+  width: 9.6rem;
+  aspect-ratio: 1;
+  overflow: visible;
+  filter: drop-shadow(0 0 28px rgba(225, 138, 36, 0.22));
+}
+
+.metric-check-ring,
+.metric-check-mark {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.metric-check-ring {
+  stroke: rgba(225, 138, 36, 0.32);
+  stroke-width: 7;
+  stroke-dasharray: 239;
+  stroke-dashoffset: 239;
+}
+
+.metric-check-mark {
+  stroke: var(--orange);
+  stroke-width: 9;
+  stroke-dasharray: 56;
+  stroke-dashoffset: 56;
+}
+
+.metric-check span {
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 1.55rem;
+  font-weight: 700;
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.metric-card.is-chart-visible .metric-check {
+  animation: metric-check-pop 640ms cubic-bezier(0.18, 0.9, 0.2, 1) forwards;
+}
+
+.metric-card.is-chart-visible .metric-check-ring {
+  animation: metric-check-ring 900ms cubic-bezier(0.18, 0.9, 0.2, 1) forwards;
+}
+
+.metric-card.is-chart-visible .metric-check-mark {
+  animation: metric-check-draw 640ms 380ms cubic-bezier(0.18, 0.9, 0.2, 1) forwards;
+}
+
+.metric-card.is-chart-visible .metric-check span {
+  animation: metric-check-label 520ms 680ms ease forwards;
+}
+
+.metric-pie {
+  width: 10.6rem;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, rgba(6, 9, 14, 0.92) 0 42%, transparent 43%),
+    conic-gradient(var(--orange) 0 360deg);
+  box-shadow:
+    0 0 0 1px rgba(225, 138, 36, 0.28),
+    0 0 42px rgba(225, 138, 36, 0.22);
+  opacity: 0;
+  transform: rotate(-360deg) scale(0.72);
+}
+
+.metric-pie span {
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 2.1rem;
+  font-weight: 700;
+}
+
+.metric-card.is-chart-visible .metric-pie {
+  animation: metric-pie-reveal 1.12s cubic-bezier(0.18, 0.9, 0.2, 1) forwards;
+}
+
+.metric-flow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.metric-flow-label {
+  font-family: var(--mono);
+  font-size: 1.35rem;
+  font-weight: 700;
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.metric-flow-pip {
+  color: #ff5f57;
+}
+
+.metric-flow-spip {
+  color: var(--green);
+}
+
+.metric-flow-arrow {
+  width: 3.6rem;
+  height: 1.5rem;
+  opacity: 0;
+}
+
+.metric-flow-line {
+  fill: none;
+  stroke: var(--orange);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 32;
+  stroke-dashoffset: 32;
+}
+
+.metric-flow-head {
+  fill: var(--orange);
+  opacity: 0;
+}
+
+.metric-card.is-chart-visible .metric-flow-label {
+  animation: metric-flow-label 480ms ease forwards;
+}
+
+.metric-card.is-chart-visible .metric-flow-pip {
+  animation-delay: 0ms;
+}
+
+.metric-card.is-chart-visible .metric-flow-spip {
+  animation-delay: 600ms;
+}
+
+.metric-card.is-chart-visible .metric-flow-arrow {
+  animation: metric-flow-arrow 400ms 200ms ease forwards;
+}
+
+.metric-card.is-chart-visible .metric-flow-line {
+  animation: metric-flow-line 500ms 200ms cubic-bezier(0.2, 0.85, 0.25, 1) forwards;
+}
+
+.metric-card.is-chart-visible .metric-flow-head {
+  animation: metric-flow-head 200ms 600ms ease forwards;
+}
+
 .closing-section {
   width: min(1220px, calc(100% - 3rem));
   min-height: calc(100vh - 160px);
@@ -472,8 +722,6 @@ a.hero-message-safe:hover {
   display: grid;
   place-items: center;
   padding: 2rem 0 1.5rem;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
 }
 
 .closing-copy {
@@ -828,6 +1076,112 @@ a.hero-message-safe:hover {
   }
 }
 
+@keyframes metric-bar-grow {
+  from {
+    width: 0;
+  }
+  to {
+    width: var(--bar-target);
+  }
+}
+
+@keyframes metric-check-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.84);
+  }
+  74% {
+    opacity: 1;
+    transform: translateY(0) scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes metric-check-ring {
+  from {
+    stroke-dashoffset: 239;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes metric-check-draw {
+  from {
+    stroke-dashoffset: 56;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes metric-check-label {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes metric-pie-reveal {
+  0% {
+    opacity: 0;
+    transform: rotate(-360deg) scale(0.72);
+  }
+  72% {
+    opacity: 1;
+    transform: rotate(18deg) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+@keyframes metric-flow-label {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes metric-flow-arrow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes metric-flow-line {
+  from {
+    stroke-dashoffset: 32;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes metric-flow-head {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @media (max-width: 860px) {
   .site-header,
   .site-footer {
@@ -849,6 +1203,14 @@ a.hero-message-safe:hover {
 
   .install-guides {
     grid-template-columns: 1fr;
+  }
+
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metric-card {
+    min-height: auto;
   }
 
   .page-grid .panel-card {
@@ -894,6 +1256,10 @@ a.hero-message-safe:hover {
 
   .install-guides {
     width: min(1440px, 100%);
+    gap: 1.25rem;
+  }
+
+  .metric-grid {
     gap: 1.25rem;
   }
 
@@ -966,7 +1332,6 @@ a.hero-message-safe:hover {
   .home-hero {
     width: min(1220px, calc(100% - 2rem));
     gap: 1.65rem;
-    min-height: calc(100vh - 76px);
     padding: 1.4rem 0 2rem;
   }
 
@@ -982,7 +1347,6 @@ a.hero-message-safe:hover {
 
   .closing-section {
     width: min(1220px, calc(100% - 2rem));
-    min-height: calc(100vh - 120px);
   }
 
   .hero-copy-top h1 {
@@ -1048,5 +1412,18 @@ a.hero-message-safe:hover {
 
   .compare-point {
     padding: 1rem;
+  }
+
+  .metric-card {
+    padding: 1rem;
+  }
+
+  .metric-chart {
+    height: 12rem;
+  }
+
+  .metric-bar-row {
+    grid-template-columns: 2.8rem minmax(0, 1fr) 4.2rem;
+    gap: 0.5rem;
   }
 }

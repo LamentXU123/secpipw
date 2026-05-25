@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 license = "MIT"
 name = "secured_pip"
-version = "0.3.0"
+version = "0.4.1"
 description = "A defensive pip wrapper with supply-chain preflight checks."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -27,7 +27,7 @@ dependencies = [
 ]
 
 [project.scripts]
-spip = "spip.cli:main"
+spip = "secured_pip.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
@@ -36,4 +36,4 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.setuptools.package-data]
-spip = ["data/*.json", "data/*.txt"]
+secured_pip = ["data/*.json", "data/*.txt"]

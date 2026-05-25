@@ -10,15 +10,23 @@ import shutil
 import uuid
 from unittest.mock import patch
 
-from spip.release_checks import (
+from secured_pip.release_checks import (
+    _DESCRIPTION_LOOKUP_CACHE,
     _DISPOSABLE_EMAIL_LOOKUP_CACHE,
+    _REPOSITORY_MISMATCH_LOOKUP_CACHE,
     _RELEASE_LOOKUP_CACHE,
+    _SUSPICIOUS_URL_LOOKUP_CACHE,
+    detect_direct_url_alerts,
     detect_disposable_email_alerts,
+    detect_email_domain_drift_alerts,
+    detect_empty_description_alerts,
     detect_recent_release_alerts,
+    detect_repository_mismatch_alerts,
+    detect_suspicious_metadata_url_alerts,
     detect_zero_version_alerts,
 )
-from spip.pypi_api import OfficialPyPIClient
-from spip.severity import Severity
+from secured_pip.pypi_api import OfficialPyPIClient
+from secured_pip.severity import Severity
 
 
 @dataclass(frozen=True)
@@ -28,12 +36,24 @@ class FakePackage:
     download_url: str | None
     artifact_name: str | None
     requested: bool = True
+    requires_dist: tuple[str, ...] = ()
+    metadata: dict | None = None
 
 
 class FakePyPIClient:
-    def __init__(self, upload_times, contact_emails=None):
+    def __init__(
+        self,
+        upload_times,
+        contact_emails=None,
+        description_fields=None,
+        metadata=None,
+        email_domain_history=None,
+    ):
         self.upload_times = dict(upload_times)
         self.contact_emails = dict(contact_emails or {})
+        self.description_fields = dict(description_fields or {})
+        self.metadata = dict(metadata or {})
+        self.email_domain_history = dict(email_domain_history or {})
         self.calls = []
 
     def fetch_release_upload_time(
@@ -49,6 +69,20 @@ class FakePyPIClient:
 
     def fetch_release_contact_emails(self, name: str, version: str) -> tuple[str, ...]:
         return self.contact_emails.get((name, version), ())
+
+    def fetch_release_description_fields(
+        self, name: str, version: str
+    ) -> tuple[str, str]:
+        return self.description_fields.get((name, version), ("", ""))
+
+    def fetch_release_metadata(self, name: str, version: str) -> dict:
+        return self.metadata.get((name, version), {"info": {}})
+
+    def load_email_domain_history(self) -> dict[str, tuple[str, ...]]:
+        return self.email_domain_history
+
+    def store_email_domain_history(self, history) -> None:
+        self.email_domain_history = dict(history)
 
     def load_cached_release_upload_time(
         self,
@@ -76,10 +110,29 @@ class FakePyPIClient:
         return "https://pypi.org"
 
 
+class NoNetworkMetadataClient(FakePyPIClient):
+    def __init__(self, *, email_domain_history=None):
+        super().__init__({}, email_domain_history=email_domain_history)
+
+    def fetch_release_contact_emails(self, name: str, version: str) -> tuple[str, ...]:
+        raise AssertionError("release contact email fetch should not be called")
+
+    def fetch_release_description_fields(
+        self, name: str, version: str
+    ) -> tuple[str, str]:
+        raise AssertionError("release description fetch should not be called")
+
+    def fetch_release_metadata(self, name: str, version: str) -> dict:
+        raise AssertionError("release metadata fetch should not be called")
+
+
 class ReleaseCheckTests(unittest.TestCase):
     def setUp(self) -> None:
         _RELEASE_LOOKUP_CACHE.clear()
         _DISPOSABLE_EMAIL_LOOKUP_CACHE.clear()
+        _DESCRIPTION_LOOKUP_CACHE.clear()
+        _SUSPICIOUS_URL_LOOKUP_CACHE.clear()
+        _REPOSITORY_MISMATCH_LOOKUP_CACHE.clear()
 
     def make_temp_dir(self) -> Path:
         root = Path.cwd() / ".tmp-tests"
@@ -104,7 +157,8 @@ class ReleaseCheckTests(unittest.TestCase):
                     "1.0.0",
                     "https://files.pythonhosted.org/packages/demo-1.0.0.whl",
                     "demo-1.0.0.whl",
-                ): now - timedelta(hours=6)
+                ): now
+                - timedelta(hours=6)
             }
         )
 
@@ -129,7 +183,8 @@ class ReleaseCheckTests(unittest.TestCase):
                     "1.0.0",
                     "https://files.pythonhosted.org/packages/demo-1.0.0.whl",
                     "demo-1.0.0.whl",
-                ): now - timedelta(days=2)
+                ): now
+                - timedelta(days=2)
             }
         )
 
@@ -158,13 +213,15 @@ class ReleaseCheckTests(unittest.TestCase):
                     "1.0.0",
                     "https://files.pythonhosted.org/packages/recent-1.0.0.whl",
                     "recent-1.0.0.whl",
-                ): now - timedelta(days=1, hours=23, minutes=59),
+                ): now
+                - timedelta(days=1, hours=23, minutes=59),
                 (
                     "boundary",
                     "1.0.0",
                     "https://files.pythonhosted.org/packages/boundary-1.0.0.whl",
                     "boundary-1.0.0.whl",
-                ): now - timedelta(days=2),
+                ): now
+                - timedelta(days=2),
             }
         )
 
@@ -199,13 +256,15 @@ class ReleaseCheckTests(unittest.TestCase):
                     "1.0.0",
                     "https://files.pythonhosted.org/packages/top-level-1.0.0.whl",
                     "top-level-1.0.0.whl",
-                ): now - timedelta(hours=4),
+                ): now
+                - timedelta(hours=4),
                 (
                     "transitive",
                     "2.0.0",
                     "https://files.pythonhosted.org/packages/transitive-2.0.0.whl",
                     "transitive-2.0.0.whl",
-                ): now - timedelta(hours=8),
+                ): now
+                - timedelta(hours=8),
             }
         )
 
@@ -221,7 +280,9 @@ class ReleaseCheckTests(unittest.TestCase):
             ["top-level", "transitive"],
         )
         self.assertEqual(len(client.calls), 2)
-        self.assertEqual([call[0] for call in client.calls], ["top-level", "transitive"])
+        self.assertEqual(
+            [call[0] for call in client.calls], ["top-level", "transitive"]
+        )
 
     def test_recent_release_deduplicates_name_version_lookups(self) -> None:
         now = datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc)
@@ -246,14 +307,17 @@ class ReleaseCheckTests(unittest.TestCase):
                     "1.0.0",
                     "https://files.pythonhosted.org/packages/demo-1.0.0.whl",
                     "demo-1.0.0.whl",
-                ): now - timedelta(hours=5),
+                ): now
+                - timedelta(hours=5),
             }
         )
 
         alerts = detect_recent_release_alerts([first, second], client=client, now=now)
 
         self.assertEqual(len(alerts), 1)
-        self.assertEqual(client.calls, [("demo", "1.0.0", first.download_url, first.artifact_name)])
+        self.assertEqual(
+            client.calls, [("demo", "1.0.0", first.download_url, first.artifact_name)]
+        )
 
     def test_recent_release_uses_disk_cache_before_network(self) -> None:
         now = datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc)
@@ -420,6 +484,24 @@ class ReleaseCheckTests(unittest.TestCase):
 
         self.assertEqual(len(alerts), 1)
 
+    def test_disposable_email_uses_package_metadata_without_client_fetch(self) -> None:
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+            metadata={"author_email": "Demo Maintainer <author@mailinator.com>"},
+        )
+
+        alerts = detect_disposable_email_alerts(
+            [package],
+            client=NoNetworkMetadataClient(),
+            disposable_domains={"mailinator.com"},
+        )
+
+        self.assertEqual(len(alerts), 1)
+        self.assertIn("author@mailinator.com", alerts[0].message)
+
     def test_disposable_email_timeout_raises_low_alert(self) -> None:
         package = FakePackage(
             name="demo",
@@ -429,7 +511,9 @@ class ReleaseCheckTests(unittest.TestCase):
         )
 
         class TimeoutClient(FakePyPIClient):
-            def fetch_release_contact_emails(self, name: str, version: str) -> tuple[str, ...]:
+            def fetch_release_contact_emails(
+                self, name: str, version: str
+            ) -> tuple[str, ...]:
                 raise TimeoutError("timed out")
 
         alerts = detect_disposable_email_alerts(
@@ -441,6 +525,278 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertEqual(len(alerts), 1)
         self.assertEqual(alerts[0].severity, Severity.LOW)
         self.assertIn("PyPI timed out", alerts[0].message)
+
+    def test_empty_description_raises_low_alert_when_summary_and_description_are_empty(
+        self,
+    ) -> None:
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+        )
+        client = FakePyPIClient(
+            {},
+            description_fields={("demo", "1.0.0"): ("", "   ")},
+        )
+
+        alerts = detect_empty_description_alerts([package], client=client)
+
+        self.assertEqual(len(alerts), 1)
+        self.assertEqual(alerts[0].severity, Severity.LOW)
+        self.assertIn("empty description", alerts[0].message)
+
+    def test_empty_description_treats_unknown_as_empty(self) -> None:
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+        )
+        client = FakePyPIClient(
+            {},
+            description_fields={("demo", "1.0.0"): ("UNKNOWN", "unknown")},
+        )
+
+        alerts = detect_empty_description_alerts([package], client=client)
+
+        self.assertEqual(len(alerts), 1)
+
+    def test_empty_description_uses_package_metadata_without_client_fetch(self) -> None:
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+            metadata={"summary": "UNKNOWN", "description": "   "},
+        )
+
+        alerts = detect_empty_description_alerts(
+            [package],
+            client=NoNetworkMetadataClient(),
+        )
+
+        self.assertEqual(len(alerts), 1)
+        self.assertIn("empty description", alerts[0].message)
+
+    def test_empty_description_does_not_alert_when_summary_is_present(self) -> None:
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+        )
+        client = FakePyPIClient(
+            {},
+            description_fields={("demo", "1.0.0"): ("Useful package", "")},
+        )
+
+        alerts = detect_empty_description_alerts([package], client=client)
+
+        self.assertEqual(alerts, [])
+
+    def test_direct_url_alerts_for_pip_args_and_transitive_requirements(self) -> None:
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+            requires_dist=("dep @ https://example.test/dep-1.0.0.whl",),
+        )
+
+        alerts = detect_direct_url_alerts(
+            ["git+https://example.test/demo.git"], [package]
+        )
+
+        self.assertEqual(len(alerts), 2)
+        self.assertTrue(all(alert.severity == Severity.MEDIUM for alert in alerts))
+        self.assertIn("direct URL", alerts[0].message)
+        self.assertIn("declares direct URL dependency", alerts[1].message)
+
+    def test_direct_url_alerts_ignore_index_urls(self) -> None:
+        alerts = detect_direct_url_alerts(
+            ["-i", "https://mirror.example/simple", "requests"],
+            [],
+        )
+
+        self.assertEqual(alerts, [])
+
+    def test_suspicious_metadata_url_alerts_for_shortener_and_raw_ip(self) -> None:
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+        )
+        client = FakePyPIClient(
+            {},
+            metadata={
+                ("demo", "1.0.0"): {
+                    "info": {
+                        "home_page": "https://bit.ly/demo",
+                        "project_urls": {"Docs": "https://192.0.2.1/docs"},
+                    }
+                }
+            },
+        )
+
+        alerts = detect_suspicious_metadata_url_alerts([package], client=client)
+
+        self.assertEqual(len(alerts), 2)
+        self.assertTrue(all(alert.severity == Severity.LOW for alert in alerts))
+        self.assertIn("shortener", alerts[0].message)
+        self.assertIn("raw IP", alerts[1].message)
+
+    def test_suspicious_metadata_url_uses_package_metadata_without_client_fetch(
+        self,
+    ) -> None:
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+            metadata={
+                "home_page": "https://bit.ly/demo",
+                "project_url": ["Docs, https://192.0.2.1/docs"],
+            },
+        )
+
+        alerts = detect_suspicious_metadata_url_alerts(
+            [package],
+            client=NoNetworkMetadataClient(),
+        )
+
+        self.assertEqual(len(alerts), 2)
+        self.assertIn("shortener", alerts[0].message)
+        self.assertIn("raw IP", alerts[1].message)
+
+    def test_repository_mismatch_alerts_when_repo_name_is_unrelated(self) -> None:
+        package = FakePackage(
+            name="demo-package",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-package-1.0.0.whl",
+            artifact_name="demo-package-1.0.0.whl",
+        )
+        client = FakePyPIClient(
+            {},
+            metadata={
+                ("demo-package", "1.0.0"): {
+                    "info": {
+                        "project_urls": {
+                            "Source": "https://github.com/example/unrelated-tool"
+                        }
+                    }
+                }
+            },
+        )
+
+        alerts = detect_repository_mismatch_alerts([package], client=client)
+
+        self.assertEqual(len(alerts), 1)
+        self.assertEqual(alerts[0].severity, Severity.LOW)
+        self.assertIn("appears unrelated", alerts[0].message)
+
+    def test_repository_mismatch_uses_package_metadata_without_client_fetch(
+        self,
+    ) -> None:
+        package = FakePackage(
+            name="demo-package",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-package-1.0.0.whl",
+            artifact_name="demo-package-1.0.0.whl",
+            metadata={
+                "project_url": ["Source, https://github.com/example/unrelated-tool"],
+            },
+        )
+
+        alerts = detect_repository_mismatch_alerts(
+            [package],
+            client=NoNetworkMetadataClient(),
+        )
+
+        self.assertEqual(len(alerts), 1)
+        self.assertIn("unrelated-tool", alerts[0].message)
+
+    def test_repository_mismatch_allows_related_repo_name(self) -> None:
+        package = FakePackage(
+            name="demo-package",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-package-1.0.0.whl",
+            artifact_name="demo-package-1.0.0.whl",
+        )
+        client = FakePyPIClient(
+            {},
+            metadata={
+                ("demo-package", "1.0.0"): {
+                    "info": {
+                        "project_urls": {
+                            "Source": "https://github.com/example/demo-package"
+                        }
+                    }
+                }
+            },
+        )
+
+        alerts = detect_repository_mismatch_alerts([package], client=client)
+
+        self.assertEqual(alerts, [])
+
+    def test_email_domain_drift_alerts_when_domain_changes(self) -> None:
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+        )
+        client = FakePyPIClient(
+            {},
+            contact_emails={("demo", "1.0.0"): ("maintainer@example.org",)},
+            email_domain_history={"demo": ("old.example",)},
+        )
+
+        alerts = detect_email_domain_drift_alerts([package], client=client)
+
+        self.assertEqual(len(alerts), 1)
+        self.assertEqual(alerts[0].severity, Severity.LOW)
+        self.assertIn("changed from old.example to example.org", alerts[0].message)
+        self.assertEqual(client.email_domain_history["demo"], ("example.org",))
+
+    def test_email_domain_drift_uses_package_metadata_without_client_fetch(
+        self,
+    ) -> None:
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+            metadata={"maintainer_email": "maintainer@example.org"},
+        )
+        client = NoNetworkMetadataClient(
+            email_domain_history={"demo": ("old.example",)},
+        )
+
+        alerts = detect_email_domain_drift_alerts([package], client=client)
+
+        self.assertEqual(len(alerts), 1)
+        self.assertIn("changed from old.example to example.org", alerts[0].message)
+        self.assertEqual(client.email_domain_history["demo"], ("example.org",))
+
+    def test_email_domain_drift_records_first_seen_domain_without_alert(self) -> None:
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+        )
+        client = FakePyPIClient(
+            {},
+            contact_emails={("demo", "1.0.0"): ("maintainer@example.org",)},
+        )
+
+        alerts = detect_email_domain_drift_alerts([package], client=client)
+
+        self.assertEqual(alerts, [])
+        self.assertEqual(client.email_domain_history["demo"], ("example.org",))
 
     def test_non_zero_major_zero_version_does_not_alert(self) -> None:
         package = FakePackage(

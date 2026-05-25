@@ -9,6 +9,7 @@ from email.utils import getaddresses
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Iterable
 from urllib.parse import urlparse
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -16,9 +17,12 @@ from urllib.request import Request, urlopen
 DEFAULT_PYPI_BASE_URL = "https://pypi.org"
 DEFAULT_JSON_API_TIMEOUT_SECONDS = 2.5
 _RELEASE_CACHE_LOCK = threading.RLock()
+_EMAIL_DOMAIN_HISTORY_LOCK = threading.RLock()
 _METADATA_CACHE_LOCK = threading.RLock()
 _METADATA_CACHE: dict[tuple[str, str, str], dict] = {}
-BOOTSTRAP_CACHE_PATH = Path(__file__).resolve().parent / "data" / "pypi-project-names.json"
+BOOTSTRAP_CACHE_PATH = (
+    Path(__file__).resolve().parent / "data" / "pypi-project-names.json"
+)
 BOOTSTRAP_DISPOSABLE_EMAIL_DOMAINS_PATH = (
     Path(__file__).resolve().parent / "data" / "disposable-email-domains-strict.txt"
 )
@@ -92,12 +96,21 @@ def _default_disposable_email_cache_path() -> Path:
     return Path.cwd() / ".spip-cache" / "disposable-email-domains-strict.txt"
 
 
+def _default_email_domain_history_path() -> Path:
+    return Path.cwd() / ".spip-cache" / "pypi-email-domains.json"
+
+
 @dataclass(frozen=True)
 class OfficialPyPIClient:
     base_url: str = DEFAULT_PYPI_BASE_URL
     cache_path: Path = field(default_factory=_default_cache_path)
     release_cache_path: Path = field(default_factory=_default_release_cache_path)
-    disposable_email_cache_path: Path = field(default_factory=_default_disposable_email_cache_path)
+    disposable_email_cache_path: Path = field(
+        default_factory=_default_disposable_email_cache_path
+    )
+    email_domain_history_path: Path = field(
+        default_factory=_default_email_domain_history_path
+    )
 
     def fetch_reference_package_names(self) -> list[str]:
         request = Request(
@@ -194,7 +207,9 @@ class OfficialPyPIClient:
         except Exception as exc:
             if not _is_timeout_error(exc):
                 raise
-            return name.lower() in {project.lower() for project in self.load_cached_project_names()}
+            return name.lower() in {
+                project.lower() for project in self.load_cached_project_names()
+            }
 
     def fetch_release_metadata(self, name: str, version: str) -> dict:
         cache_key = (self.base_url.rstrip("/").lower(), name.lower(), version)
@@ -216,7 +231,9 @@ class OfficialPyPIClient:
                 f"{DEFAULT_PYPI_BASE_URL}/pypi/{name}/{version}/json",
                 headers={"Accept": "application/json"},
             )
-            with urlopen(fallback, timeout=DEFAULT_JSON_API_TIMEOUT_SECONDS) as response:
+            with urlopen(
+                fallback, timeout=DEFAULT_JSON_API_TIMEOUT_SECONDS
+            ) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         with _METADATA_CACHE_LOCK:
             _METADATA_CACHE[cache_key] = payload
@@ -270,6 +287,61 @@ class OfficialPyPIClient:
             emails.append(normalized)
         return tuple(emails)
 
+    def fetch_release_description_fields(
+        self, name: str, version: str
+    ) -> tuple[str, str]:
+        payload = self.fetch_release_metadata(name, version)
+        info = payload.get("info") or {}
+        return (
+            str(info.get("summary") or ""),
+            str(info.get("description") or ""),
+        )
+
+    def load_email_domain_history(self) -> dict[str, tuple[str, ...]]:
+        with _EMAIL_DOMAIN_HISTORY_LOCK:
+            if not self.email_domain_history_path.exists():
+                return {}
+            try:
+                payload = json.loads(
+                    self.email_domain_history_path.read_text(encoding="utf-8")
+                )
+            except Exception:
+                return {}
+        projects = payload.get("projects") if isinstance(payload, dict) else None
+        if not isinstance(projects, dict):
+            return {}
+        result: dict[str, tuple[str, ...]] = {}
+        for name, domains in projects.items():
+            if not isinstance(name, str) or not isinstance(domains, list):
+                continue
+            cleaned = tuple(
+                sorted(
+                    {
+                        str(domain).strip().lower()
+                        for domain in domains
+                        if str(domain).strip()
+                    }
+                )
+            )
+            if cleaned:
+                result[name.lower()] = cleaned
+        return result
+
+    def store_email_domain_history(self, history: dict[str, Iterable[str]]) -> None:
+        projects = {
+            name.lower(): sorted(
+                {domain.strip().lower() for domain in domains if domain.strip()}
+            )
+            for name, domains in history.items()
+        }
+        payload = {"projects": projects}
+        with _EMAIL_DOMAIN_HISTORY_LOCK:
+            self.email_domain_history_path.parent.mkdir(parents=True, exist_ok=True)
+            self.email_domain_history_path.write_text(
+                json.dumps(payload, indent=2, sort_keys=True),
+                encoding="utf-8",
+            )
+
     def load_cached_release_upload_time(
         self,
         name: str,
@@ -321,7 +393,9 @@ class OfficialPyPIClient:
             if not self.release_cache_path.exists():
                 return {}
             try:
-                payload = json.loads(self.release_cache_path.read_text(encoding="utf-8"))
+                payload = json.loads(
+                    self.release_cache_path.read_text(encoding="utf-8")
+                )
             except Exception:
                 return {}
         entries = payload.get("entries") if isinstance(payload, dict) else None

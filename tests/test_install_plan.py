@@ -2,7 +2,11 @@ import json
 import unittest
 from unittest.mock import patch
 
-from spip.install_plan import InstallPlanError, render_install_plan, resolve_install_plan
+from secured_pip.install_plan import (
+    InstallPlanError,
+    render_install_plan,
+    resolve_install_plan,
+)
 
 
 class InstallPlanTests(unittest.TestCase):
@@ -17,9 +21,16 @@ class InstallPlanTests(unittest.TestCase):
                         "name": "requests",
                         "version": "2.31.0",
                         "requires_dist": ["urllib3>=2"],
+                        "summary": "HTTP for Humans",
+                        "author_email": "dev@example.org",
                     },
                     "download_info": {
-                        "url": "https://files.pythonhosted.org/packages/xx/requests-2.31.0-py3-none-any.whl"
+                        "url": "https://files.pythonhosted.org/packages/xx/requests-2.31.0-py3-none-any.whl",
+                        "archive_info": {
+                            "hashes": {
+                                "sha256": "abc123",
+                            },
+                        },
                     },
                 },
                 {
@@ -42,14 +53,21 @@ class InstallPlanTests(unittest.TestCase):
             },
         )()
 
-        with patch("spip.install_plan.subprocess.run", return_value=completed):
+        with patch("secured_pip.install_plan.subprocess.run", return_value=completed):
             plan = resolve_install_plan(["requests==2.31.0"])
 
-        self.assertEqual([package.name for package in plan.packages], ["requests", "urllib3"])
-        self.assertEqual(plan.packages[0].artifact_name, "requests-2.31.0-py3-none-any.whl")
+        self.assertEqual(
+            [package.name for package in plan.packages], ["requests", "urllib3"]
+        )
+        self.assertEqual(
+            plan.packages[0].artifact_name, "requests-2.31.0-py3-none-any.whl"
+        )
         self.assertTrue(plan.packages[0].requested)
         self.assertFalse(plan.packages[1].requested)
         self.assertEqual(plan.packages[0].requires_dist, ("urllib3>=2",))
+        self.assertEqual(plan.packages[0].metadata["summary"], "HTTP for Humans")
+        self.assertEqual(plan.packages[0].metadata["author_email"], "dev@example.org")
+        self.assertEqual(plan.packages[0].archive_hash, "sha256=abc123")
 
     def test_resolve_install_plan_raises_with_pip_failure(self) -> None:
         completed = type(
@@ -62,7 +80,7 @@ class InstallPlanTests(unittest.TestCase):
             },
         )()
 
-        with patch("spip.install_plan.subprocess.run", return_value=completed):
+        with patch("secured_pip.install_plan.subprocess.run", return_value=completed):
             with self.assertRaises(InstallPlanError) as context:
                 resolve_install_plan(["bad"])
 
@@ -91,7 +109,7 @@ class InstallPlanTests(unittest.TestCase):
             },
         )()
 
-        with patch("spip.install_plan.subprocess.run", return_value=completed):
+        with patch("secured_pip.install_plan.subprocess.run", return_value=completed):
             plan = resolve_install_plan(["requests==2.31.0"])
 
         rendered = render_install_plan(plan)
@@ -110,7 +128,7 @@ class InstallPlanTests(unittest.TestCase):
             },
         )()
 
-        with patch("spip.install_plan.subprocess.run", return_value=completed) as run:
+        with patch("secured_pip.install_plan.subprocess.run", return_value=completed) as run:
             resolve_install_plan(["requests==2.31.0"])
 
         env = run.call_args.kwargs["env"]

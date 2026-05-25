@@ -1,8 +1,8 @@
 import unittest
 from dataclasses import dataclass
 
-from spip.severity import Severity
-from spip.typo import TypoDetector, detect_typos_in_resolved_packages
+from secured_pip.severity import Severity
+from secured_pip.typo import TypoDetector, detect_typos_in_resolved_packages
 
 
 @dataclass(frozen=True)

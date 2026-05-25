@@ -2,8 +2,8 @@ import io
 import unittest
 from types import SimpleNamespace
 
-from spip import Severity
-from spip.warning_gate import enforce_warning_policy
+from secured_pip import Severity
+from secured_pip.warning_gate import enforce_warning_policy
 
 
 class FlushingStringIO(io.StringIO):
@@ -58,7 +58,11 @@ class WarningGateTests(unittest.TestCase):
 
         self.assertTrue(decision.allow_install)
         self.assertEqual(decision.exit_code, 0)
-        self.assertIn("continue install? enter y/n [y/N]:", stderr.getvalue())
+        self.assertIn(
+            "continue install? enter y/n [y/N] "
+            "(rerun with --ignore-warning to ignore this warning):",
+            stderr.getvalue(),
+        )
         self.assertIn("\x1b[", stderr.getvalue())
         self.assertEqual(stderr.flush_calls, 1)
 
@@ -93,6 +97,7 @@ class WarningGateTests(unittest.TestCase):
         self.assertFalse(decision.allow_install)
         self.assertEqual(decision.exit_code, 2)
         self.assertIn("requires confirmation", stderr.getvalue())
+        self.assertIn("--ignore-warning to ignore this warning", stderr.getvalue())
 
     def test_low_warning_allows_install_without_prompt(self) -> None:
         stderr = io.StringIO()
@@ -128,6 +133,56 @@ class WarningGateTests(unittest.TestCase):
         self.assertEqual(decision.exit_code, 2)
         self.assertIn("high severity warning detected", stderr.getvalue())
         self.assertNotIn("continue install?", stderr.getvalue())
+
+    def test_medium_sensitivity_blocks_medium_warning(self) -> None:
+        stderr = io.StringIO()
+        warnings = [SimpleNamespace(severity=Severity.MEDIUM, message="medium risk")]
+
+        decision = enforce_warning_policy(
+            warnings,
+            ignore_warning=False,
+            sensitivity=Severity.MEDIUM,
+            stderr=stderr,
+        )
+
+        self.assertFalse(decision.allow_install)
+        self.assertEqual(decision.exit_code, 2)
+        self.assertIn("medium severity warning detected", stderr.getvalue())
+
+    def test_medium_sensitivity_prompts_for_low_warning(self) -> None:
+        stderr = FlushingStringIO()
+        stdin = io.StringIO("y\n")
+        warnings = [SimpleNamespace(severity=Severity.LOW, message="low risk")]
+
+        decision = enforce_warning_policy(
+            warnings,
+            ignore_warning=False,
+            sensitivity=Severity.MEDIUM,
+            stdin=stdin,
+            stderr=stderr,
+            is_tty=lambda: True,
+        )
+
+        self.assertTrue(decision.allow_install)
+        self.assertEqual(decision.exit_code, 0)
+        self.assertIn(
+            "low severity warning detected. continue install?", stderr.getvalue()
+        )
+
+    def test_high_sensitivity_blocks_low_warning(self) -> None:
+        stderr = io.StringIO()
+        warnings = [SimpleNamespace(severity=Severity.LOW, message="low risk")]
+
+        decision = enforce_warning_policy(
+            warnings,
+            ignore_warning=False,
+            sensitivity=Severity.HIGH,
+            stderr=stderr,
+        )
+
+        self.assertFalse(decision.allow_install)
+        self.assertEqual(decision.exit_code, 2)
+        self.assertIn("low severity warning detected", stderr.getvalue())
 
 
 if __name__ == "__main__":

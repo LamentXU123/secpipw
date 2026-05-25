@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable
 
-from spip.pypi_api import OfficialPyPIClient
+from secured_pip.pypi_api import OfficialPyPIClient
 
 
 @dataclass(frozen=True)
@@ -55,6 +55,8 @@ REFRESH_TASKS: tuple[CacheRefreshTask, ...] = (
 )
 
 
-def refresh_all_caches(client: OfficialPyPIClient | None = None) -> list[CacheRefreshResult]:
+def refresh_all_caches(
+    client: OfficialPyPIClient | None = None,
+) -> list[CacheRefreshResult]:
     client = client or OfficialPyPIClient()
     return [task.run(client) for task in REFRESH_TASKS]

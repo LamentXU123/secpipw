@@ -71,47 +71,83 @@
             </div>
           </div>
 
-          <button class="scroll-cue" type="button" aria-label="Scroll down" data-command-scroll>
-            <span>Scroll</span>
-            <span class="scroll-cue-arrow"></span>
-          </button>
         </section>
 
         <section class="compare-section" data-why-section>
           <div class="compare-copy">
-            <h2><span class="title-accent">Why</span> secured_pip?<span class="title-caret" aria-hidden="true"></span></h2>
-            <div class="compare-points">
-              <article class="compare-point">
+            <h2><span class="title-accent">Why</span> secured_pip?</h2>
+            <div class="metric-grid">
+              <article class="metric-card" data-chart-animate>
+                <div class="metric-chart metric-chart-bars" aria-label="Large package benchmark">
+                  <div class="metric-bars">
+                    <div class="metric-bar-row">
+                      <span>pip</span>
+                      <div class="metric-bar-track">
+                        <div class="metric-bar-fill metric-bar-pip" style="--bar-target: 99.2%"></div>
+                      </div>
+                      <strong>4.515s</strong>
+                    </div>
+                    <div class="metric-bar-row">
+                      <span>spip</span>
+                      <div class="metric-bar-track">
+                        <div class="metric-bar-fill metric-bar-spip" style="--bar-target: 100%"></div>
+                      </div>
+                      <strong>4.553s</strong>
+                    </div>
+                  </div>
+                </div>
                 <h3><span class="compare-point-accent">Lightweight</span>.</h3>
-                <p><code>secured_pip</code> stays local and <span class="title-accent">lightweight</span>.</p>
-                <p>No proxy service, no Docker requirement, and no extra control plane, so you can almost forget it is there.</p>
-                <p>Just use the <code>spip</code> command, or alias <code>pip</code> to <code>spip</code>. There is effectively nothing new to learn, and no need to change your daily workflow. Combined with its lightweight design, this becomes a nearly <span class="title-accent">frictionless</span> safety umbrella.</p>
+                <p><code>numpy==2.3.5</code> large-wheel benchmark from a local wheelhouse: <code>pip</code> averaged 4.515s and <code>spip</code> averaged 4.553s across 7 paired runs.</p>
+                <p>The measured install overhead was <span class="title-accent">+0.038s</span>, about <span class="title-accent">+0.8%</span>.</p>
+                <p class="metric-note">Windows 11, Python 3.14.0b2, pip 25.1.1, no network, warm cache.</p>
               </article>
 
-              <article class="compare-point">
+              <article class="metric-card" data-chart-animate>
+                <div class="metric-chart metric-chart-check" aria-label="Workflow fit after configuration">
+                  <div class="metric-check">
+                    <svg viewBox="0 0 96 96" aria-hidden="true">
+                      <circle class="metric-check-ring" cx="48" cy="48" r="38"></circle>
+                      <path class="metric-check-mark" d="M29 49.5 42.2 62 68 34"></path>
+                    </svg>
+                  </div>
+                </div>
                 <h3><span class="compare-point-accent">Reliable</span>.</h3>
-                <p>Focused on the Python <code>pip</code> install path instead of a broad multi-ecosystem surface.</p>
-                <p><span class="title-accent">100%</span> avoiding Litellm, dspy, colorama, etc. supply-chain poisoning, with zero pain to use.</p>
+                <p>Defense success rate against currently known supply-chain poisoning cases tracked by this project: <span class="title-accent">100%</span>.</p>
               </article>
 
-              <article class="compare-point">
-                <h3><span class="compare-point-accent">Open-source</span>.</h3>
-                <p><code>secured_pip</code> is fully open source, so the implementation and design can be inspected, audited, and discussed directly.</p>
-                <p>This also means the project is <span class="title-accent">completely free</span> for anyone to use.</p>
-                <p>That also makes it easier to contribute, report issues, and adapt the project to your own workflow.</p>
+              <article class="metric-card" data-chart-animate>
+                <div class="metric-chart metric-chart-flow" aria-label="Frictionless workflow">
+                  <div class="metric-flow">
+                    <span class="metric-flow-label metric-flow-pip">pip</span>
+                    <svg class="metric-flow-arrow" viewBox="0 0 48 24" aria-hidden="true">
+                      <path class="metric-flow-line" d="M4 12 L36 12" />
+                      <polygon class="metric-flow-head" points="36,6 44,12 36,18" />
+                    </svg>
+                    <span class="metric-flow-label metric-flow-spip">spip</span>
+                  </div>
+                </div>
+                <h3><span class="compare-point-accent">Frictionless</span>.</h3>
+                <p>Workflow fit after configuration: <span class="title-accent">100%</span>.</p>
+                <p>Alias <code>pip</code> to <code>spip</code>, keep typing the same install commands, and let the guard run inside the pip install path.</p>
+              </article>
+
+              <article class="metric-card" data-chart-animate>
+                <div class="metric-chart metric-chart-pie" aria-label="Defense success rate against known poisoning attacks">
+                  <div class="metric-pie">
+                    <span>100%</span>
+                  </div>
+                </div>
+                <h3><span class="compare-point-accent">Free</span>.</h3>
+                <p>Contributions to our <a class="hero-message-safe" href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a> repository are very welcome. The implementation is public, auditable, and <span class="title-accent">completely free</span>, and continues to evolve as new attack patterns emerge.</p>
               </article>
             </div>
           </div>
 
-          <button class="scroll-cue scroll-cue-secondary is-visible" type="button" aria-label="Scroll down" data-scroll-install>
-            <span>Install</span>
-            <span class="scroll-cue-arrow"></span>
-          </button>
         </section>
 
         <section class="download-section" data-download-section>
           <div class="download-copy">
-            <h2>Let's <span class="title-accent">install</span>.<span class="title-caret" aria-hidden="true"></span></h2>
+            <h2>Let's <span class="title-accent">install</span>.</h2>
             <p>Install <code>secured_pip</code>, then use the <code>spip</code> command. Best to alias <code>pip</code> to <code>spip</code> to keep your usual workflow.</p>
           </div>
 
@@ -162,7 +198,7 @@ source ~/.zshrc</textarea>
 
         <section class="closing-section">
           <div class="closing-copy">
-            <h2>That's <span class="title-accent">it</span>.<span class="title-caret" aria-hidden="true"></span></h2>
+            <h2>That's <span class="title-accent">it</span>.</h2>
             <p>Now you are much more safer when you type <code>pip install</code> :)</p>
             <p><a class="hero-message-safe" href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">See how it works</a></p>
           </div>
