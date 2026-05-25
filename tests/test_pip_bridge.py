@@ -4,7 +4,7 @@ import io
 import unittest
 from dataclasses import dataclass, field
 from types import SimpleNamespace
-from unittest.mock import ANY, patch
+from unittest.mock import patch
 
 from secured_pip import Severity
 from secured_pip import cli
@@ -39,10 +39,14 @@ def _plan(*packages: FakePackage) -> InstallPlan:
 
 
 def _guarded_install_for(plan: InstallPlan, returncode: int = 0):
-    def run_guarded(pip_args, plan_hook):
+    def run_guarded(pip_args, plan_hook, artifact_hook=None):
         decision = plan_hook(plan)
         if not decision.allow_install:
             return decision.exit_code
+        if artifact_hook is not None:
+            artifact_decision = artifact_hook([])
+            if not artifact_decision.allow_install:
+                return artifact_decision.exit_code
         return returncode
 
     return run_guarded
@@ -511,8 +515,42 @@ class PipBridgeTests(unittest.TestCase):
                     )
 
         self.assertEqual(rc, 0)
-        guarded.assert_called_once_with(["requests", "--target", "vendor"], ANY)
+        guarded.assert_called_once()
+        self.assertEqual(guarded.call_args.args[0], ["requests", "--target", "vendor"])
+        self.assertEqual(len(guarded.call_args.args), 3)
         handle_post.assert_called_once_with(["alert"], ignore_warning=False)
+
+    def test_install_with_guard_passes_preinstall_pth_hook(self) -> None:
+        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+            with patch("secured_pip.cli.run_guarded_pip_install", return_value=0) as guarded:
+                rc = cli._install_with_guard(
+                    ["requests"],
+                    ignore_warning=False,
+                    debug=False,
+                    sensitivity=Severity.LOW,
+                )
+
+        self.assertEqual(rc, 0)
+        self.assertEqual(guarded.call_args.args[0], ["requests"])
+        self.assertEqual(len(guarded.call_args.args), 3)
+        artifact_hook = guarded.call_args.args[2]
+
+        with patch(
+            "secured_pip.cli.inspect_install_artifacts",
+            return_value=[
+                SimpleNamespace(severity=Severity.MEDIUM, message="suspicious .pth")
+            ],
+        ) as inspect_artifacts:
+            with patch(
+                "secured_pip.cli.gate_suspicious_pth_alerts",
+                return_value=SimpleNamespace(allow_install=False, exit_code=2),
+            ) as gate:
+                decision = artifact_hook(["req"])
+
+        inspect_artifacts.assert_called_once_with(["req"])
+        gate.assert_called_once()
+        self.assertFalse(decision.allow_install)
+        self.assertEqual(decision.exit_code, 2)
 
     def test_cli_install_allows_empty_plan(self) -> None:
         with patch("secured_pip.cli._create_pth_monitor", return_value=None):

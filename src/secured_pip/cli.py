@@ -8,7 +8,12 @@ from secured_pip.severity import Severity, parse_severity
 from secured_pip.install_checks import run_install_checks
 from secured_pip.pip_bridge import run_pip
 from secured_pip.pip_guard import run_guarded_pip_install
-from secured_pip.pth_monitor import PthMonitor, handle_suspicious_pth_alerts
+from secured_pip.pth_monitor import (
+    PthMonitor,
+    gate_suspicious_pth_alerts,
+    handle_suspicious_pth_alerts,
+    inspect_install_artifacts,
+)
 from secured_pip.pypi_api import OfficialPyPIClient
 
 
@@ -126,8 +131,15 @@ def _install_with_guard(
             debug=debug,
         )
 
+    def artifact_hook(requirements):
+        return gate_suspicious_pth_alerts(
+            inspect_install_artifacts(requirements),
+            ignore_warning=ignore_warning,
+            sensitivity=sensitivity,
+        )
+
     try:
-        rc = run_guarded_pip_install(pip_args, plan_hook)
+        rc = run_guarded_pip_install(pip_args, plan_hook, artifact_hook)
     except Exception as exc:
         sys.stderr.write(f"ERROR: spip failed to run guarded pip install: {exc}\n")
         return 1

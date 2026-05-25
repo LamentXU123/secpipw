@@ -73,16 +73,18 @@ def contextlib_nested(patches):
 class PipGuardTests(unittest.TestCase):
     def test_run_guarded_pip_install_invokes_guarded_command(self) -> None:
         hook = Mock(return_value=GateDecision(allow_install=True, exit_code=0))
+        artifact_hook = Mock(return_value=GateDecision(allow_install=True, exit_code=0))
         with patch("secured_pip.pip_guard.GuardedInstallCommand") as command_class:
             command_class.return_value.main.return_value = 7
 
-            rc = run_guarded_pip_install(["requests"], hook)
+            rc = run_guarded_pip_install(["requests"], hook, artifact_hook)
 
         self.assertEqual(rc, 7)
         command_class.assert_called_once_with(
             "install",
             "Install packages.",
             plan_hook=hook,
+            artifact_hook=artifact_hook,
         )
         command_class.return_value.main.assert_called_once_with(["requests"])
 
@@ -282,6 +284,69 @@ class PipGuardTests(unittest.TestCase):
         self.assertEqual(checked_plan.packages[0].name, "requests")
         build_m.assert_not_called()
         install_m.assert_not_called()
+
+    def test_artifact_hook_blocks_before_install(self) -> None:
+        report = {
+            "version": "1",
+            "install": [
+                {
+                    "requested": True,
+                    "is_direct": False,
+                    "metadata": {"name": "requests", "version": "2.31.0"},
+                    "download_info": {"url": "https://example.test/requests.whl"},
+                }
+            ],
+        }
+        hook = Mock(return_value=GateDecision(allow_install=True, exit_code=0))
+        artifact_hook = Mock(return_value=GateDecision(allow_install=False, exit_code=2))
+        installed_req = SimpleNamespace(name="requests", local_file_path="requests.whl")
+        requirement_set = SimpleNamespace(
+            requirements_to_install=[installed_req],
+            get_requirement=Mock(side_effect=KeyError),
+        )
+        resolver = SimpleNamespace(
+            resolve=Mock(return_value=requirement_set),
+            get_installation_order=Mock(return_value=[installed_req]),
+        )
+        command, reqs, _, _ = self._make_command_and_mocks(
+            hook,
+            requirement_set=requirement_set,
+            resolver=resolver,
+        )
+        command._artifact_hook = artifact_hook
+        options = _install_options()
+
+        report_patch = patch("secured_pip.pip_guard.InstallationReport")
+        prepare_mock = patch("secured_pip.pip_guard.prepare_linked_requirements_more")
+        should_build_mock = patch(
+            "secured_pip.pip_guard.should_build_for_install_command",
+            return_value=False,
+        )
+        build_mock = patch("secured_pip.pip_guard.build", return_value=([], []))
+        install_mock = patch("secured_pip.pip_guard.install_given_reqs")
+
+        patches = self._apply_base_patches() + [
+            patch.object(command, "get_default_session", return_value=object()),
+            patch.object(command, "_build_package_finder", return_value=object()),
+            patch.object(command, "get_requirements", return_value=reqs),
+            patch.object(command, "make_requirement_preparer", return_value=object()),
+            patch.object(command, "make_resolver", return_value=resolver),
+            patch.object(command, "trace_basic_info"),
+            report_patch,
+            prepare_mock,
+            should_build_mock,
+            build_mock,
+            install_mock,
+        ]
+
+        with command.main_context():
+            with contextlib_nested(patches) as values:
+                values[-5].return_value.to_dict.return_value = report
+                rc = command.run(options, ["requests"])
+
+        self.assertEqual(rc, 2)
+        artifact_hook.assert_called_once_with([installed_req])
+        values[-1].assert_not_called()
 
     def test_user_and_target_combined_raises_command_error(self) -> None:
         hook = Mock(return_value=GateDecision(allow_install=True, exit_code=0))

@@ -42,10 +42,20 @@ logger = getLogger(__name__)
 
 
 PlanHook = Callable[[InstallPlan], GateDecision]
+ArtifactHook = Callable[[list[object]], GateDecision]
 
 
-def run_guarded_pip_install(pip_args: list[str], plan_hook: PlanHook) -> int:
-    command = GuardedInstallCommand("install", "Install packages.", plan_hook=plan_hook)
+def run_guarded_pip_install(
+    pip_args: list[str],
+    plan_hook: PlanHook,
+    artifact_hook: ArtifactHook | None = None,
+) -> int:
+    command = GuardedInstallCommand(
+        "install",
+        "Install packages.",
+        plan_hook=plan_hook,
+        artifact_hook=artifact_hook,
+    )
     return int(command.main(pip_args))
 
 
@@ -168,8 +178,15 @@ def _should_build_for_install_command_checker():
 
 
 class GuardedInstallCommand(InstallCommand):
-    def __init__(self, *args, plan_hook: PlanHook, **kwargs) -> None:
+    def __init__(
+        self,
+        *args,
+        plan_hook: PlanHook,
+        artifact_hook: ArtifactHook | None = None,
+        **kwargs,
+    ) -> None:
         self._plan_hook = plan_hook
+        self._artifact_hook = artifact_hook or _allow_install_artifact_hook
         super().__init__(*args, **kwargs)
 
     @with_cleanup
@@ -311,6 +328,11 @@ class GuardedInstallCommand(InstallCommand):
 
             prepare_linked_requirements_more(preparer, requirement_set)
 
+            for req in requirement_set.requirements_to_install:
+                local_file_path = getattr(req, "local_file_path", None)
+                if local_file_path and not hasattr(req, "_spip_prebuild_local_file_path"):
+                    req._spip_prebuild_local_file_path = local_file_path
+
             try:
                 pip_req = requirement_set.get_requirement("pip")
             except KeyError:
@@ -340,6 +362,12 @@ class GuardedInstallCommand(InstallCommand):
                         ", ".join(r.name for r in build_failures)
                     )
                 )
+
+            artifact_decision = self._artifact_hook(
+                list(requirement_set.requirements_to_install)
+            )
+            if not artifact_decision.allow_install:
+                return artifact_decision.exit_code
 
             to_install = resolver.get_installation_order(requirement_set)
 
@@ -421,3 +449,7 @@ class GuardedInstallCommand(InstallCommand):
         if options.root_user_action == "warn":
             warn_if_run_as_root()
         return SUCCESS
+
+
+def _allow_install_artifact_hook(requirements: list[object]) -> GateDecision:
+    return GateDecision(allow_install=True, exit_code=0)
