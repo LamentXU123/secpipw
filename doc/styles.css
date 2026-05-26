@@ -1418,21 +1418,70 @@ a.hero-message-safe:hover {
   line-height: 1.7;
 }
 
-.docs-install-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
+.docs-install-tabs {
   margin-top: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: rgba(6, 9, 14, 0.72);
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
 }
 
-.docs-install-card {
-  display: grid;
-  align-content: space-between;
+.docs-install-tablist {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  border-bottom: 1px solid var(--line);
 }
 
-.docs-install-card h3 {
-  padding: 0.9rem 1rem 0;
+.docs-install-tab {
+  border: 0;
+  border-right: 1px solid var(--line);
+  padding: 0.78rem 1rem;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 0.84rem;
+  cursor: pointer;
+  text-transform: lowercase;
+}
+
+.docs-install-tab:last-child {
+  border-right: 0;
+}
+
+.docs-install-tab:hover,
+.docs-install-tab.is-active {
+  background: rgba(58, 146, 255, 0.12);
+  color: var(--text);
+}
+
+.docs-install-panel {
+  display: none;
+}
+
+.docs-install-panel.is-active {
+  display: block;
+}
+
+.docs-install-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 1rem 0.35rem;
+}
+
+.docs-install-panel-head h3 {
   font-size: 0.95rem;
+}
+
+.docs-install-panel pre {
+  margin: 0.35rem 1rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.45rem;
+  background: rgba(6, 9, 14, 0.74);
 }
 
 .docs-param-list {
@@ -1952,10 +2001,6 @@ a.hero-message-safe:hover {
     grid-column: 1 / -1;
   }
 
-  .docs-install-grid {
-    grid-template-columns: 1fr;
-  }
-
   .warning-level-grid {
     grid-template-columns: 1fr;
   }
@@ -2219,6 +2264,10 @@ a.hero-message-safe:hover {
 
   .docs-nav-list {
     grid-template-columns: 1fr;
+  }
+
+  .docs-install-tablist {
+    overflow-x: auto;
   }
 
   .docs-article h1 {

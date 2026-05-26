@@ -62,25 +62,48 @@
           <section id="install">
             <h2>安装</h2>
             <p>先安装 <code>secured_pip</code>，再把 <code>pip</code> alias 到 <code>spip</code>，这样原来的工作流不用改变。</p>
-            <div class="docs-install-grid">
-              <article class="docs-install-card">
-                <h3>cmd（Windows）</h3>
+            <div class="docs-install-tabs" data-doc-tabs>
+              <div class="docs-install-tablist" role="tablist" aria-label="安装方式">
+                <button class="docs-install-tab is-active" type="button" role="tab" aria-selected="true" data-doc-tab="windows">windows</button>
+                <button class="docs-install-tab" type="button" role="tab" aria-selected="false" data-doc-tab="bash">bash</button>
+                <button class="docs-install-tab" type="button" role="tab" aria-selected="false" data-doc-tab="zsh">zsh</button>
+              </div>
+
+              <article class="docs-install-panel is-active" role="tabpanel" data-doc-panel="windows">
+                <div class="docs-install-panel-head">
+                  <h3>cmd（Windows）</h3>
+                  <button class="copy-button" type="button" data-copy-target="docs-copy-windows-zh">复制</button>
+                </div>
                 <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secured_pip</span>
 <span class="code-command">doskey</span> pip=<span class="code-package">spip</span> $*</code></pre>
+                <textarea class="copy-buffer" id="docs-copy-windows-zh" readonly>pip install secured_pip
+doskey pip=spip $*</textarea>
               </article>
 
-              <article class="docs-install-card">
-                <h3>Bash（Linux）</h3>
+              <article class="docs-install-panel" role="tabpanel" hidden data-doc-panel="bash">
+                <div class="docs-install-panel-head">
+                  <h3>Bash（Linux）</h3>
+                  <button class="copy-button" type="button" data-copy-target="docs-copy-bash-zh">复制</button>
+                </div>
                 <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secured_pip</span>
 <span class="code-command">echo</span> <span class="code-string">"alias pip='spip'"</span> <span class="code-operator">&gt;&gt;</span> <span class="code-path">~/.bashrc</span>
 <span class="code-command">source</span> <span class="code-path">~/.bashrc</span></code></pre>
+                <textarea class="copy-buffer" id="docs-copy-bash-zh" readonly>pip install secured_pip
+echo "alias pip='spip'" >> ~/.bashrc
+source ~/.bashrc</textarea>
               </article>
 
-              <article class="docs-install-card">
-                <h3>Zsh（macOS）</h3>
+              <article class="docs-install-panel" role="tabpanel" hidden data-doc-panel="zsh">
+                <div class="docs-install-panel-head">
+                  <h3>Zsh（macOS）</h3>
+                  <button class="copy-button" type="button" data-copy-target="docs-copy-zsh-zh">复制</button>
+                </div>
                 <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secured_pip</span>
 <span class="code-command">echo</span> <span class="code-string">"alias pip='spip'"</span> <span class="code-operator">&gt;&gt;</span> <span class="code-path">~/.zshrc</span>
 <span class="code-command">source</span> <span class="code-path">~/.zshrc</span></code></pre>
+                <textarea class="copy-buffer" id="docs-copy-zsh-zh" readonly>pip install secured_pip
+echo "alias pip='spip'" >> ~/.zshrc
+source ~/.zshrc</textarea>
               </article>
             </div>
           </section>

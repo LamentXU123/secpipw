@@ -18,6 +18,7 @@ const nextButtons = document.querySelectorAll('[data-scroll-next]')
 const topButtons = document.querySelectorAll('[data-scroll-top]')
 const animatedCharts = document.querySelectorAll('[data-chart-animate]')
 const languageSwitches = document.querySelectorAll('[data-language-switch]')
+const docTabGroups = document.querySelectorAll('[data-doc-tabs]')
 
 if (scenes.length > 0) {
   if ('scrollRestoration' in history) {
@@ -258,4 +259,32 @@ for (const select of languageSwitches) {
       window.location.href = select.value
     }
   })
+}
+
+for (const group of docTabGroups) {
+  const tabs = group.querySelectorAll('[data-doc-tab]')
+  const panels = group.querySelectorAll('[data-doc-panel]')
+
+  const activate = (key) => {
+    for (const tab of tabs) {
+      const active = tab.getAttribute('data-doc-tab') === key
+      tab.classList.toggle('is-active', active)
+      tab.setAttribute('aria-selected', active ? 'true' : 'false')
+    }
+
+    for (const panel of panels) {
+      const active = panel.getAttribute('data-doc-panel') === key
+      panel.classList.toggle('is-active', active)
+      panel.hidden = !active
+    }
+  }
+
+  for (const tab of tabs) {
+    tab.addEventListener('click', () => {
+      const key = tab.getAttribute('data-doc-tab')
+      if (key) {
+        activate(key)
+      }
+    })
+  }
 }
