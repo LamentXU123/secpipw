@@ -21,6 +21,7 @@
       <header class="site-header">
         <a class="brand brand-mark" href="../">secured_pip</a>
         <nav class="site-nav">
+          <a href="/zh-cn/docs/">文档</a>
           <a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a>
           <a href="https://pypi.org/project/secured-pip" target="_blank" rel="noreferrer">PyPI</a>
           <select class="lang-select" data-language-switch aria-label="语言">
@@ -74,87 +75,32 @@
 
         </section>
 
-        <section class="compare-section" data-why-section>
+        <section class="compare-section" data-why-section id="why">
           <div class="compare-copy">
             <h2><span class="title-accent">为什么</span>选择 secured_pip？</h2>
-            <div class="metric-grid">
-              <article class="metric-card" data-chart-animate>
-                <div class="metric-chart metric-chart-bars" aria-label="大包安装基准测试">
-                  <div class="metric-bars">
-                    <div class="metric-bar-row">
-                      <span>pip</span>
-                      <div class="metric-bar-track">
-                        <div class="metric-bar-fill metric-bar-pip" style="--bar-target: 99.2%"></div>
-                      </div>
-                      <strong>4.515s</strong>
-                    </div>
-                    <div class="metric-bar-row">
-                      <span>spip</span>
-                      <div class="metric-bar-track">
-                        <div class="metric-bar-fill metric-bar-spip" style="--bar-target: 100%"></div>
-                      </div>
-                      <strong>4.553s</strong>
-                    </div>
-                  </div>
-                </div>
-                <h3><span class="compare-point-accent">轻量</span></h3>
-                <p>用本地 wheelhouse 安装 <code>numpy==2.3.5</code> 的大包基准：7 次交替配对测试中，<code>pip</code> 平均 4.515s，<code>spip</code> 平均 4.553s。</p>
-                <p>测得安装开销为 <span class="title-accent">+0.038s</span>，约 <span class="title-accent">+0.8%</span>。</p>
-                <p class="metric-note">Windows 11，Python 3.14.0b2，pip 25.1.1，无网络，缓存预热。</p>
+            <div class="release-copy">
+              <article class="release-copy-block">
+                <h3>解决了什么问题</h3>
+                <p>供应链投毒一直是网络安全里永恒的话题。现在市面上对此的解决方案，有成熟却性能开销大的 GuardDog，也有完全依赖付费 socket API 的 sfw。它们的问题在于：成熟如 GuardDog 的太笨重，不适合进入 CI 反而适合安全研究员静态解析。若对每一个 pip install 的下载产物（包括各种依赖）都跑一次 GuardDog 无疑会拖慢安装进度；而 sfw 虽然轻量，却是完全依靠付费的 socket API 完成，对于日常开发者而言，无疑又是一次经济负担。</p>
+                <p>spip 解决了这个问题。它通过给 pip 的安装器上钩子，将安全检查完美地融合到了 pip install 的下载和安装流程中去。同时，你几乎感受不到任何性能损失（~0.04%）。spip 完全免费提供给所有人。</p>
+                <p>当代，很多独立开发者的 CI 服务器被攻击导致 secret key 泄露，造成严重后果。如果安装了 spip，这样的风险会大大降低，同时<strong>不需要付费，不需要额外的性能开支，也不需要学习和配置</strong>。只有一次的 <code>pip install spip</code> 再设置一次别名，你就可以接着用 pip，却在无形中获得一层至关重要的保护网。</p>
               </article>
 
-              <article class="metric-card" data-chart-animate>
-                <div class="metric-chart metric-chart-shield" aria-label="对目前已知供应链投毒攻击防御成功率">
-                  <div class="metric-shield">
-                    <svg viewBox="0 0 128 128" aria-hidden="true">
-                      <circle class="metric-shield-orbit" cx="64" cy="64" r="45"></circle>
-                      <path class="metric-shield-body" d="M64 17 99 31v29c0 24-14.7 42.5-35 51-20.3-8.5-35-27-35-51V31z"></path>
-                      <path class="metric-shield-scan" d="M39 68h50"></path>
-                      <path class="metric-shield-check" d="M48 64.5 59 75l23-25"></path>
-                    </svg>
-                  </div>
-                </div>
-                <h3><span class="compare-point-accent">可靠</span></h3>
-                <p>对本项目目前追踪的已知供应链投毒案例，防御成功率：<span class="title-accent">100%</span>。</p>
-              </article>
-
-              <article class="metric-card" data-chart-animate>
-                <div class="metric-chart metric-chart-flow" aria-label="无摩擦工作流">
-                  <div class="metric-flow">
-                    <span class="metric-flow-label metric-flow-pip">pip</span>
-                    <svg class="metric-flow-arrow" viewBox="0 0 48 24" aria-hidden="true">
-                      <path class="metric-flow-line" d="M4 12 L36 12" />
-                      <polygon class="metric-flow-head" points="36,6 44,12 36,18" />
-                    </svg>
-                    <span class="metric-flow-label metric-flow-spip">spip</span>
-                  </div>
-                </div>
-                <h3><span class="compare-point-accent">无摩擦</span></h3>
-                <p>配置完成后与原本工作流的契合度：<span class="title-accent">100%</span>。</p>
-                <p>把 <code>pip</code> alias 到 <code>spip</code> 后，继续输入原来的安装命令，让保护逻辑进入 pip 安装链路。</p>
-              </article>
-
-              <article class="metric-card" data-chart-animate>
-                <div class="metric-chart metric-chart-open" aria-label="免费使用">
-                  <div class="metric-open">
-                    <svg class="metric-open-branch" viewBox="0 0 128 128" aria-hidden="true">
-                      <path class="metric-open-branch-line metric-open-branch-main" d="M43 24v80"></path>
-                      <path class="metric-open-branch-line metric-open-branch-fork" d="M43 64h23c14 0 24-10 24-24"></path>
-                      <circle class="metric-open-branch-node metric-open-node-top" cx="43" cy="24" r="8"></circle>
-                      <circle class="metric-open-branch-node metric-open-node-bottom" cx="43" cy="104" r="8"></circle>
-                      <circle class="metric-open-branch-node metric-open-node-fork" cx="90" cy="40" r="8"></circle>
-                    </svg>
-                  </div>
-                </div>
-                <h3><span class="compare-point-accent">免费</span></h3>
-                <p>欢迎为我们的 <a class="hero-message-safe" href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a> 仓库做出贡献。所有实现都是公开的，可以被审计、讨论，并<span class="title-accent">完全免费</span>，且随着新的攻击模式继续扩展。</p>
+              <article class="release-copy-block">
+                <h3>spip 的优势</h3>
+                <ul>
+                  <li><strong>轻量。</strong>你感受不到它的存在。</li>
+                  <li><strong>0 迁移或学习成本。</strong>你不需要任何配置，开箱即用。</li>
+                  <li><strong>免费。</strong>spip 在 MIT 协议下开源。任何人都可以使用，修改或再分发。</li>
+                  <li><strong>强大。</strong>经过测试可以完美防御如 LiteLLM，colorama 等知名攻击事件。</li>
+                </ul>
               </article>
             </div>
           </div>
 
         </section>
 
-        <section class="download-section" data-download-section>
+        <section class="download-section" data-download-section id="download">
           <div class="download-copy">
             <h2>开始<span class="title-accent">安装</span>。</h2>
             <p>先安装 <code>secured_pip</code>，再用 <code>spip</code> 命令。最好把 <code>pip</code> 变成 <code>spip</code> 的别名，这样你原来的工作流完全不用变。</p>

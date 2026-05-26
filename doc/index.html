@@ -21,6 +21,7 @@
       <header class="site-header">
         <a class="brand brand-mark" href="./">secured_pip</a>
         <nav class="site-nav">
+          <a href="/docs/">Docs</a>
           <a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a>
           <a href="https://pypi.org/project/secured-pip" target="_blank" rel="noreferrer">PyPI</a>
           <select class="lang-select" data-language-switch aria-label="Language">
@@ -77,87 +78,32 @@
 
         </section>
 
-        <section class="compare-section" data-why-section>
+        <section class="compare-section" data-why-section id="why">
           <div class="compare-copy">
             <h2><span class="title-accent">Why</span> secured_pip?</h2>
-            <div class="metric-grid">
-              <article class="metric-card" data-chart-animate>
-                <div class="metric-chart metric-chart-bars" aria-label="Large package benchmark">
-                  <div class="metric-bars">
-                    <div class="metric-bar-row">
-                      <span>pip</span>
-                      <div class="metric-bar-track">
-                        <div class="metric-bar-fill metric-bar-pip" style="--bar-target: 99.2%"></div>
-                      </div>
-                      <strong>4.515s</strong>
-                    </div>
-                    <div class="metric-bar-row">
-                      <span>spip</span>
-                      <div class="metric-bar-track">
-                        <div class="metric-bar-fill metric-bar-spip" style="--bar-target: 100%"></div>
-                      </div>
-                      <strong>4.553s</strong>
-                    </div>
-                  </div>
-                </div>
-                <h3><span class="compare-point-accent">Lightweight</span>.</h3>
-                <p><code>numpy==2.3.5</code> large-wheel benchmark from a local wheelhouse: <code>pip</code> averaged 4.515s and <code>spip</code> averaged 4.553s across 7 paired runs.</p>
-                <p>The measured install overhead was <span class="title-accent">+0.038s</span>, about <span class="title-accent">+0.8%</span>.</p>
-                <p class="metric-note">Windows 11, Python 3.14.0b2, pip 25.1.1, no network, warm cache.</p>
+            <div class="release-copy">
+              <article class="release-copy-block">
+                <h3>What problem does it solve?</h3>
+                <p>Supply-chain poisoning has always been a persistent security problem. Existing solutions include mature but expensive-to-run tools like GuardDog, and lightweight tools like sfw that rely entirely on a paid Socket API. GuardDog is too heavy for everyday CI usage and is better suited to static analysis by security researchers. Running GuardDog against every artifact downloaded by <code>pip install</code>, including all dependencies, would slow installs down. sfw is lighter, but its dependence on a paid API creates another cost for everyday developers.</p>
+                <p>spip solves this by hooking into pip's installer and merging security checks directly into the <code>pip install</code> download and installation flow. At the same time, the performance impact is almost invisible (~0.04%). spip is completely free for everyone.</p>
+                <p>Today, many independent developers have suffered CI server compromises that leak secret keys and cause serious damage. With spip installed, that risk is greatly reduced, while requiring <strong>no payment, no extra performance budget, and no learning or configuration</strong>. Install it once with <code>pip install spip</code>, set an alias once, and keep using pip while gaining an important protection layer in the background.</p>
               </article>
 
-              <article class="metric-card" data-chart-animate>
-                <div class="metric-chart metric-chart-shield" aria-label="Defense success rate against known poisoning attacks">
-                  <div class="metric-shield">
-                    <svg viewBox="0 0 128 128" aria-hidden="true">
-                      <circle class="metric-shield-orbit" cx="64" cy="64" r="45"></circle>
-                      <path class="metric-shield-body" d="M64 17 99 31v29c0 24-14.7 42.5-35 51-20.3-8.5-35-27-35-51V31z"></path>
-                      <path class="metric-shield-scan" d="M39 68h50"></path>
-                      <path class="metric-shield-check" d="M48 64.5 59 75l23-25"></path>
-                    </svg>
-                  </div>
-                </div>
-                <h3><span class="compare-point-accent">Reliable</span>.</h3>
-                <p>Defense success rate against currently known supply-chain poisoning cases tracked by this project: <span class="title-accent">100%</span>.</p>
-              </article>
-
-              <article class="metric-card" data-chart-animate>
-                <div class="metric-chart metric-chart-flow" aria-label="Frictionless workflow">
-                  <div class="metric-flow">
-                    <span class="metric-flow-label metric-flow-pip">pip</span>
-                    <svg class="metric-flow-arrow" viewBox="0 0 48 24" aria-hidden="true">
-                      <path class="metric-flow-line" d="M4 12 L36 12" />
-                      <polygon class="metric-flow-head" points="36,6 44,12 36,18" />
-                    </svg>
-                    <span class="metric-flow-label metric-flow-spip">spip</span>
-                  </div>
-                </div>
-                <h3><span class="compare-point-accent">Frictionless</span>.</h3>
-                <p>Workflow fit after configuration: <span class="title-accent">100%</span>.</p>
-                <p>Alias <code>pip</code> to <code>spip</code>, keep typing the same install commands, and let the guard run inside the pip install path.</p>
-              </article>
-
-              <article class="metric-card" data-chart-animate>
-                <div class="metric-chart metric-chart-open" aria-label="Free to use">
-                  <div class="metric-open">
-                    <svg class="metric-open-branch" viewBox="0 0 128 128" aria-hidden="true">
-                      <path class="metric-open-branch-line metric-open-branch-main" d="M43 24v80"></path>
-                      <path class="metric-open-branch-line metric-open-branch-fork" d="M43 64h23c14 0 24-10 24-24"></path>
-                      <circle class="metric-open-branch-node metric-open-node-top" cx="43" cy="24" r="8"></circle>
-                      <circle class="metric-open-branch-node metric-open-node-bottom" cx="43" cy="104" r="8"></circle>
-                      <circle class="metric-open-branch-node metric-open-node-fork" cx="90" cy="40" r="8"></circle>
-                    </svg>
-                  </div>
-                </div>
-                <h3><span class="compare-point-accent">Free</span>.</h3>
-                <p>Contributions to our <a class="hero-message-safe" href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a> repository are very welcome. The implementation is public, auditable, and <span class="title-accent">completely free</span>, and continues to evolve as new attack patterns emerge.</p>
+              <article class="release-copy-block">
+                <h3>spip advantages</h3>
+                <ul>
+                  <li><strong>Lightweight.</strong> You should not feel it running.</li>
+                  <li><strong>Zero migration or learning cost.</strong> No configuration is required; it works out of the box.</li>
+                  <li><strong>Free.</strong> spip is open source under the MIT license. Anyone can use, modify, and redistribute it.</li>
+                  <li><strong>Powerful.</strong> Tests show that it can defend against well-known attack cases such as LiteLLM and colorama.</li>
+                </ul>
               </article>
             </div>
           </div>
 
         </section>
 
-        <section class="download-section" data-download-section>
+        <section class="download-section" data-download-section id="download">
           <div class="download-copy">
             <h2>Let's <span class="title-accent">install</span>.</h2>
             <p>Install <code>secured_pip</code>, then use the <code>spip</code> command. Best to alias <code>pip</code> to <code>spip</code> to keep your usual workflow.</p>

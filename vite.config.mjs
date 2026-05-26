@@ -12,7 +12,11 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(rootDir, 'doc/index.html'),
-        'zh-cn': resolve(rootDir, 'doc/zh-cn/index.html')
+        'docs-index': resolve(rootDir, 'doc/docs/index.html'),
+        'docs-parameters': resolve(rootDir, 'doc/docs/parameters.html'),
+        'zh-cn': resolve(rootDir, 'doc/zh-cn/index.html'),
+        'zh-cn-docs-index': resolve(rootDir, 'doc/zh-cn/docs/index.html'),
+        'zh-cn-docs-parameters': resolve(rootDir, 'doc/zh-cn/docs/parameters.html')
       }
     }
   }

@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>secured_pip parameters</title>
+    <meta
+      name="description"
+      content="All secured_pip command-line parameters and passthrough behavior."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="page-docs">
+    <div class="site-frame docs-frame">
+      <header class="site-header docs-topbar">
+        <a class="brand brand-mark" href="/">secured_pip</a>
+        <nav class="site-nav">
+          <a href="/docs/" aria-current="page">Docs</a>
+          <a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://pypi.org/project/secured-pip" target="_blank" rel="noreferrer">PyPI</a>
+          <select class="lang-select" data-language-switch aria-label="Language">
+            <option value="/docs/parameters.html" selected>English</option>
+            <option value="/zh-cn/docs/parameters.html">中文</option>
+          </select>
+        </nav>
+      </header>
+
+      <main class="docs-layout">
+        <aside class="docs-sidebar" aria-label="Documentation navigation">
+          <div class="docs-search">Search docs <span>Ctrl K</span></div>
+          <nav class="docs-nav-list">
+            <a href="/docs/">Intro</a>
+            <a href="/docs/parameters.html" aria-current="page">Parameters</a>
+          </nav>
+        </aside>
+
+        <article class="docs-article">
+          <p class="docs-kicker">CLI reference</p>
+          <h1>Parameters</h1>
+          <p class="docs-lead">
+            spip behaves like <code>python -m pip</code> for almost everything. The only command with
+            spip-specific options is <code>spip install</code>; every option not listed here is passed
+            through to pip.
+          </p>
+
+          <hr />
+
+          <section id="command-shape">
+            <h2>Command shape</h2>
+            <div class="docs-terminal">
+              <span>Terminal window</span>
+              <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-var">[spip options]</span> <span class="code-var">[pip install options]</span> <span class="code-var">[requirements]</span>
+<span class="code-command">spip</span> <span class="code-arg">refresh-cache</span>
+<span class="code-command">spip</span> <span class="code-var">[any other pip command]</span></code></pre>
+            </div>
+          </section>
+
+          <section id="install-options">
+            <h2>spip install options</h2>
+            <p>These options are consumed by spip and are not forwarded to pip.</p>
+
+            <div class="docs-param-list">
+              <section id="ignore-warning" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>--ignore-warning</code>
+                  <span>boolean</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Continue despite warnings that would normally pause, prompt, or block the install.
+                    This also applies to suspicious <code>.pth</code> alerts found after installation.
+                  </p>
+                  <dl>
+                    <dt>Accepted values</dt>
+                    <dd>No value. Presence enables the option.</dd>
+                    <dt>Default</dt>
+                    <dd>Disabled.</dd>
+                  </dl>
+                  <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--ignore-warning</span></code></pre>
+                </div>
+              </section>
+
+              <section id="debug" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>--debug</code>
+                  <span>boolean</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Print additional diagnostic output from spip, including resolved packages and
+                    internal monitor errors. pip still receives the remaining install arguments.
+                  </p>
+                  <dl>
+                    <dt>Accepted values</dt>
+                    <dd>No value. Presence enables the option.</dd>
+                    <dt>Default</dt>
+                    <dd>Disabled.</dd>
+                  </dl>
+                  <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--debug</span></code></pre>
+                </div>
+              </section>
+
+              <section id="spip-status" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>--spip-status</code>
+                  <span>boolean</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Print a short status line confirming that the spip guard is enabled for this
+                    install command.
+                  </p>
+                  <dl>
+                    <dt>Accepted values</dt>
+                    <dd>No value. Presence enables the option.</dd>
+                    <dt>Default</dt>
+                    <dd>Disabled.</dd>
+                  </dl>
+                  <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--spip-status</span></code></pre>
+                </div>
+              </section>
+
+              <section id="sensitivity" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>--sensitivity &lt;level&gt;</code>
+                  <span>low | medium | high</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Adjust how strict the warning gate is. Both <code>--sensitivity medium</code> and
+                    <code>--sensitivity=medium</code> are supported.
+                  </p>
+                  <dl>
+                    <dt>Accepted values</dt>
+                    <dd><code>low</code>, <code>medium</code>, or <code>high</code>.</dd>
+                    <dt>Default</dt>
+                    <dd><code>low</code>.</dd>
+                  </dl>
+                  <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--sensitivity</span> <span class="code-string">medium</span>
+<span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--sensitivity=high</span></code></pre>
+
+                  <div class="policy-table-wrap docs-table-wrap">
+                    <table class="policy-table">
+                      <thead>
+                        <tr>
+                          <th>Mode</th>
+                          <th>HIGH warning</th>
+                          <th>MEDIUM warning</th>
+                          <th>LOW warning</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><code>low</code> default</td>
+                          <td>Pause</td>
+                          <td>Ask for y/n confirmation</td>
+                          <td>Warn and continue</td>
+                        </tr>
+                        <tr>
+                          <td><code>medium</code></td>
+                          <td>Pause</td>
+                          <td>Pause</td>
+                          <td>Ask for y/n confirmation</td>
+                        </tr>
+                        <tr>
+                          <td><code>high</code></td>
+                          <td>Pause</td>
+                          <td>Pause</td>
+                          <td>Pause</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p>
+                    In non-interactive environments, prompts cannot be answered. spip pauses instead
+                    and exits with a non-zero code. Use <code>--ignore-warning</code> only when you
+                    have reviewed the warning source and accept the risk.
+                  </p>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section id="top-level">
+            <h2>Top-level spip commands</h2>
+            <p>These are handled before spip falls back to pip passthrough behavior.</p>
+            <div class="docs-param-list">
+              <section id="refresh-cache" class="docs-param-item">
+                <div>
+                  <h3><code>refresh-cache</code></h3>
+                  <span>cache</span>
+                </div>
+                <p>
+                  Refresh the local caches used by spip checks, including the PyPI project-name cache
+                  and disposable email domain cache.
+                </p>
+                <pre><code><span class="code-command">spip</span> <span class="code-arg">refresh-cache</span></code></pre>
+              </section>
+
+              <section id="refresh-package-cache" class="docs-param-item">
+                <div>
+                  <h3><code>refresh-package-cache</code></h3>
+                  <span>alias</span>
+                </div>
+                <p>Alias for <code>refresh-cache</code>. It performs the same cache refresh operation.</p>
+                <pre><code><span class="code-command">spip</span> <span class="code-arg">refresh-package-cache</span></code></pre>
+              </section>
+            </div>
+          </section>
+
+          <section id="passthrough">
+            <h2>Pip passthrough</h2>
+            <p>
+              For commands other than <code>install</code>, spip directly runs
+              <code>python -m pip</code> with the same arguments. For <code>spip install</code>, only
+              the spip options listed above are removed; everything else is kept as pip install
+              input, including <code>-r</code>, <code>--upgrade</code>, <code>--target</code>,
+              <code>--user</code>, <code>--prefix</code>, <code>--root</code>, <code>--python</code>,
+              index options, constraints, package specifiers, direct URLs, and VCS requirements.
+            </p>
+            <p>
+              spip reads some pip install options such as <code>--target</code>, <code>--user</code>,
+              <code>--prefix</code>, <code>--root</code>, and <code>--python</code> to locate the
+              directories that need <code>.pth</code> monitoring. They are still pip options and are
+              forwarded into the guarded pip install path.
+            </p>
+          </section>
+        </article>
+
+        <aside class="docs-toc" aria-label="On this page">
+          <strong>On this page</strong>
+          <a href="#command-shape">Command shape</a>
+          <a href="#install-options">Install options</a>
+          <a href="#sensitivity">Sensitivity</a>
+          <a href="#top-level">Top-level commands</a>
+          <a href="#passthrough">Pip passthrough</a>
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
