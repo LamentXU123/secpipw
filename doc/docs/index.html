@@ -17,9 +17,19 @@
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body class="page-docs">
+    <div class="docs-search-modal" data-docs-search-modal hidden>
+      <div class="docs-search-shell" role="dialog" aria-modal="true" aria-labelledby="docs-search-title">
+        <div class="docs-search-head">
+          <input class="docs-search-input" data-docs-search-input type="search" placeholder="Search docs..." aria-label="Search docs" />
+        </div>
+        <div class="docs-search-results" data-docs-search-results></div>
+      </div>
+    </div>
     <div class="site-frame docs-frame">
       <header class="site-header docs-topbar">
-        <a class="brand brand-mark" href="/">secured_pip</a>
+        <a class="brand brand-mark" href="/" aria-label="secured_pip home">
+          <img class="brand-logo" src="/assets/logo.png" alt="secured_pip" />
+        </a>
         <nav class="site-nav">
           <a href="/docs/" aria-current="page">Docs</a>
           <a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a>
@@ -44,8 +54,8 @@
           <p class="docs-kicker">Documentation</p>
           <h1>Intro</h1>
           <p class="docs-lead">
-            secured_pip, or spip, is a lightweight wrapper around pip. It keeps normal pip behavior,
-            but adds supply-chain checks around <code>pip install</code>.
+            secured_pip is a lightweight wrapper around pip. It keeps normal pip behavior, but adds
+            supply-chain checks around <code>pip install</code>.
           </p>
 
           <hr />
@@ -53,10 +63,10 @@
           <section id="overview">
             <h2>Overview</h2>
             <p>
-              spip is designed for the everyday Python install path. Commands other than
-              <code>install</code> are forwarded to <code>python -m pip</code>. For
-              <code>spip install</code>, pip still resolves, downloads, builds, and installs packages;
-              spip inserts lightweight checks at key points in that flow.
+              secured_pip is designed for the everyday Python install path. Commands other than
+              <code>install</code> are forwarded to <code>python -m pip</code>. For the
+              <code>spip install</code> entrypoint, pip still resolves, downloads, builds, and installs
+              packages; secured_pip inserts lightweight checks at key points in that flow.
             </p>
           </section>
 
@@ -112,7 +122,7 @@ source ~/.zshrc</textarea>
           <section id="warnings">
             <h2>Warning mechanism</h2>
             <p>
-              Every risk found by spip is assigned one of three severities. Under the default
+              Every risk found by secured_pip is assigned one of three severities. Under the default
               <code>low</code> sensitivity, <strong>HIGH</strong> warnings pause installation,
               <strong>MEDIUM</strong> warnings ask for interactive confirmation, and
               <strong>LOW</strong> warnings are printed while installation continues.
@@ -142,8 +152,19 @@ source ~/.zshrc</textarea>
             <h2>Workflow</h2>
             <p>
               The recommended workflow is simple: keep typing the same package install commands, but
-              route them through spip so the guarded install path can inspect the resolved plan and
+              route them through secured_pip so the guarded install path can inspect the resolved plan and
               prepared artifacts.
+            </p>
+            <p>
+              For local install paths such as <code>pip install .</code>, file-based installs, or
+              offline installs using <code>--no-index</code> or <code>--find-links</code>,
+              secured_pip disables registry metadata requests. In those cases it stays focused on local
+              checks such as direct-install detection and <code>.pth</code> inspection rather than trying
+              to query package metadata from a registry.
+            </p>
+            <p>
+              This only disables remote metadata lookups. The local install path is still checked for
+              direct references, prepared artifact content, and post-install <code>.pth</code> changes.
             </p>
             <div class="docs-terminal">
               <span>Shell alias</span>
@@ -154,7 +175,7 @@ source ~/.zshrc</textarea>
           <section id="next">
             <h2>Next</h2>
             <p>
-              Continue with the parameter reference to see every spip-specific flag and how pip
+              Continue with the parameter reference to see every secured_pip-specific flag and how pip
               passthrough works.
             </p>
             <p><a class="docs-forward-link" href="/docs/parameters.html">Read parameters</a></p>

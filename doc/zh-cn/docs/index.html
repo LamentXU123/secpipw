@@ -17,9 +17,19 @@
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body class="page-docs">
+    <div class="docs-search-modal" data-docs-search-modal hidden>
+      <div class="docs-search-shell" role="dialog" aria-modal="true" aria-labelledby="docs-search-title">
+        <div class="docs-search-head">
+          <input class="docs-search-input" data-docs-search-input type="search" placeholder="搜索文档..." aria-label="搜索文档" />
+        </div>
+        <div class="docs-search-results" data-docs-search-results></div>
+      </div>
+    </div>
     <div class="site-frame docs-frame">
       <header class="site-header docs-topbar">
-        <a class="brand brand-mark" href="/zh-cn/">secured_pip</a>
+        <a class="brand brand-mark" href="/zh-cn/" aria-label="secured_pip home">
+          <img class="brand-logo" src="/assets/logo.png" alt="secured_pip" />
+        </a>
         <nav class="site-nav">
           <a href="/zh-cn/docs/" aria-current="page">文档</a>
           <a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a>
@@ -44,7 +54,7 @@
           <p class="docs-kicker">文档</p>
           <h1>介绍</h1>
           <p class="docs-lead">
-            secured_pip，也就是 spip，是一个轻量的 pip wrapper。它保持普通 pip 的行为，只在
+            secured_pip 是一个轻量的 pip wrapper。它保持普通 pip 的行为，只在
             <code>pip install</code> 周围加入供应链安全检查。
           </p>
 
@@ -53,9 +63,9 @@
           <section id="overview">
             <h2>概览</h2>
             <p>
-              spip 面向日常 Python 安装路径设计。除 <code>install</code> 之外的命令都会转发给
-              <code>python -m pip</code>。对于 <code>spip install</code>，解析、下载、构建和安装仍然走
-              pip；spip 只在关键节点插入轻量检查。
+              secured_pip 面向日常 Python 安装路径设计。除 <code>install</code> 之外的命令都会转发给
+              <code>python -m pip</code>。对于 <code>spip install</code> 这个 CLI 入口，解析、下载、构建和安装仍然走
+              pip；secured_pip 只在关键节点插入轻量检查。
             </p>
           </section>
 
@@ -111,7 +121,7 @@ source ~/.zshrc</textarea>
           <section id="warnings">
             <h2>报警机制</h2>
             <p>
-              spip 发现的每个风险都会被归入三个等级之一。在默认 <code>low</code> 敏感度下，
+              secured_pip 发现的每个风险都会被归入三个等级之一。在默认 <code>low</code> 敏感度下，
               <strong>HIGH</strong> warning 会暂停安装，<strong>MEDIUM</strong> warning 会要求交互确认，
               <strong>LOW</strong> warning 会提示后继续安装。
             </p>
@@ -139,8 +149,17 @@ source ~/.zshrc</textarea>
           <section id="workflow">
             <h2>工作流</h2>
             <p>
-              推荐工作流很简单：继续输入你熟悉的包安装命令，但让它们经过 spip，这样 guarded install
+              推荐工作流很简单：继续输入你熟悉的包安装命令，但让它们经过 secured_pip，这样 guarded install
               路径就能检查解析后的安装计划和准备好的本地安装产物。
+            </p>
+            <p>
+              对于 <code>pip install .</code> 这类本地安装路径、基于本地文件的安装，或者显式使用
+              <code>--no-index</code>、<code>--find-links</code> 的离线安装，secured_pip 会禁用 registry
+              元数据请求。此时它会专注于 direct install 检测和 <code>.pth</code> 检查，而不是去查询远端包索引的元数据。
+            </p>
+            <p>
+              这里禁用的只是远端元数据查询，不会关闭本地安全检查。本地路径、安装产物内容，以及安装后的
+              <code>.pth</code> 变化仍然会继续检查。
             </p>
             <div class="docs-terminal">
               <span>Shell alias</span>
@@ -150,7 +169,7 @@ source ~/.zshrc</textarea>
 
           <section id="next">
             <h2>下一步</h2>
-            <p>继续阅读参数说明，查看所有 spip 专属参数和 pip 透传行为。</p>
+            <p>继续阅读参数说明，查看所有 secured_pip 专属参数和 pip 透传行为。</p>
             <p><a class="docs-forward-link" href="/zh-cn/docs/parameters.html">阅读参数说明</a></p>
           </section>
         </article>

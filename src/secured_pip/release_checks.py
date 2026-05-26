@@ -190,11 +190,7 @@ def detect_recent_release_alerts(
     client = client or OfficialPyPIClient()
     now = datetime.now(timezone.utc) if now is None else now
     alerts: list[ReleaseAgeAlert] = []
-    candidates = [
-        package
-        for package in _unique_packages_for_recent_release_check(packages)
-        if _looks_like_pypi_download(package.download_url)
-    ]
+    candidates = _packages_with_registry_metadata(packages)
 
     if not candidates:
         return alerts
@@ -280,11 +276,7 @@ def detect_disposable_email_alerts(
         else {domain.lower() for domain in disposable_domains}
     )
     alerts: list[DisposableEmailAlert] = []
-    candidates = [
-        package
-        for package in _unique_packages_for_recent_release_check(packages)
-        if _looks_like_pypi_download(package.download_url)
-    ]
+    candidates = _packages_with_registry_metadata(packages)
 
     if not candidates:
         return alerts
@@ -340,11 +332,7 @@ def detect_empty_description_alerts(
 ) -> list[EmptyDescriptionAlert]:
     client = client or OfficialPyPIClient()
     alerts: list[EmptyDescriptionAlert] = []
-    candidates = [
-        package
-        for package in _unique_packages_for_recent_release_check(packages)
-        if _looks_like_pypi_download(package.download_url)
-    ]
+    candidates = _packages_with_registry_metadata(packages)
 
     if not candidates:
         return alerts
@@ -427,11 +415,7 @@ def detect_suspicious_metadata_url_alerts(
 ) -> list[MetadataUrlAlert]:
     client = client or OfficialPyPIClient()
     alerts: list[MetadataUrlAlert] = []
-    candidates = [
-        package
-        for package in _unique_packages_for_recent_release_check(packages)
-        if _looks_like_pypi_download(package.download_url)
-    ]
+    candidates = _packages_with_registry_metadata(packages)
 
     if not candidates:
         return alerts
@@ -470,11 +454,7 @@ def detect_repository_mismatch_alerts(
 ) -> list[RepositoryMismatchAlert]:
     client = client or OfficialPyPIClient()
     alerts: list[RepositoryMismatchAlert] = []
-    candidates = [
-        package
-        for package in _unique_packages_for_recent_release_check(packages)
-        if _looks_like_pypi_download(package.download_url)
-    ]
+    candidates = _packages_with_registry_metadata(packages)
 
     if not candidates:
         return alerts
@@ -517,11 +497,7 @@ def detect_email_domain_drift_alerts(
 ) -> list[EmailDomainDriftAlert]:
     client = client or OfficialPyPIClient()
     alerts: list[EmailDomainDriftAlert] = []
-    candidates = [
-        package
-        for package in _unique_packages_for_recent_release_check(packages)
-        if _looks_like_pypi_download(package.download_url)
-    ]
+    candidates = _packages_with_registry_metadata(packages)
 
     if not candidates:
         return alerts
@@ -666,10 +642,21 @@ def render_email_domain_drift_alerts(
     return "\n".join(lines)
 
 
-def _looks_like_pypi_download(download_url: str | None) -> bool:
-    if not download_url:
+def _packages_with_registry_metadata(
+    packages: Iterable[PackageLike],
+) -> list[PackageLike]:
+    return [
+        package
+        for package in _unique_packages_for_recent_release_check(packages)
+        if _package_can_use_registry_metadata(package)
+    ]
+
+
+def _package_can_use_registry_metadata(package: PackageLike) -> bool:
+    # Direct and editable installs do not map reliably to registry release metadata.
+    if getattr(package, "is_direct", False):
         return False
-    return "pythonhosted.org" in download_url or "/packages/" in download_url
+    return bool(package.name and package.version)
 
 
 def _unique_packages_for_recent_release_check(

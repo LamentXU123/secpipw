@@ -17,9 +17,19 @@
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body class="page-docs">
+    <div class="docs-search-modal" data-docs-search-modal hidden>
+      <div class="docs-search-shell" role="dialog" aria-modal="true" aria-labelledby="docs-search-title">
+        <div class="docs-search-head">
+          <input class="docs-search-input" data-docs-search-input type="search" placeholder="Search docs..." aria-label="Search docs" />
+        </div>
+        <div class="docs-search-results" data-docs-search-results></div>
+      </div>
+    </div>
     <div class="site-frame docs-frame">
       <header class="site-header docs-topbar">
-        <a class="brand brand-mark" href="/">secured_pip</a>
+        <a class="brand brand-mark" href="/" aria-label="secured_pip home">
+          <img class="brand-logo" src="/assets/logo.png" alt="secured_pip" />
+        </a>
         <nav class="site-nav">
           <a href="/docs/" aria-current="page">Docs</a>
           <a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a>
@@ -44,9 +54,9 @@
           <p class="docs-kicker">CLI reference</p>
           <h1>Parameters</h1>
           <p class="docs-lead">
-            spip behaves like <code>python -m pip</code> for almost everything. The only command with
-            spip-specific options is <code>spip install</code>; every option not listed here is passed
-            through to pip.
+            secured_pip behaves like <code>python -m pip</code> for almost everything. The only command
+            with secured_pip-specific options is <code>spip install</code>; every option not listed here
+            is passed through to pip.
           </p>
 
           <hr />
@@ -62,8 +72,8 @@
           </section>
 
           <section id="install-options">
-            <h2>spip install options</h2>
-            <p>These options are consumed by spip and are not forwarded to pip.</p>
+            <h2>secured_pip install options</h2>
+            <p>These options are consumed by secured_pip and are not forwarded to pip.</p>
 
             <div class="docs-param-list">
               <section id="ignore-warning" class="cli-option">
@@ -93,7 +103,7 @@
                 </div>
                 <div class="cli-option-body">
                   <p>
-                    Print additional diagnostic output from spip, including resolved packages and
+                    Print additional diagnostic output from secured_pip, including resolved packages and
                     internal monitor errors. pip still receives the remaining install arguments.
                   </p>
                   <dl>
@@ -113,7 +123,7 @@
                 </div>
                 <div class="cli-option-body">
                   <p>
-                    Print a short status line confirming that the spip guard is enabled for this
+                    Print a short status line confirming that the secured_pip guard is enabled for this
                     install command.
                   </p>
                   <dl>
@@ -178,7 +188,7 @@
                     </table>
                   </div>
                   <p>
-                    In non-interactive environments, prompts cannot be answered. spip pauses instead
+                    In non-interactive environments, prompts cannot be answered. secured_pip pauses instead
                     and exits with a non-zero code. Use <code>--ignore-warning</code> only when you
                     have reviewed the warning source and accept the risk.
                   </p>
@@ -188,8 +198,8 @@
           </section>
 
           <section id="top-level">
-            <h2>Top-level spip commands</h2>
-            <p>These are handled before spip falls back to pip passthrough behavior.</p>
+            <h2>Top-level secured_pip commands</h2>
+            <p>These are handled before secured_pip falls back to pip passthrough behavior.</p>
             <div class="docs-param-list">
               <section id="refresh-cache" class="docs-param-item">
                 <div>
@@ -197,38 +207,40 @@
                   <span>cache</span>
                 </div>
                 <p>
-                  Refresh the local caches used by spip checks, including the PyPI project-name cache
+                  Refresh the local caches used by secured_pip checks, including the PyPI project-name cache
                   and disposable email domain cache.
                 </p>
                 <pre><code><span class="code-command">spip</span> <span class="code-arg">refresh-cache</span></code></pre>
               </section>
 
-              <section id="refresh-package-cache" class="docs-param-item">
-                <div>
-                  <h3><code>refresh-package-cache</code></h3>
-                  <span>alias</span>
-                </div>
-                <p>Alias for <code>refresh-cache</code>. It performs the same cache refresh operation.</p>
-                <pre><code><span class="code-command">spip</span> <span class="code-arg">refresh-package-cache</span></code></pre>
-              </section>
             </div>
           </section>
 
           <section id="passthrough">
             <h2>Pip passthrough</h2>
             <p>
-              For commands other than <code>install</code>, spip directly runs
+              For commands other than <code>install</code>, secured_pip directly runs
               <code>python -m pip</code> with the same arguments. For <code>spip install</code>, only
-              the spip options listed above are removed; everything else is kept as pip install
+              the secured_pip options listed above are removed; everything else is kept as pip install
               input, including <code>-r</code>, <code>--upgrade</code>, <code>--target</code>,
               <code>--user</code>, <code>--prefix</code>, <code>--root</code>, <code>--python</code>,
               index options, constraints, package specifiers, direct URLs, and VCS requirements.
             </p>
             <p>
-              spip reads some pip install options such as <code>--target</code>, <code>--user</code>,
+              secured_pip reads some pip install options such as <code>--target</code>, <code>--user</code>,
               <code>--prefix</code>, <code>--root</code>, and <code>--python</code> to locate the
               directories that need <code>.pth</code> monitoring. They are still pip options and are
               forwarded into the guarded pip install path.
+            </p>
+            <p>
+              When the install target is local, or when pip is explicitly running offline with
+              <code>--no-index</code> or <code>--find-links</code>, secured_pip disables registry metadata
+              requests. That means commands such as <code>pip install .</code> or local wheel installs do
+              not trigger extra metadata lookups against PyPI or another package index.
+            </p>
+            <p>
+              This behavior does not disable local safety checks. It only skips remote metadata queries
+              that are not meaningful for local or offline install sources.
             </p>
           </section>
         </article>

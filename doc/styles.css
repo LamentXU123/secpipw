@@ -73,7 +73,7 @@ pre {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--bg);
+  background: #000;
 }
 
 .site-header,
@@ -100,15 +100,22 @@ pre {
 }
 
 .brand {
-  font-family: "Iowan Old Style", Georgia, serif;
-  font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: -0.04em;
+  display: inline-flex;
+  align-items: center;
+  width: 9.2rem;
+  height: 2.4rem;
 }
 
 .brand-mark {
   display: inline-flex;
   align-items: center;
+}
+
+.brand-logo {
+  display: block;
+  width: 100%;
+  height: 2.4rem;
+  object-fit: contain;
 }
 
 .site-nav {
@@ -168,6 +175,102 @@ pre {
 .lang-select option {
   background: var(--bg);
   color: var(--fg);
+}
+
+.docs-search {
+  cursor: pointer;
+}
+
+.docs-search:hover {
+  border-color: var(--blue);
+  color: var(--text);
+}
+
+.docs-search-modal[hidden] {
+  display: none;
+}
+
+.docs-search-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  display: grid;
+  place-items: start center;
+  padding: 10vh 1rem 1rem;
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(8px);
+}
+
+.docs-search-shell {
+  width: min(720px, 100%);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  background: rgba(15, 20, 27, 0.98);
+  box-shadow: 0 32px 90px rgba(0, 0, 0, 0.42);
+}
+
+.docs-search-head {
+  padding: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.docs-search-input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font: inherit;
+  font-size: 1rem;
+}
+
+.docs-search-input::placeholder {
+  color: var(--muted);
+}
+
+.docs-search-input:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 1px;
+}
+
+.docs-search-results {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.docs-search-empty {
+  padding: 1rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.docs-search-result {
+  display: grid;
+  gap: 0.25rem;
+  border-radius: 12px;
+  padding: 0.85rem 0.9rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.docs-search-result:hover,
+.docs-search-result:focus-visible {
+  background: rgba(255, 255, 255, 0.05);
+  outline: none;
+}
+
+.docs-search-result-title {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.docs-search-result-meta {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-family: var(--mono);
 }
 
 .home-main {
@@ -1220,7 +1323,7 @@ a.hero-message-safe:hover {
 }
 
 .docs-topbar {
-  background: rgba(15, 20, 27, 0.88);
+  background: #000;
   backdrop-filter: blur(14px);
 }
 

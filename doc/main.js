@@ -19,6 +19,10 @@ const topButtons = document.querySelectorAll('[data-scroll-top]')
 const animatedCharts = document.querySelectorAll('[data-chart-animate]')
 const languageSwitches = document.querySelectorAll('[data-language-switch]')
 const docTabGroups = document.querySelectorAll('[data-doc-tabs]')
+const docsSearchTriggers = document.querySelectorAll('.docs-search')
+const docsSearchModal = document.querySelector('[data-docs-search-modal]')
+const docsSearchInput = document.querySelector('[data-docs-search-input]')
+const docsSearchResults = document.querySelector('[data-docs-search-results]')
 
 if (scenes.length > 0) {
   if ('scrollRestoration' in history) {
@@ -287,4 +291,128 @@ for (const group of docTabGroups) {
       }
     })
   }
+}
+
+const docsSearchIndex = {
+  en: [
+    { title: 'Intro', meta: '/docs/', href: '/docs/' },
+    { title: 'Overview', meta: '/docs/#overview', href: '/docs/#overview' },
+    { title: 'Install', meta: '/docs/#install', href: '/docs/#install' },
+    { title: 'Warning mechanism', meta: '/docs/#warnings', href: '/docs/#warnings' },
+    { title: 'Workflow', meta: '/docs/#workflow', href: '/docs/#workflow' },
+    { title: 'Next', meta: '/docs/#next', href: '/docs/#next' },
+    { title: 'Parameters', meta: '/docs/parameters.html', href: '/docs/parameters.html' },
+    { title: 'Command shape', meta: '/docs/parameters.html#command-shape', href: '/docs/parameters.html#command-shape' },
+    { title: 'secured_pip install options', meta: '/docs/parameters.html#install-options', href: '/docs/parameters.html#install-options' },
+    { title: '--ignore-warning', meta: '/docs/parameters.html#ignore-warning', href: '/docs/parameters.html#ignore-warning' },
+    { title: '--debug', meta: '/docs/parameters.html#debug', href: '/docs/parameters.html#debug' },
+    { title: '--spip-status', meta: '/docs/parameters.html#spip-status', href: '/docs/parameters.html#spip-status' },
+    { title: '--sensitivity', meta: '/docs/parameters.html#sensitivity', href: '/docs/parameters.html#sensitivity' },
+    { title: 'Top-level secured_pip commands', meta: '/docs/parameters.html#top-level', href: '/docs/parameters.html#top-level' },
+    { title: 'Pip passthrough', meta: '/docs/parameters.html#passthrough', href: '/docs/parameters.html#passthrough' },
+  ],
+  zh: [
+    { title: '介绍', meta: '/zh-cn/docs/', href: '/zh-cn/docs/' },
+    { title: '概览', meta: '/zh-cn/docs/#overview', href: '/zh-cn/docs/#overview' },
+    { title: '安装', meta: '/zh-cn/docs/#install', href: '/zh-cn/docs/#install' },
+    { title: '报警机制', meta: '/zh-cn/docs/#warnings', href: '/zh-cn/docs/#warnings' },
+    { title: '工作流', meta: '/zh-cn/docs/#workflow', href: '/zh-cn/docs/#workflow' },
+    { title: '下一步', meta: '/zh-cn/docs/#next', href: '/zh-cn/docs/#next' },
+    { title: '参数说明', meta: '/zh-cn/docs/parameters.html', href: '/zh-cn/docs/parameters.html' },
+    { title: '命令结构', meta: '/zh-cn/docs/parameters.html#command-shape', href: '/zh-cn/docs/parameters.html#command-shape' },
+    { title: 'secured_pip install 参数', meta: '/zh-cn/docs/parameters.html#install-options', href: '/zh-cn/docs/parameters.html#install-options' },
+    { title: '--ignore-warning', meta: '/zh-cn/docs/parameters.html#ignore-warning', href: '/zh-cn/docs/parameters.html#ignore-warning' },
+    { title: '--debug', meta: '/zh-cn/docs/parameters.html#debug', href: '/zh-cn/docs/parameters.html#debug' },
+    { title: '--spip-status', meta: '/zh-cn/docs/parameters.html#spip-status', href: '/zh-cn/docs/parameters.html#spip-status' },
+    { title: '--sensitivity', meta: '/zh-cn/docs/parameters.html#sensitivity', href: '/zh-cn/docs/parameters.html#sensitivity' },
+    { title: '顶层 secured_pip 命令', meta: '/zh-cn/docs/parameters.html#top-level', href: '/zh-cn/docs/parameters.html#top-level' },
+    { title: 'pip 参数透传', meta: '/zh-cn/docs/parameters.html#passthrough', href: '/zh-cn/docs/parameters.html#passthrough' },
+  ],
+}
+
+const currentDocsSearchLang = window.location.pathname.startsWith('/zh-cn/')
+  ? 'zh'
+  : 'en'
+
+const renderDocsSearchResults = (query) => {
+  if (!docsSearchResults) {
+    return
+  }
+
+  const normalized = query.trim().toLowerCase()
+  const items = docsSearchIndex[currentDocsSearchLang]
+  const matches = normalized
+    ? items.filter((item) =>
+        `${item.title} ${item.meta}`.toLowerCase().includes(normalized),
+      )
+    : items
+
+  if (matches.length === 0) {
+    docsSearchResults.innerHTML = `<div class="docs-search-empty">${
+      currentDocsSearchLang === 'zh' ? '没有匹配结果。' : 'No matches found.'
+    }</div>`
+    return
+  }
+
+  docsSearchResults.innerHTML = matches
+    .map(
+      (item) => `
+        <a class="docs-search-result" href="${item.href}">
+          <span class="docs-search-result-title">${escapeHtml(item.title)}</span>
+          <span class="docs-search-result-meta">${escapeHtml(item.meta)}</span>
+        </a>
+      `,
+    )
+    .join('')
+}
+
+const openDocsSearch = () => {
+  if (!docsSearchModal || !docsSearchInput) {
+    return
+  }
+  docsSearchModal.hidden = false
+  renderDocsSearchResults('')
+  window.setTimeout(() => docsSearchInput.focus(), 0)
+}
+
+const closeDocsSearch = () => {
+  if (!docsSearchModal || !docsSearchInput) {
+    return
+  }
+  docsSearchModal.hidden = true
+  docsSearchInput.value = ''
+}
+
+for (const trigger of docsSearchTriggers) {
+  trigger.addEventListener('click', openDocsSearch)
+}
+
+if (docsSearchModal && docsSearchInput && docsSearchResults) {
+  docsSearchInput.addEventListener('input', () => {
+    renderDocsSearchResults(docsSearchInput.value)
+  })
+
+  docsSearchModal.addEventListener('click', (event) => {
+    if (event.target === docsSearchModal) {
+      closeDocsSearch()
+    }
+  })
+
+  document.addEventListener('keydown', (event) => {
+    const isOpen = !docsSearchModal.hidden
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault()
+      if (isOpen) {
+        closeDocsSearch()
+      } else {
+        openDocsSearch()
+      }
+      return
+    }
+
+    if (event.key === 'Escape' && isOpen) {
+      event.preventDefault()
+      closeDocsSearch()
+    }
+  })
 }

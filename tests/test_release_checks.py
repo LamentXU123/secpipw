@@ -36,6 +36,7 @@ class FakePackage:
     download_url: str | None
     artifact_name: str | None
     requested: bool = True
+    is_direct: bool = False
     requires_dist: tuple[str, ...] = ()
     metadata: dict | None = None
 
@@ -426,6 +427,48 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertEqual(len(alerts), 1)
         self.assertEqual(alerts[0].severity, Severity.LOW)
         self.assertIn("PyPI timed out", alerts[0].message)
+
+    def test_recent_release_checks_private_index_artifact_when_not_direct(self) -> None:
+        now = datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc)
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://mirror.example/simple/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+        )
+        client = FakePyPIClient(
+            {
+                (
+                    "demo",
+                    "1.0.0",
+                    "https://mirror.example/simple/demo-1.0.0.whl",
+                    "demo-1.0.0.whl",
+                ): now - timedelta(hours=2)
+            }
+        )
+
+        alerts = detect_recent_release_alerts([package], client=client, now=now)
+
+        self.assertEqual(len(alerts), 1)
+        self.assertEqual(alerts[0].severity, Severity.MEDIUM)
+
+    def test_metadata_checks_skip_direct_installs(self) -> None:
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://example.test/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+            is_direct=True,
+            metadata={"author_email": "author@mailinator.com"},
+        )
+
+        alerts = detect_disposable_email_alerts(
+            [package],
+            client=NoNetworkMetadataClient(),
+            disposable_domains={"mailinator.com"},
+        )
+
+        self.assertEqual(alerts, [])
 
     def test_zero_version_raises_low_alert(self) -> None:
         package = FakePackage(

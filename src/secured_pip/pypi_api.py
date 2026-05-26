@@ -14,6 +14,8 @@ from urllib.parse import urlparse
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
+from packaging.requirements import InvalidRequirement, Requirement
+
 DEFAULT_PYPI_BASE_URL = "https://pypi.org"
 DEFAULT_JSON_API_TIMEOUT_SECONDS = 2.5
 _RELEASE_CACHE_LOCK = threading.RLock()
@@ -103,6 +105,7 @@ def _default_email_domain_history_path() -> Path:
 @dataclass(frozen=True)
 class OfficialPyPIClient:
     base_url: str = DEFAULT_PYPI_BASE_URL
+    network_enabled: bool = True
     cache_path: Path = field(default_factory=_default_cache_path)
     release_cache_path: Path = field(default_factory=_default_release_cache_path)
     disposable_email_cache_path: Path = field(
@@ -212,6 +215,8 @@ class OfficialPyPIClient:
             }
 
     def fetch_release_metadata(self, name: str, version: str) -> dict:
+        if not self.network_enabled:
+            raise RuntimeError("registry metadata requests are disabled")
         cache_key = (self.base_url.rstrip("/").lower(), name.lower(), version)
         with _METADATA_CACHE_LOCK:
             cached = _METADATA_CACHE.get(cache_key)
@@ -225,16 +230,7 @@ class OfficialPyPIClient:
             with urlopen(request, timeout=DEFAULT_JSON_API_TIMEOUT_SECONDS) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         except Exception as exc:
-            if self.base_url == DEFAULT_PYPI_BASE_URL or _is_timeout_error(exc):
-                raise
-            fallback = Request(
-                f"{DEFAULT_PYPI_BASE_URL}/pypi/{name}/{version}/json",
-                headers={"Accept": "application/json"},
-            )
-            with urlopen(
-                fallback, timeout=DEFAULT_JSON_API_TIMEOUT_SECONDS
-            ) as response:
-                payload = json.loads(response.read().decode("utf-8"))
+            raise
         with _METADATA_CACHE_LOCK:
             _METADATA_CACHE[cache_key] = payload
         return payload
@@ -469,10 +465,128 @@ def client_from_pip_args(
     *,
     env: dict[str, str] | None = None,
 ) -> OfficialPyPIClient:
+    network_enabled = not _disable_registry_requests_for_install_args(pip_args)
     index_url = resolve_index_url(pip_args, env=env)
     if not index_url:
-        return OfficialPyPIClient()
-    return OfficialPyPIClient(base_url=_base_url_from_index_url(index_url))
+        return OfficialPyPIClient(network_enabled=network_enabled)
+    return OfficialPyPIClient(
+        base_url=_base_url_from_index_url(index_url),
+        network_enabled=network_enabled,
+    )
+
+
+def _disable_registry_requests_for_install_args(args: list[str]) -> bool:
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        option_name = arg.split("=", 1)[0]
+
+        if arg == "--":
+            for trailing in args[i + 1 :]:
+                if _is_local_install_target(trailing):
+                    return True
+            return False
+        if arg == "--no-index":
+            return True
+        if arg.startswith("--find-links="):
+            return True
+        if arg in {"-f", "--find-links"}:
+            return True
+        if arg in {"-e", "--editable"}:
+            if i + 1 < len(args) and _is_local_install_target(args[i + 1]):
+                return True
+            i += 2
+            continue
+        if arg.startswith("--editable="):
+            if _is_local_install_target(arg.split("=", 1)[1]):
+                return True
+            i += 1
+            continue
+        if option_name in {
+            "-c",
+            "-C",
+            "-f",
+            "-i",
+            "-r",
+            "-t",
+            "--abi",
+            "--cache-dir",
+            "--cert",
+            "--client-cert",
+            "--config-settings",
+            "--constraint",
+            "--editable",
+            "--exists-action",
+            "--extra-index-url",
+            "--find-links",
+            "--global-option",
+            "--implementation",
+            "--index-url",
+            "--keyring-provider",
+            "--log",
+            "--platform",
+            "--prefix",
+            "--progress-bar",
+            "--proxy",
+            "--python",
+            "--python-version",
+            "--requirement",
+            "--report",
+            "--retries",
+            "--root",
+            "--root-user-action",
+            "--src",
+            "--target",
+            "--timeout",
+            "--trusted-host",
+            "--upgrade-strategy",
+            "--use-deprecated",
+            "--use-feature",
+        }:
+            i += 2 if "=" not in arg else 1
+            continue
+        if arg.startswith("-"):
+            i += 1
+            continue
+        if _is_local_install_target(arg):
+            return True
+        i += 1
+    return False
+
+
+def _is_local_install_target(value: str) -> bool:
+    try:
+        requirement = Requirement(value)
+    except InvalidRequirement:
+        requirement = None
+
+    if requirement is not None:
+        if requirement.url:
+            parsed = urlparse(requirement.url)
+            return parsed.scheme == "file"
+        return False
+
+    parsed = urlparse(value)
+    if parsed.scheme == "file":
+        return True
+    if parsed.scheme:
+        return False
+
+    if value in {".", ".."}:
+        return True
+    if value.startswith((".\\", "./", "..\\", "../")):
+        return True
+
+    path = Path(value)
+    if path.is_absolute() or path.exists():
+        return True
+
+    suffixes = path.suffixes
+    if suffixes[-1:] == [".whl"]:
+        return True
+    if suffixes[-2:] == [".tar", ".gz"] or suffixes[-1:] == [".zip"]:
+        return True
+    return False
 
 
 def resolve_index_url(

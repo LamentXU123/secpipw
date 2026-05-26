@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import io
 import unittest
@@ -20,6 +20,11 @@ from secured_pip.pip_bridge import (
 class TtyInput(io.StringIO):
     def isatty(self) -> bool:
         return True
+
+
+class FakeMonitor:
+    def inspect(self):
+        return []
 
 
 @dataclass(frozen=True)
@@ -107,7 +112,7 @@ class PipBridgeTests(unittest.TestCase):
             severity=Severity.HIGH,
             message="'requsets' is similar to popular package 'requests'",
         )
-        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+        with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
                 "secured_pip.install_checks.detect_typos_in_resolved_packages",
                 return_value=[alert],
@@ -145,7 +150,7 @@ class PipBridgeTests(unittest.TestCase):
             severity=Severity.HIGH,
             message="'requsets' is similar to popular package 'requests'",
         )
-        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+        with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
                 "secured_pip.install_checks.detect_typos_in_resolved_packages",
                 return_value=[alert],
@@ -185,7 +190,7 @@ class PipBridgeTests(unittest.TestCase):
             severity=Severity.MEDIUM,
             message="'reqeusts' is similar to popular package 'requests'",
         )
-        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+        with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
                 "secured_pip.install_checks.detect_typos_in_resolved_packages",
                 return_value=[alert],
@@ -227,7 +232,7 @@ class PipBridgeTests(unittest.TestCase):
             severity=Severity.MEDIUM,
             message="'reqeusts' is similar to popular package 'requests'",
         )
-        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+        with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
                 "secured_pip.install_checks.detect_typos_in_resolved_packages",
                 return_value=[alert],
@@ -264,7 +269,7 @@ class PipBridgeTests(unittest.TestCase):
             severity=Severity.MEDIUM,
             message="'reqeusts' is similar to popular package 'requests'",
         )
-        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+        with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
                 "secured_pip.install_checks.detect_typos_in_resolved_packages",
                 return_value=[alert],
@@ -300,7 +305,7 @@ class PipBridgeTests(unittest.TestCase):
             severity=Severity.MEDIUM,
             message="'reqeusts' is similar to popular package 'requests'",
         )
-        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+        with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
                 "secured_pip.install_checks.detect_typos_in_resolved_packages",
                 return_value=[alert],
@@ -343,7 +348,7 @@ class PipBridgeTests(unittest.TestCase):
             severity=Severity.MEDIUM,
             message="'reqeusts' is similar to popular package 'requests'",
         )
-        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+        with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
                 "secured_pip.install_checks.detect_typos_in_resolved_packages",
                 return_value=[alert],
@@ -451,7 +456,7 @@ class PipBridgeTests(unittest.TestCase):
             FakePackage(name="requests", version="2.31.0", requested=True),
             FakePackage(name="urllib3", version="2.2.1"),
         )
-        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+        with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
                 "secured_pip.install_checks.detect_typos_in_resolved_packages", return_value=[]
             ):
@@ -520,40 +525,26 @@ class PipBridgeTests(unittest.TestCase):
         self.assertEqual(len(guarded.call_args.args), 3)
         handle_post.assert_called_once_with(["alert"], ignore_warning=False)
 
-    def test_install_with_guard_passes_preinstall_pth_hook(self) -> None:
+    def test_install_with_guard_refuses_to_run_without_pth_monitor(self) -> None:
+        stderr = io.StringIO()
+
         with patch("secured_pip.cli._create_pth_monitor", return_value=None):
-            with patch("secured_pip.cli.run_guarded_pip_install", return_value=0) as guarded:
-                rc = cli._install_with_guard(
-                    ["requests"],
-                    ignore_warning=False,
-                    debug=False,
-                    sensitivity=Severity.LOW,
-                )
+            with patch("secured_pip.cli.run_guarded_pip_install") as guarded:
+                with patch("sys.stderr", stderr):
+                    rc = cli._install_with_guard(
+                        ["requests"],
+                        ignore_warning=False,
+                        debug=False,
+                        sensitivity=Severity.LOW,
+                    )
 
-        self.assertEqual(rc, 0)
-        self.assertEqual(guarded.call_args.args[0], ["requests"])
-        self.assertEqual(len(guarded.call_args.args), 3)
-        artifact_hook = guarded.call_args.args[2]
-
-        with patch(
-            "secured_pip.cli.inspect_install_artifacts",
-            return_value=[
-                SimpleNamespace(severity=Severity.MEDIUM, message="suspicious .pth")
-            ],
-        ) as inspect_artifacts:
-            with patch(
-                "secured_pip.cli.gate_suspicious_pth_alerts",
-                return_value=SimpleNamespace(allow_install=False, exit_code=2),
-            ) as gate:
-                decision = artifact_hook(["req"])
-
-        inspect_artifacts.assert_called_once_with(["req"])
-        gate.assert_called_once()
-        self.assertFalse(decision.allow_install)
-        self.assertEqual(decision.exit_code, 2)
+        self.assertEqual(rc, 2)
+        guarded.assert_not_called()
+        self.assertIn("could not initialize .pth monitoring", stderr.getvalue())
+        self.assertIn("Refusing to continue", stderr.getvalue())
 
     def test_cli_install_allows_empty_plan(self) -> None:
-        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+        with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
                 "secured_pip.install_checks.detect_typos_in_resolved_packages", return_value=[]
             ):
@@ -579,7 +570,7 @@ class PipBridgeTests(unittest.TestCase):
         self.assertEqual(rc, 0)
         guarded.assert_called_once()
 
-    def test_cli_create_pth_monitor_falls_back_to_none_on_error(self) -> None:
+    def test_cli_create_pth_monitor_logs_debug_message_on_error(self) -> None:
         stderr = io.StringIO()
         with patch(
             "secured_pip.cli.PthMonitor.from_install_args", side_effect=RuntimeError("boom")
@@ -624,6 +615,13 @@ class PipBridgeTests(unittest.TestCase):
             stdout.getvalue(),
         )
 
+    def test_refresh_package_cache_is_no_longer_a_spip_command(self) -> None:
+        with patch("secured_pip.cli.run_pip", return_value=7) as run_pip:
+            rc = cli.main(["refresh-package-cache"])
+
+        self.assertEqual(rc, 7)
+        run_pip.assert_called_once_with(["refresh-package-cache"])
+
     def test_collect_pip_output_invokes_python_m_pip(self) -> None:
         completed = type(
             "Completed",
@@ -648,7 +646,7 @@ class PipBridgeTests(unittest.TestCase):
             FakePackage(name="requests", version="2.31.0", requested=True),
             FakePackage(name="urllib3", version="2.2.1"),
         )
-        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+        with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
                 "secured_pip.install_checks.detect_typos_in_resolved_packages", return_value=[]
             ):
@@ -679,7 +677,7 @@ class PipBridgeTests(unittest.TestCase):
     def test_cli_install_prints_guard_status_only_when_requested(self) -> None:
         stderr = io.StringIO()
         plan = _plan(FakePackage(name="requests", version="2.31.0", requested=True))
-        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+        with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
                 "secured_pip.install_checks.detect_typos_in_resolved_packages", return_value=[]
             ):
@@ -716,7 +714,7 @@ class PipBridgeTests(unittest.TestCase):
             FakePackage(name="requests", version="2.31.0", requested=True),
             FakePackage(name="urllib3", version="2.2.1"),
         )
-        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+        with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
                 "secured_pip.install_checks.detect_typos_in_resolved_packages", return_value=[]
             ):
@@ -748,7 +746,7 @@ class PipBridgeTests(unittest.TestCase):
         self.assertIn("urllib3==2.2.1", stderr.getvalue())
 
     def test_cli_install_returns_resolution_error_code(self) -> None:
-        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+        with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch("secured_pip.cli.run_guarded_pip_install", return_value=2) as guarded:
                 rc = cli.main(["install", "badpkg"])
 
@@ -761,7 +759,7 @@ class PipBridgeTests(unittest.TestCase):
     ) -> None:
         stderr = io.StringIO()
 
-        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+        with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch("secured_pip.cli.run_guarded_pip_install", return_value=1):
                 with patch("sys.stderr", stderr):
                     rc = cli.main(["install", "badpkg"])
@@ -772,7 +770,7 @@ class PipBridgeTests(unittest.TestCase):
     def test_cli_install_internal_guard_error_uses_spip_error_prefix(self) -> None:
         stderr = io.StringIO()
 
-        with patch("secured_pip.cli._create_pth_monitor", return_value=None):
+        with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
                 "secured_pip.cli.run_guarded_pip_install", side_effect=RuntimeError("boom")
             ):
@@ -804,3 +802,4 @@ class PipBridgeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

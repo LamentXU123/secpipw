@@ -458,28 +458,22 @@ class OfficialPyPIClientTests(unittest.TestCase):
         self.assertEqual(summary, "Short summary")
         self.assertEqual(description, "Long description")
 
-    def test_fetch_release_metadata_falls_back_to_official_pypi_for_non_timeout_mirror_error(
+    def test_fetch_release_metadata_does_not_fall_back_to_official_pypi(
         self,
     ) -> None:
         client = OfficialPyPIClient(base_url="https://mirror.example/simple")
-        responses = [
-            build_http_error(404),
-            FakeHTTPResponse({"urls": []}),
-        ]
+        with patch(
+            "secured_pip.pypi_api.urlopen",
+            side_effect=build_http_error(404),
+        ) as mocked:
+            with self.assertRaises(HTTPError):
+                client.fetch_release_metadata("demo", "1.0.0")
 
-        with patch("secured_pip.pypi_api.urlopen", side_effect=responses) as mocked:
-            payload = client.fetch_release_metadata("demo", "1.0.0")
-
-        self.assertEqual(payload, {"urls": []})
-        first_request = mocked.call_args_list[0].args[0]
-        second_request = mocked.call_args_list[1].args[0]
+        self.assertEqual(len(mocked.call_args_list), 1)
+        request = mocked.call_args_list[0].args[0]
         self.assertEqual(
-            first_request.full_url,
+            request.full_url,
             "https://mirror.example/simple/pypi/demo/1.0.0/json",
-        )
-        self.assertEqual(
-            second_request.full_url,
-            f"{DEFAULT_PYPI_BASE_URL}/pypi/demo/1.0.0/json",
         )
 
     def test_resolve_index_url_prefers_cli_over_env_and_config(self) -> None:
@@ -536,6 +530,38 @@ class OfficialPyPIClientTests(unittest.TestCase):
         )
 
         self.assertEqual(client.base_url, "https://pypi.tuna.tsinghua.edu.cn")
+
+    def test_client_from_pip_args_disables_network_for_no_index(self) -> None:
+        client = client_from_pip_args(
+            ["install", "--no-index", "packaging==24.2"],
+            env={},
+        )
+
+        self.assertFalse(client.network_enabled)
+
+    def test_client_from_pip_args_disables_network_for_find_links(self) -> None:
+        client = client_from_pip_args(
+            ["install", "--find-links", "wheelhouse", "packaging==24.2"],
+            env={},
+        )
+
+        self.assertFalse(client.network_enabled)
+
+    def test_client_from_pip_args_disables_network_for_local_path_install(self) -> None:
+        client = client_from_pip_args(
+            ["install", "."],
+            env={},
+        )
+
+        self.assertFalse(client.network_enabled)
+
+    def test_client_from_pip_args_keeps_network_for_normal_registry_install(self) -> None:
+        client = client_from_pip_args(
+            ["install", "requests==2.32.3"],
+            env={},
+        )
+
+        self.assertTrue(client.network_enabled)
 
 
 if __name__ == "__main__":

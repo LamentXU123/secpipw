@@ -167,7 +167,7 @@ class TypoDetector:
         except Exception:
             names = list(BOOTSTRAP_PROJECT_NAMES)
 
-        candidate_names = sorted(set(BOOTSTRAP_PROJECT_NAMES))
+        candidate_names = _candidate_names_from_project_names(names)
         candidates: list[_Candidate] = []
         project_name_set: set[str] = {
             canonicalize_name(name)
@@ -193,6 +193,30 @@ class TypoDetector:
         self._last_char_index = {
             key: tuple(value) for key, value in last_char_index.items()
         }
+
+
+def _candidate_names_from_project_names(
+    names: Iterable[str],
+) -> list[str]:
+    canonical_to_original: dict[str, str] = {}
+    popular_names = {canonicalize_name(item) for item in BOOTSTRAP_PROJECT_NAMES}
+    for name in sorted(set(names).union(BOOTSTRAP_PROJECT_NAMES)):
+        canonical_name = canonicalize_name(name)
+        if not canonical_name:
+            continue
+        existing = canonical_to_original.get(canonical_name)
+        if existing is None or len(name) < len(existing):
+            canonical_to_original[canonical_name] = name
+
+    ranked = sorted(
+        canonical_to_original.values(),
+        key=lambda name: (
+            0 if canonicalize_name(name) in popular_names else 1,
+            len(name),
+            name,
+        ),
+    )
+    return ranked
 
 
 def detect_typos_in_resolved_packages(

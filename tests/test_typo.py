@@ -112,9 +112,11 @@ class TypoDetectorTests(unittest.TestCase):
     def test_uses_cached_names_outside_bootstrap_list(self) -> None:
         detector = TypoDetector(FakePyPIClient(project_names=["internal-toolkit"]))
 
-        alert = detector.detect("internal-toollkit")
+        alert = detector.detect("internal-toolkiit")
 
-        self.assertIsNone(alert)
+        self.assertIsNotNone(alert)
+        self.assertEqual(alert.matched_name, "internal-toolkit")
+        self.assertEqual(alert.severity, Severity.MEDIUM)
 
 
 if __name__ == "__main__":

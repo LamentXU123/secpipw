@@ -19,7 +19,7 @@ from secured_pip.pypi_api import OfficialPyPIClient
 
 def main(argv: list[str] | None = None) -> int:
     args = list(sys.argv[1:] if argv is None else argv)
-    if args[:1] in (["refresh-cache"], ["refresh-package-cache"]):
+    if args[:1] == ["refresh-cache"]:
         return _refresh_caches()
     if args[:1] == ["install"]:
         try:
@@ -121,6 +121,14 @@ def _install_with_guard(
     sensitivity: Severity,
 ) -> int:
     monitor = _create_pth_monitor(pip_args, debug=debug)
+    if monitor is None:
+        sys.stderr.write(
+            "ERROR: spip could not initialize .pth monitoring for this install path.\n"
+        )
+        sys.stderr.write(
+            "Refusing to continue because post-install .pth protection would be disabled.\n"
+        )
+        return 2
 
     def plan_hook(plan):
         return run_install_checks(
@@ -145,8 +153,6 @@ def _install_with_guard(
         return 1
     if rc != 0:
         return rc
-    if monitor is None:
-        return 0
     decision = handle_suspicious_pth_alerts(
         monitor.inspect(),
         ignore_warning=ignore_warning,
