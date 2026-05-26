@@ -102,8 +102,8 @@ pre {
 .brand {
   display: inline-flex;
   align-items: center;
-  width: 9.2rem;
-  height: 2.4rem;
+  width: 11.4rem;
+  height: 3rem;
 }
 
 .brand-mark {
@@ -114,7 +114,7 @@ pre {
 .brand-logo {
   display: block;
   width: 100%;
-  height: 2.4rem;
+  height: 3rem;
   object-fit: contain;
 }
 
@@ -2243,7 +2243,8 @@ a.hero-message-safe:hover {
   }
 
   .brand {
-    font-size: 1.55rem;
+    width: 9.8rem;
+    height: 2.6rem;
   }
 
   .home-main {
