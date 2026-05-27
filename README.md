@@ -8,7 +8,7 @@
 ![PyPI Version](https://img.shields.io/pypi/v/secured_pip)
 [![Codecov](https://codecov.io/gh/LamentXU123/spip/graph/badge.svg)](https://codecov.io/gh/LamentXU123/spip)
 
-An open-source, free guard for your pip to avoid supply-chain attacks.
+An open-source, free, powerful, light-weight guard for your pip to avoid supply-chain attacks.
 
 By using this, you can avoid being screwed by the poisoned LiteLLM, etc. just because you type `pip install`
 
