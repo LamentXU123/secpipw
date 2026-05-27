@@ -12,6 +12,8 @@ An open-source, free guard for your pip to avoid supply-chain attacks.
 
 By using this, you can avoid being screwed by the poisoned LiteLLM, etc. just because you type `pip install`
 
+Although `secured_pip` is designed for low learning budget, we still recommend you to read our [docs](https://spip.lamentxu.top/docs) before you try this product in your production environment.
+
 ## What?
 
 Currently, supply chain attacks are one of the major security concerns all over the world. The `secured_pip` project is a future `pip` wrapper focused on supply-chain risk controls.
