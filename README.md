@@ -41,12 +41,14 @@ If you want a near drop-in experience, you can set a shell alias from `pip` to `
 Command Prompt (Windows):
 
 ```cmd
+pip install secured_pip
 doskey pip=spip $*
 ```
 
 Bash (Linux):
 
 ```bash
+pip install secured_pip
 echo "alias pip='spip'" >> ~/.bashrc
 source ~/.bashrc
 ```
@@ -54,6 +56,7 @@ source ~/.bashrc
 Zsh (macOS):
 
 ```zsh
+pip install secured_pip
 echo "alias pip='spip'" >> ~/.zshrc
 source ~/.zshrc
 ```
