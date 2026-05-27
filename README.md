@@ -73,11 +73,11 @@ For more details, please see our docs: https://spip.lamentxu.top/docs
 
 ## What problem do secured_pip solved?
 
-Supply-chain poisoning has always been a persistent security problem. Existing solutions include mature but expensive-to-run tools like GuardDog, and lightweight tools like sfw that rely entirely on a paid Socket API. GuardDog is too heavy for everyday CI usage and is better suited to static analysis by security researchers. Running GuardDog against every artifact downloaded by pip install, including all dependencies, would slow installs down. sfw is lighter, but its dependence on a paid API creates another cost for everyday developers.
+Supply-chain poisoning has always been a persistent security problem. Existing solutions include mature but expensive-to-run tools like GuardDog, and lightweight tools like sfw that rely entirely on a paid Socket API. GuardDog is too heavy for everyday CI usage and is better suited to static analysis by security researchers. Running GuardDog against every artifact downloaded by `pip install`, including all dependencies, would slow installs down. sfw is lighter, but its dependence on a paid API creates another cost for everyday developers.
 
 secured_pip solves this by hooking into pip's installer and merging security checks directly into the pip install download and installation flow. At the same time, the performance impact is almost invisible (~0.04%). secured_pip is completely free for everyone.
 
-Today, many independent developers have suffered CI server compromises that leak secret keys and cause serious damage. With secured_pip installed, that risk is greatly reduced, while requiring no payment, no extra performance budget, and no learning or configuration. Install it once with pip install secured_pip, set an alias once, and keep using pip while gaining an important protection layer in the background.
+Today, many independent developers have suffered CI server compromises that leak secret keys and cause serious damage. With secured_pip installed, that risk is greatly reduced, while requiring no payment, no extra performance budget, and no learning or configuration. Install it once with `pip install secured_pip`, set an alias once, and keep using pip while gaining an important protection layer in the background.
 
 ## Warning policies
 
