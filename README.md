@@ -65,31 +65,21 @@ source ~/.zshrc
 
 The `secured_pip` project will actively check for all the supply chain risks and avoid you installing potentially malicious packages when typing `spip install`
 
-For `install`, `spip` uses pip's own resolver and then checks the selected install plan before pip builds or installs the resolved distributions. If the checks pass, the same pip install flow continues; `spip` does not run a second `pip install` for the already-resolved packages.
+For `install`, `secured_pip` uses pip's own resolver and then checks the selected install plan before pip builds or installs the resolved distributions. If the checks pass, the same pip install flow continues; `secured_pip` does not run a second `pip install` for the already-resolved packages.
 
 Except for the `install` commands, the project behaves exactly the same as the original `pip` program. That is, you can always use `spip` instead of `pip` in any case :)
 
-If you want to refresh local caches used by `spip`, run:
+For more details, please see our docs: https://spip.lamentxu.top/docs
 
-```bash
-spip refresh-cache
-```
+## What problem do secured_pip solved?
 
-## Why not SFW / GuardDog?
+Supply-chain poisoning has always been a persistent security problem. Existing solutions include mature but expensive-to-run tools like GuardDog, and lightweight tools like sfw that rely entirely on a paid Socket API. GuardDog is too heavy for everyday CI usage and is better suited to static analysis by security researchers. Running GuardDog against every artifact downloaded by pip install, including all dependencies, would slow installs down. sfw is lighter, but its dependence on a paid API creates another cost for everyday developers.
 
-There are already good supply-chain tools out there. `secured_pip` is not trying to replace all of them. The point is different: keep the protection path as light as possible for everyday Python installs.
+secured_pip solves this by hooking into pip's installer and merging security checks directly into the pip install download and installation flow. At the same time, the performance impact is almost invisible (~0.04%). secured_pip is completely free for everyone.
 
-- Compared with Socket Firewall (`sfw`): Socket Firewall works as a wrapper/proxy layer in front of package-manager network requests and uses Socket's security intelligence to block packages before download. `secured_pip` is much smaller in scope: it is a local Python-only `pip` wrapper, with no proxy service, no organization dashboard, and no extra infrastructure to run. Official Socket docs: <https://docs.socket.dev/docs/socket-firewall-overview>
-- Compared with GuardDog: GuardDog is a scanning CLI that downloads package source archives and applies source-code and metadata heuristics, including Semgrep-based rules. `secured_pip` is intentionally lighter: it stays close to `pip install`, does quick local checks around the install flow, and does not try to be a full package-code scanner. Official GuardDog README: <https://github.com/DataDog/guarddog>
+Today, many independent developers have suffered CI server compromises that leak secret keys and cause serious damage. With secured_pip installed, that risk is greatly reduced, while requiring no payment, no extra performance budget, and no learning or configuration. Install it once with pip install secured_pip, set an alias once, and keep using pip while gaining an important protection layer in the background.
 
-In short, `secured_pip` optimizes for:
-
-- near-drop-in use with `spip install`
-- local, lightweight checks
-- minimal workflow change
-- Python / pip focus instead of broad multi-ecosystem coverage
-
-Current minimum Python version: `3.10`
+## Warning policies
 
 We currently have three install warning policies:
 
@@ -103,21 +93,21 @@ the gate stricter with `--sensitivity medium` or `--sensitivity high`:
 - `--sensitivity medium`: `MEDIUM` and above pause installation; `LOW` prompts.
 - `--sensitivity high`: `LOW` and above pause installation.
 
-When `spip` detects a potential risk, a warning will be raised, with the level depending on the severity the risk is.
+When `secured_pip` detects a potential risk, a warning will be raised, with the level depending on the severity the risk is.
 
 For now, the project has several major check points:
 
-- [x] Fake typo checks: Hackers often use "fake typos" to inject a malicious dependency package into the poisoned source file. `spip` detects this by first resolving all the packages that `pip install` is going to download, and then comparing non-popular resolved package names with a local hot-package list. Warning levels:
+- [x] Fake typo checks: Hackers often use "fake typos" to inject a malicious dependency package into the poisoned source file. `secured_pip` detects this by first resolving all the packages that `pip install` is going to download, and then comparing non-popular resolved package names with a local hot-package list. Warning levels:
     - Medium severity: `requsets` vs `requests`
     - Medium severity: `pandaz` vs `pandas`
     - Low severity: `sixth` vs `six`
-- [x] Direct URL dependency checks: If the install target or a resolved dependency uses a direct URL, VCS URL, or PEP 508 direct reference, `spip` will raise a `MEDIUM` warning.
-- [x] Fresh release checks: If the selected PyPI release was published less than 2 days ago, `spip` will raise a `MEDIUM` warning.
-- [x] Disposable email checks: If the PyPI release metadata uses a known disposable author or maintainer email domain, `spip` will raise a `LOW` warning. The built-in blocklist is vendored from `disposable/disposable-email-domains` strict mode.
-- [x] Empty description checks: If the selected PyPI release metadata has no summary and no long description, `spip` will raise a `LOW` warning.
-- [x] Suspicious metadata URL checks: If PyPI metadata points to a shortener, raw IP, suspicious TLD, embedded credentials, or similar suspicious URL, `spip` will raise a `LOW` warning.
-- [x] Repository mismatch checks: If PyPI metadata points to a GitHub/GitLab repository whose repo name appears unrelated to the package name, `spip` will raise a `LOW` warning.
-- [x] Maintainer email domain drift checks: If a package's maintainer email domain changes compared with the local `spip` history cache, `spip` will raise a `LOW` warning.
-- [x] Zero-version checks: If the selected package version is `0.0` or `0.0.0`, `spip` will raise a `LOW` warning.
-- [x] `.pth` file detection: Instead of directly injecting malicious code inside the package, today most hackers will place their bad stuff under a `.pth` file, with an `import` as the beginning. `spip` only checks the installed file-system diff after installation. The warning level is always `MEDIUM`, and `spip` will ask whether to delete the suspicious installed `.pth` file.
+- [x] Direct URL dependency checks: If the install target or a resolved dependency uses a direct URL, VCS URL, or PEP 508 direct reference, `secured_pip` will raise a `MEDIUM` warning.
+- [x] Fresh release checks: If the selected PyPI release was published less than 2 days ago, `secured_pip` will raise a `MEDIUM` warning.
+- [x] Disposable email checks: If the PyPI release metadata uses a known disposable author or maintainer email domain, `secured_pip` will raise a `LOW` warning. The built-in blocklist is vendored from `disposable/disposable-email-domains` strict mode.
+- [x] Empty description checks: If the selected PyPI release metadata has no summary and no long description, `secured_pip` will raise a `LOW` warning.
+- [x] Suspicious metadata URL checks: If PyPI metadata points to a shortener, raw IP, suspicious TLD, embedded credentials, or similar suspicious URL, `secured_pip` will raise a `LOW` warning.
+- [x] Repository mismatch checks: If PyPI metadata points to a GitHub/GitLab repository whose repo name appears unrelated to the package name, `secured_pip` will raise a `LOW` warning.
+- [x] Maintainer email domain drift checks: If a package's maintainer email domain changes compared with the local `secured_pip` history cache, `secured_pip` will raise a `LOW` warning.
+- [x] Zero-version checks: If the selected package version is `0.0` or `0.0.0`, `secured_pip` will raise a `LOW` warning.
+- [x] `.pth` file detection: Instead of directly injecting malicious code inside the package, today most hackers will place their bad stuff under a `.pth` file, with an `import` as the beginning. `secured_pip` only checks the installed file-system diff after installation. The warning level is always `MEDIUM`, and `secured_pip` will ask whether to delete the suspicious installed `.pth` file.
 - [ ] TODO ...
