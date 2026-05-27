@@ -214,9 +214,7 @@
             <p>
               对于 <code>install</code> 之外的命令，secured_pip 会直接用相同参数运行
               <code>python -m pip</code>。对于 <code>spip install</code>，只有上面列出的 secured_pip 参数会被移除；其它内容都会作为
-              pip install 输入保留下来，包括 <code>-r</code>、<code>--upgrade</code>、<code>--target</code>、
-              <code>--user</code>、<code>--prefix</code>、<code>--root</code>、<code>--python</code>、
-              index 参数、constraints、包版本约束、direct URL 和 VCS requirements。
+              pip install 输入保留下来。
             </p>
             <p>
               secured_pip 会读取部分 pip install 参数，例如 <code>--target</code>、<code>--user</code>、
