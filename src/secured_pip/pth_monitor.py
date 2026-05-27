@@ -69,7 +69,9 @@ class PthMonitor:
         return alerts
 
 
-def inspect_install_artifacts(requirements: Iterable[object]) -> list[SuspiciousPthAlert]:
+def inspect_install_artifacts(
+    requirements: Iterable[object],
+) -> list[SuspiciousPthAlert]:
     alerts: list[SuspiciousPthAlert] = []
     seen_paths: set[Path] = set()
     for req in requirements:

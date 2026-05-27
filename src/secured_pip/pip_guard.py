@@ -147,9 +147,7 @@ def install_given_reqs(
 
 def make_resolver(command, **kwargs):
     parameters = inspect.signature(command.make_resolver).parameters
-    resolver_kwargs = {
-        key: value for key, value in kwargs.items() if key in parameters
-    }
+    resolver_kwargs = {key: value for key, value in kwargs.items() if key in parameters}
     return command.make_resolver(**resolver_kwargs)
 
 
@@ -330,7 +328,9 @@ class GuardedInstallCommand(InstallCommand):
 
             for req in requirement_set.requirements_to_install:
                 local_file_path = getattr(req, "local_file_path", None)
-                if local_file_path and not hasattr(req, "_spip_prebuild_local_file_path"):
+                if local_file_path and not hasattr(
+                    req, "_spip_prebuild_local_file_path"
+                ):
                     req._spip_prebuild_local_file_path = local_file_path
 
             try:

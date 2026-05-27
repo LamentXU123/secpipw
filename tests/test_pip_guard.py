@@ -28,14 +28,22 @@ from secured_pip.warning_gate import GateDecision
 
 
 @contextmanager
-def patch_guarded_install(command, reqs, requirement_set, resolver, report_dict, **extra_patches):
+def patch_guarded_install(
+    command, reqs, requirement_set, resolver, report_dict, **extra_patches
+):
     patches = [
         patch("secured_pip.pip_guard.cmdoptions.check_dist_restriction"),
         patch("secured_pip.pip_guard.decide_user_install", return_value=False),
         patch("secured_pip.pip_guard.make_target_python", return_value=object()),
-        patch("secured_pip.pip_guard.get_build_tracker", return_value=nullcontext(object())),
+        patch(
+            "secured_pip.pip_guard.get_build_tracker",
+            return_value=nullcontext(object()),
+        ),
         patch("secured_pip.pip_guard.WheelCache"),
-        patch("secured_pip.pip_guard.TempDirectory", return_value=SimpleNamespace(path="tmp")),
+        patch(
+            "secured_pip.pip_guard.TempDirectory",
+            return_value=SimpleNamespace(path="tmp"),
+        ),
         patch.object(command, "get_default_session", return_value=object()),
         patch.object(command, "_build_package_finder", return_value=object()),
         patch.object(command, "get_requirements", return_value=reqs),
@@ -111,9 +119,16 @@ class PipGuardTests(unittest.TestCase):
     def test_should_build_falls_back_to_not_wheel_when_pip_checker_is_missing(
         self,
     ) -> None:
-        with patch("secured_pip.pip_guard._should_build_for_install_command_checker", return_value=None):
-            self.assertTrue(should_build_for_install_command(SimpleNamespace(is_wheel=False)))
-            self.assertFalse(should_build_for_install_command(SimpleNamespace(is_wheel=True)))
+        with patch(
+            "secured_pip.pip_guard._should_build_for_install_command_checker",
+            return_value=None,
+        ):
+            self.assertTrue(
+                should_build_for_install_command(SimpleNamespace(is_wheel=False))
+            )
+            self.assertFalse(
+                should_build_for_install_command(SimpleNamespace(is_wheel=True))
+            )
 
     def test_should_build_uses_pip_checker_when_available(self) -> None:
         checker = Mock(return_value=True)
@@ -130,7 +145,9 @@ class PipGuardTests(unittest.TestCase):
     def test_wheel_build_wrapper_omits_removed_options(self) -> None:
         build_func = Mock(return_value=([], []))
 
-        with patch("secured_pip.pip_guard._wheel_builder_build", return_value=build_func):
+        with patch(
+            "secured_pip.pip_guard._wheel_builder_build", return_value=build_func
+        ):
             result = build(
                 [SimpleNamespace()],
                 wheel_cache=SimpleNamespace(),
@@ -211,7 +228,9 @@ class PipGuardTests(unittest.TestCase):
             list(requirement_set.requirements.values()),
         )
 
-    def _make_command_and_mocks(self, hook, reqs=None, requirement_set=None, resolver=None):
+    def _make_command_and_mocks(
+        self, hook, reqs=None, requirement_set=None, resolver=None
+    ):
         command = GuardedInstallCommand(
             "install",
             "Install packages.",
@@ -232,9 +251,15 @@ class PipGuardTests(unittest.TestCase):
             patch("secured_pip.pip_guard.cmdoptions.check_dist_restriction"),
             patch("secured_pip.pip_guard.decide_user_install", return_value=False),
             patch("secured_pip.pip_guard.make_target_python", return_value=object()),
-            patch("secured_pip.pip_guard.get_build_tracker", return_value=nullcontext(object())),
+            patch(
+                "secured_pip.pip_guard.get_build_tracker",
+                return_value=nullcontext(object()),
+            ),
             patch("secured_pip.pip_guard.WheelCache"),
-            patch("secured_pip.pip_guard.TempDirectory", return_value=SimpleNamespace(path="tmp")),
+            patch(
+                "secured_pip.pip_guard.TempDirectory",
+                return_value=SimpleNamespace(path="tmp"),
+            ),
         ]
 
     def test_plan_hook_blocks_before_build_or_install(self) -> None:
@@ -298,7 +323,9 @@ class PipGuardTests(unittest.TestCase):
             ],
         }
         hook = Mock(return_value=GateDecision(allow_install=True, exit_code=0))
-        artifact_hook = Mock(return_value=GateDecision(allow_install=False, exit_code=2))
+        artifact_hook = Mock(
+            return_value=GateDecision(allow_install=False, exit_code=2)
+        )
         installed_req = SimpleNamespace(name="requests", local_file_path="requests.whl")
         requirement_set = SimpleNamespace(
             requirements_to_install=[installed_req],
@@ -380,7 +407,9 @@ class PipGuardTests(unittest.TestCase):
         req_obj = SimpleNamespace(metadata={"name": "requests", "version": "2.31.0"})
         requirement_set = SimpleNamespace(requirements_to_install=[req_obj])
         resolver = SimpleNamespace(resolve=Mock(return_value=requirement_set))
-        command, reqs, _, _ = self._make_command_and_mocks(hook, requirement_set=requirement_set, resolver=resolver)
+        command, reqs, _, _ = self._make_command_and_mocks(
+            hook, requirement_set=requirement_set, resolver=resolver
+        )
         options = _install_options()
         options.dry_run = True
 
@@ -520,16 +549,24 @@ class PipGuardTests(unittest.TestCase):
             resolve=Mock(return_value=requirement_set),
             get_installation_order=Mock(return_value=[]),
         )
-        command, reqs, _, _ = self._make_command_and_mocks(hook, requirement_set=requirement_set, resolver=resolver)
+        command, reqs, _, _ = self._make_command_and_mocks(
+            hook, requirement_set=requirement_set, resolver=resolver
+        )
         failing_req = SimpleNamespace(name="requests")
         options = _install_options()
 
         report_patch = patch("secured_pip.pip_guard.InstallationReport")
         prepare_mock = patch("secured_pip.pip_guard.prepare_linked_requirements_more")
-        should_build_mock = patch("secured_pip.pip_guard.should_build_for_install_command", return_value=True)
-        build_mock = patch("secured_pip.pip_guard.build", return_value=([], [failing_req]))
+        should_build_mock = patch(
+            "secured_pip.pip_guard.should_build_for_install_command", return_value=True
+        )
+        build_mock = patch(
+            "secured_pip.pip_guard.build", return_value=([], [failing_req])
+        )
         install_mock = patch("secured_pip.pip_guard.install_given_reqs")
-        get_req_mock = patch.object(requirement_set, "get_requirement", side_effect=KeyError)
+        get_req_mock = patch.object(
+            requirement_set, "get_requirement", side_effect=KeyError
+        )
 
         patches = self._apply_base_patches() + [
             patch.object(command, "get_default_session", return_value=object()),
@@ -573,14 +610,20 @@ class PipGuardTests(unittest.TestCase):
             resolve=Mock(return_value=requirement_set),
             get_installation_order=Mock(return_value=[]),
         )
-        command, reqs, _, _ = self._make_command_and_mocks(hook, requirement_set=requirement_set, resolver=resolver)
+        command, reqs, _, _ = self._make_command_and_mocks(
+            hook, requirement_set=requirement_set, resolver=resolver
+        )
         options = _install_options()
 
         report_patch = patch("secured_pip.pip_guard.InstallationReport")
         prepare_mock = patch("secured_pip.pip_guard.prepare_linked_requirements_more")
-        should_build_mock = patch("secured_pip.pip_guard.should_build_for_install_command", return_value=False)
+        should_build_mock = patch(
+            "secured_pip.pip_guard.should_build_for_install_command", return_value=False
+        )
         build_mock = patch("secured_pip.pip_guard.build", return_value=([], []))
-        install_mock = patch("secured_pip.pip_guard.install_given_reqs", side_effect=OSError("disk full"))
+        install_mock = patch(
+            "secured_pip.pip_guard.install_given_reqs", side_effect=OSError("disk full")
+        )
         logger_mock = patch("secured_pip.pip_guard.logger")
 
         patches = self._apply_base_patches() + [
@@ -628,7 +671,9 @@ class PipGuardTests(unittest.TestCase):
             resolve=Mock(return_value=requirement_set),
             get_installation_order=Mock(return_value=[installed_pkg]),
         )
-        command, reqs, _, _ = self._make_command_and_mocks(hook, requirement_set=requirement_set, resolver=resolver)
+        command, reqs, _, _ = self._make_command_and_mocks(
+            hook, requirement_set=requirement_set, resolver=resolver
+        )
         options = _install_options()
 
         dist_mock = Mock()
@@ -637,15 +682,25 @@ class PipGuardTests(unittest.TestCase):
 
         report_patch = patch("secured_pip.pip_guard.InstallationReport")
         prepare_mock = patch("secured_pip.pip_guard.prepare_linked_requirements_more")
-        should_build_mock = patch("secured_pip.pip_guard.should_build_for_install_command", return_value=False)
+        should_build_mock = patch(
+            "secured_pip.pip_guard.should_build_for_install_command", return_value=False
+        )
         build_mock = patch("secured_pip.pip_guard.build", return_value=([], []))
-        install_mock = patch("secured_pip.pip_guard.install_given_reqs", return_value=[installed_pkg])
+        install_mock = patch(
+            "secured_pip.pip_guard.install_given_reqs", return_value=[installed_pkg]
+        )
         env_mock = patch("secured_pip.pip_guard.get_environment")
         write_mock = patch("secured_pip.pip_guard.write_output")
-        canonicalize_mock = patch("secured_pip.pip_guard.canonicalize_name", side_effect=lambda x: x)
-        conflicts_mock = patch.object(command, "_determine_conflicts", return_value=None)
+        canonicalize_mock = patch(
+            "secured_pip.pip_guard.canonicalize_name", side_effect=lambda x: x
+        )
+        conflicts_mock = patch.object(
+            command, "_determine_conflicts", return_value=None
+        )
         warn_conflicts_mock = patch.object(command, "_warn_about_conflicts")
-        lib_loc_mock = patch("secured_pip.pip_guard.get_lib_location_guesses", return_value=[])
+        lib_loc_mock = patch(
+            "secured_pip.pip_guard.get_lib_location_guesses", return_value=[]
+        )
 
         patches = self._apply_base_patches() + [
             patch.object(command, "get_default_session", return_value=object()),
@@ -670,7 +725,9 @@ class PipGuardTests(unittest.TestCase):
         with command.main_context():
             with contextlib_nested(patches) as values:
                 values[-12].return_value.to_dict.return_value = report
-                values[-6].return_value.iter_all_distributions.return_value = [dist_mock]
+                values[-6].return_value.iter_all_distributions.return_value = [
+                    dist_mock
+                ]
                 rc = command.run(options, ["requests"])
 
         self.assertEqual(rc, SUCCESS)
@@ -680,6 +737,7 @@ class PipGuardTests(unittest.TestCase):
     def test_check_build_constraints_delegates_to_cmdoptions(self) -> None:
         mock_checker = Mock()
         import secured_pip.pip_guard as pg
+
         orig = getattr(pg.cmdoptions, "check_build_constraints", None)
         try:
             pg.cmdoptions.check_build_constraints = mock_checker
@@ -692,6 +750,7 @@ class PipGuardTests(unittest.TestCase):
 
     def test_check_build_constraints_is_noop_when_missing(self) -> None:
         import secured_pip.pip_guard as pg
+
         orig = getattr(pg.cmdoptions, "check_build_constraints", None)
         try:
             pg.cmdoptions.check_build_constraints = None
@@ -703,25 +762,43 @@ class PipGuardTests(unittest.TestCase):
 
     def test_check_legacy_setup_py_options_delegates(self) -> None:
         mock_checker = Mock()
-        with patch("secured_pip.pip_guard._legacy_setup_py_options_checker", return_value=mock_checker):
+        with patch(
+            "secured_pip.pip_guard._legacy_setup_py_options_checker",
+            return_value=mock_checker,
+        ):
             options = Mock()
             reqs = [object()]
             check_legacy_setup_py_options(options, reqs)
             mock_checker.assert_called_once_with(options, reqs)
 
     def test_check_legacy_setup_py_options_is_noop_when_missing(self) -> None:
-        with patch("secured_pip.pip_guard._legacy_setup_py_options_checker", return_value=None):
+        with patch(
+            "secured_pip.pip_guard._legacy_setup_py_options_checker", return_value=None
+        ):
             options = Mock()
             reqs = [object()]
             check_legacy_setup_py_options(options, reqs)
 
-    def test_wheel_build_wrapper_passes_build_options_when_signature_allows(self) -> None:
+    def test_wheel_build_wrapper_passes_build_options_when_signature_allows(
+        self,
+    ) -> None:
         build_func = Mock(return_value=([], []))
 
-        def build_with_options(requirements, *, wheel_cache, verify, build_options, global_options):
-            return build_func(requirements, wheel_cache=wheel_cache, verify=verify, build_options=build_options, global_options=global_options)
+        def build_with_options(
+            requirements, *, wheel_cache, verify, build_options, global_options
+        ):
+            return build_func(
+                requirements,
+                wheel_cache=wheel_cache,
+                verify=verify,
+                build_options=build_options,
+                global_options=global_options,
+            )
 
-        with patch("secured_pip.pip_guard._wheel_builder_build", return_value=build_with_options):
+        with patch(
+            "secured_pip.pip_guard._wheel_builder_build",
+            return_value=build_with_options,
+        ):
             result = build(
                 [SimpleNamespace()],
                 wheel_cache=SimpleNamespace(),
@@ -735,13 +812,17 @@ class PipGuardTests(unittest.TestCase):
         self.assertEqual(call_kwargs["build_options"], ["--no-deps"])
         self.assertEqual(call_kwargs["global_options"], ["--verbose"])
 
-    def test_install_given_reqs_passes_global_options_when_signature_allows(self) -> None:
+    def test_install_given_reqs_passes_global_options_when_signature_allows(
+        self,
+    ) -> None:
         pip_install = Mock(return_value=[])
 
         def pip_with_global_options(requirements, global_options, **kwargs):
             return pip_install(requirements, global_options, **kwargs)
 
-        with patch("secured_pip.pip_guard._pip_install_given_reqs", pip_with_global_options):
+        with patch(
+            "secured_pip.pip_guard._pip_install_given_reqs", pip_with_global_options
+        ):
             result = install_given_reqs(
                 [SimpleNamespace()],
                 ["--verbose"],

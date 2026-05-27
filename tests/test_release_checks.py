@@ -443,7 +443,8 @@ class ReleaseCheckTests(unittest.TestCase):
                     "1.0.0",
                     "https://mirror.example/simple/demo-1.0.0.whl",
                     "demo-1.0.0.whl",
-                ): now - timedelta(hours=2)
+                ): now
+                - timedelta(hours=2)
             }
         )
 

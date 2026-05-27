@@ -128,7 +128,9 @@ class InstallPlanTests(unittest.TestCase):
             },
         )()
 
-        with patch("secured_pip.install_plan.subprocess.run", return_value=completed) as run:
+        with patch(
+            "secured_pip.install_plan.subprocess.run", return_value=completed
+        ) as run:
             resolve_install_plan(["requests==2.31.0"])
 
         env = run.call_args.kwargs["env"]

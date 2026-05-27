@@ -114,7 +114,9 @@ class PackageInstallTests(unittest.TestCase):
 
         from unittest.mock import patch
 
-        with patch("secured_pip.package_install._run_pip_internal", return_value=0) as run:
+        with patch(
+            "secured_pip.package_install._run_pip_internal", return_value=0
+        ) as run:
             rc = install_resolved_packages(
                 [requests, urllib3],
                 [

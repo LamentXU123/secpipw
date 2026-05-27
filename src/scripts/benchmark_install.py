@@ -86,9 +86,26 @@ def main() -> int:
     spip = spip_exe(venv_dir)
 
     for cmd in (
-        [str(py), "-m", "pip", "install", "--disable-pip-version-check", "-q", "--upgrade", "pip"],
+        [
+            str(py),
+            "-m",
+            "pip",
+            "install",
+            "--disable-pip-version-check",
+            "-q",
+            "--upgrade",
+            "pip",
+        ],
         [str(py), "-m", "pip", "install", "-q", "-e", str(repo_root)],
-        [str(pip), "download", "--disable-pip-version-check", "--no-deps", "--dest", str(wheelhouse), package],
+        [
+            str(pip),
+            "download",
+            "--disable-pip-version-check",
+            "--no-deps",
+            "--dest",
+            str(wheelhouse),
+            package,
+        ],
     ):
         completed = run(cmd, cwd=repo_root)
         if completed.returncode != 0:
@@ -123,7 +140,9 @@ def main() -> int:
             ("pip-warmup", pip, pip_args),
             ("secured_pip-warmup", spip, spip_args),
         ):
-            elapsed_ms, completed = install_target(exe, args, targets / f"{label}-{i}", repo_root)
+            elapsed_ms, completed = install_target(
+                exe, args, targets / f"{label}-{i}", repo_root
+            )
             if completed.returncode != 0:
                 sys.stderr.write(f"{label} failed after {elapsed_ms} ms\n")
                 sys.stderr.write(completed.stdout)
@@ -133,7 +152,9 @@ def main() -> int:
     pip_runs: list[dict[str, object]] = []
     secured_runs: list[dict[str, object]] = []
     for i in range(1, runs + 1):
-        elapsed_ms, completed = install_target(pip, pip_args, targets / f"pip-{i}", repo_root)
+        elapsed_ms, completed = install_target(
+            pip, pip_args, targets / f"pip-{i}", repo_root
+        )
         if completed.returncode != 0:
             sys.stderr.write(f"pip run {i} failed after {elapsed_ms} ms\n")
             sys.stderr.write(completed.stdout)
@@ -152,7 +173,9 @@ def main() -> int:
         secured_runs.append({"index": i, "duration_ms": elapsed_ms})
 
     pip_avg = round(sum(run["duration_ms"] for run in pip_runs) / len(pip_runs), 2)
-    secured_avg = round(sum(run["duration_ms"] for run in secured_runs) / len(secured_runs), 2)
+    secured_avg = round(
+        sum(run["duration_ms"] for run in secured_runs) / len(secured_runs), 2
+    )
     delta_ms = round(secured_avg - pip_avg, 2)
     delta_pct = round(((secured_avg - pip_avg) / pip_avg) * 100, 2) if pip_avg else 0.0
 
@@ -161,9 +184,12 @@ def main() -> int:
         "wheel": wheels[0].name,
         "runs": runs,
         "warmups": warmups,
-        "python": run([str(py), "--version"]).stdout.strip() or run([str(py), "--version"]).stderr.strip(),
-        "pip": run([str(pip), "--version"]).stdout.strip() or run([str(pip), "--version"]).stderr.strip(),
-        "spip": run([str(spip), "--version"]).stdout.strip() or run([str(spip), "--version"]).stderr.strip(),
+        "python": run([str(py), "--version"]).stdout.strip()
+        or run([str(py), "--version"]).stderr.strip(),
+        "pip": run([str(pip), "--version"]).stdout.strip()
+        or run([str(pip), "--version"]).stderr.strip(),
+        "spip": run([str(spip), "--version"]).stdout.strip()
+        or run([str(spip), "--version"]).stderr.strip(),
         "benchmark_root": str(bench_root),
         "pip_runs": pip_runs,
         "secured_pip_runs": secured_runs,

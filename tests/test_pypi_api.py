@@ -555,7 +555,9 @@ class OfficialPyPIClientTests(unittest.TestCase):
 
         self.assertFalse(client.network_enabled)
 
-    def test_client_from_pip_args_keeps_network_for_normal_registry_install(self) -> None:
+    def test_client_from_pip_args_keeps_network_for_normal_registry_install(
+        self,
+    ) -> None:
         client = client_from_pip_args(
             ["install", "requests==2.32.3"],
             env={},

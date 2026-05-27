@@ -118,7 +118,8 @@ class PipBridgeTests(unittest.TestCase):
                 return_value=[alert],
             ):
                 with patch(
-                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                    "secured_pip.install_checks.detect_recent_release_alerts",
+                    return_value=[],
                 ):
                     with (
                         patch(
@@ -156,7 +157,8 @@ class PipBridgeTests(unittest.TestCase):
                 return_value=[alert],
             ):
                 with patch(
-                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                    "secured_pip.install_checks.detect_recent_release_alerts",
+                    return_value=[],
                 ):
                     with (
                         patch(
@@ -196,7 +198,8 @@ class PipBridgeTests(unittest.TestCase):
                 return_value=[alert],
             ):
                 with patch(
-                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                    "secured_pip.install_checks.detect_recent_release_alerts",
+                    return_value=[],
                 ):
                     with (
                         patch(
@@ -238,7 +241,8 @@ class PipBridgeTests(unittest.TestCase):
                 return_value=[alert],
             ):
                 with patch(
-                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                    "secured_pip.install_checks.detect_recent_release_alerts",
+                    return_value=[],
                 ):
                     with (
                         patch(
@@ -275,7 +279,8 @@ class PipBridgeTests(unittest.TestCase):
                 return_value=[alert],
             ):
                 with patch(
-                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                    "secured_pip.install_checks.detect_recent_release_alerts",
+                    return_value=[],
                 ):
                     with (
                         patch(
@@ -311,7 +316,8 @@ class PipBridgeTests(unittest.TestCase):
                 return_value=[alert],
             ):
                 with patch(
-                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                    "secured_pip.install_checks.detect_recent_release_alerts",
+                    return_value=[],
                 ):
                     with (
                         patch(
@@ -354,7 +360,8 @@ class PipBridgeTests(unittest.TestCase):
                 return_value=[alert],
             ):
                 with patch(
-                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                    "secured_pip.install_checks.detect_recent_release_alerts",
+                    return_value=[],
                 ):
                     with (
                         patch(
@@ -458,10 +465,12 @@ class PipBridgeTests(unittest.TestCase):
         )
         with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
-                "secured_pip.install_checks.detect_typos_in_resolved_packages", return_value=[]
+                "secured_pip.install_checks.detect_typos_in_resolved_packages",
+                return_value=[],
             ):
                 with patch(
-                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                    "secured_pip.install_checks.detect_recent_release_alerts",
+                    return_value=[],
                 ):
                     with (
                         patch(
@@ -508,8 +517,12 @@ class PipBridgeTests(unittest.TestCase):
     def test_install_with_guard_uses_guarded_pip_then_checks_pth(self) -> None:
         monitor = SimpleNamespace(inspect=lambda: ["alert"])
         with patch("secured_pip.cli._create_pth_monitor", return_value=monitor):
-            with patch("secured_pip.cli.run_guarded_pip_install", return_value=0) as guarded:
-                with patch("secured_pip.cli.handle_suspicious_pth_alerts") as handle_post:
+            with patch(
+                "secured_pip.cli.run_guarded_pip_install", return_value=0
+            ) as guarded:
+                with patch(
+                    "secured_pip.cli.handle_suspicious_pth_alerts"
+                ) as handle_post:
                     handle_post.return_value = SimpleNamespace(exit_code=0)
 
                     rc = cli._install_with_guard(
@@ -546,10 +559,12 @@ class PipBridgeTests(unittest.TestCase):
     def test_cli_install_allows_empty_plan(self) -> None:
         with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
-                "secured_pip.install_checks.detect_typos_in_resolved_packages", return_value=[]
+                "secured_pip.install_checks.detect_typos_in_resolved_packages",
+                return_value=[],
             ):
                 with patch(
-                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                    "secured_pip.install_checks.detect_recent_release_alerts",
+                    return_value=[],
                 ):
                     with (
                         patch(
@@ -573,7 +588,8 @@ class PipBridgeTests(unittest.TestCase):
     def test_cli_create_pth_monitor_logs_debug_message_on_error(self) -> None:
         stderr = io.StringIO()
         with patch(
-            "secured_pip.cli.PthMonitor.from_install_args", side_effect=RuntimeError("boom")
+            "secured_pip.cli.PthMonitor.from_install_args",
+            side_effect=RuntimeError("boom"),
         ):
             with patch("sys.stderr", stderr):
                 monitor = cli._create_pth_monitor(["requests==2.31.0"], debug=True)
@@ -633,7 +649,9 @@ class PipBridgeTests(unittest.TestCase):
             },
         )()
 
-        with patch("secured_pip.pip_bridge.subprocess.run", return_value=completed) as run:
+        with patch(
+            "secured_pip.pip_bridge.subprocess.run", return_value=completed
+        ) as run:
             collect_pip_output(["list"])
 
         command = run.call_args.args[0]
@@ -648,10 +666,12 @@ class PipBridgeTests(unittest.TestCase):
         )
         with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
-                "secured_pip.install_checks.detect_typos_in_resolved_packages", return_value=[]
+                "secured_pip.install_checks.detect_typos_in_resolved_packages",
+                return_value=[],
             ):
                 with patch(
-                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                    "secured_pip.install_checks.detect_recent_release_alerts",
+                    return_value=[],
                 ):
                     with (
                         patch(
@@ -679,10 +699,12 @@ class PipBridgeTests(unittest.TestCase):
         plan = _plan(FakePackage(name="requests", version="2.31.0", requested=True))
         with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
-                "secured_pip.install_checks.detect_typos_in_resolved_packages", return_value=[]
+                "secured_pip.install_checks.detect_typos_in_resolved_packages",
+                return_value=[],
             ):
                 with patch(
-                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                    "secured_pip.install_checks.detect_recent_release_alerts",
+                    return_value=[],
                 ):
                     with (
                         patch(
@@ -716,10 +738,12 @@ class PipBridgeTests(unittest.TestCase):
         )
         with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
-                "secured_pip.install_checks.detect_typos_in_resolved_packages", return_value=[]
+                "secured_pip.install_checks.detect_typos_in_resolved_packages",
+                return_value=[],
             ):
                 with patch(
-                    "secured_pip.install_checks.detect_recent_release_alerts", return_value=[]
+                    "secured_pip.install_checks.detect_recent_release_alerts",
+                    return_value=[],
                 ):
                     with (
                         patch(
@@ -747,7 +771,9 @@ class PipBridgeTests(unittest.TestCase):
 
     def test_cli_install_returns_resolution_error_code(self) -> None:
         with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
-            with patch("secured_pip.cli.run_guarded_pip_install", return_value=2) as guarded:
+            with patch(
+                "secured_pip.cli.run_guarded_pip_install", return_value=2
+            ) as guarded:
                 rc = cli.main(["install", "badpkg"])
 
         self.assertEqual(rc, 2)
@@ -772,7 +798,8 @@ class PipBridgeTests(unittest.TestCase):
 
         with patch("secured_pip.cli._create_pth_monitor", return_value=FakeMonitor()):
             with patch(
-                "secured_pip.cli.run_guarded_pip_install", side_effect=RuntimeError("boom")
+                "secured_pip.cli.run_guarded_pip_install",
+                side_effect=RuntimeError("boom"),
             ):
                 with patch("sys.stderr", stderr):
                     rc = cli.main(["install", "badpkg"])
@@ -785,7 +812,9 @@ class PipBridgeTests(unittest.TestCase):
     def test_run_pip_uses_direct_passthrough_execution(self) -> None:
         completed = type("Completed", (), {"returncode": 9})()
 
-        with patch("secured_pip.pip_bridge.subprocess.run", return_value=completed) as run:
+        with patch(
+            "secured_pip.pip_bridge.subprocess.run", return_value=completed
+        ) as run:
             from secured_pip.pip_bridge import run_pip
 
             rc = run_pip(["install", "-r", "requirements.txt", "--target", "vendor"])
@@ -802,4 +831,3 @@ class PipBridgeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
