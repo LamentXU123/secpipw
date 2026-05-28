@@ -7,6 +7,7 @@
 ![Python_version](https://img.shields.io/pypi/pyversions/secured_pip.svg?logo=python&logoColor=FBE071)
 ![PyPI Version](https://img.shields.io/pypi/v/secured_pip)
 [![Codecov](https://codecov.io/gh/LamentXU123/spip/graph/badge.svg)](https://codecov.io/gh/LamentXU123/spip)
+[![PyPI Downloads](https://static.pepy.tech/personalized-badge/secured-pip?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/secured-pip)
 
 An open-source, free, powerful, light-weight guard for your pip to avoid supply-chain attacks.
 
