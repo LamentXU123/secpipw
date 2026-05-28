@@ -147,6 +147,124 @@ source ~/.zshrc</textarea>
             </p>
           </section>
 
+          <section id="checks">
+            <h2>检查项</h2>
+            <p>
+              使用 <code>spip install</code> 时，secured_pip 会围绕解析后的安装计划和安装产物运行下面这些检查。
+            </p>
+
+            <div class="docs-param-list">
+              <section id="check-typo" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>typo-suspect</code>
+                  <span>MEDIUM / LOW</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    在 pip 解析出安装计划后，检查包名是否像热门包的“假拼写错误”。secured_pip 会把不热门的已解析包名和本地热门包列表进行比较。
+                  </p>
+                  <p>
+                    例如 <code>requsets</code> 对 <code>requests</code>、<code>panda</code> 对
+                    <code>pandas</code>，以及 <code>sixth</code> 对 <code>six</code>。
+                  </p>
+                </div>
+              </section>
+
+              <section id="check-direct-url" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>direct-url</code>
+                  <span>MEDIUM</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    当安装目标或已解析依赖使用 direct URL、VCS URL，或者 PEP 508 direct reference，而不是普通 registry 包引用时报警。
+                  </p>
+                </div>
+              </section>
+
+              <section id="check-recent-release" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>recent-release</code>
+                  <span>MEDIUM</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    当选中的 PyPI release 发布时间不到 2 天时报警，因为非常新的 release 留给社区审查的时间更少。
+                  </p>
+                </div>
+              </section>
+
+              <section id="check-empty-description" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>empty-description</code>
+                  <span>LOW</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>当选中的 PyPI release 元数据里 summary 和 long description 都为空时报警。</p>
+                </div>
+              </section>
+
+              <section id="check-suspicious-url" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>suspicious-url</code>
+                  <span>LOW</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    当 PyPI 元数据指向短链接、裸 IP、可疑顶级域名、嵌入凭据，或类似的可疑 URL 模式时报警。
+                  </p>
+                </div>
+              </section>
+
+              <section id="check-repository-mismatch" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>repository-mismatch</code>
+                  <span>LOW</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    当 PyPI 元数据指向 GitHub 或 GitLab 仓库，但仓库名看起来和包名无关时报警。
+                  </p>
+                </div>
+              </section>
+
+              <section id="check-email-domain-drift" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>email-domain-drift</code>
+                  <span>LOW</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    当包维护者邮箱域名和 secured_pip 本地历史缓存中记录的域名相比发生变化时报警。
+                  </p>
+                </div>
+              </section>
+
+              <section id="check-zero-version" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>zero-version</code>
+                  <span>LOW</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>当选中的包版本是 <code>0.0</code> 或 <code>0.0.0</code> 时报警。</p>
+                </div>
+              </section>
+
+              <section id="check-suspicious-pth" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>suspicious-pth</code>
+                  <span>MEDIUM</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    检测新增或被修改的 <code>.pth</code> 文件中是否存在以 <code>import</code> 开头的可执行行。报警后会询问是否删除可疑的已安装
+                    <code>.pth</code> 文件。
+                  </p>
+                </div>
+              </section>
+            </div>
+          </section>
+
           <section id="workflow">
             <h2>工作流</h2>
             <p>
@@ -162,10 +280,6 @@ source ~/.zshrc</textarea>
               这里禁用的只是远端元数据查询，不会关闭本地安全检查。本地路径、安装产物内容，以及安装后的
               <code>.pth</code> 变化仍然会继续检查。
             </p>
-            <div class="docs-terminal">
-              <span>Shell alias</span>
-              <pre><code><span class="code-command">alias</span> pip=<span class="code-string">'spip'</span></code></pre>
-            </div>
           </section>
 
           <section id="next">
@@ -180,6 +294,7 @@ source ~/.zshrc</textarea>
           <a href="#overview">概览</a>
           <a href="#install">安装</a>
           <a href="#warnings">报警机制</a>
+          <a href="#checks">检查项</a>
           <a href="#workflow">工作流</a>
           <a href="#next">下一步</a>
         </aside>

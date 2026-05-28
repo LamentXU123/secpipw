@@ -93,6 +93,7 @@ Contributions welcome:
     - [ ] Write a benchmark CI in the github workflow to compare the performance of `spip install` and `pip install`
 - Documentation
     - [ ] Use some modern documentation framework to refactor the /doc/docs directory.
+    - [ ] Support website view on mobile phones. @didongji91
 - Checks
     - [ ] Add check of the diff between the last version of the package and the to-be-installed version, search for malicious changes
         - [ ] If new .pth file is added
@@ -116,7 +117,7 @@ For now, the project has several major check points:
 
 - [x] Fake typo checks: Hackers often use "fake typos" to inject a malicious dependency package into the poisoned source file. `secured_pip` detects this by first resolving all the packages that `pip install` is going to download, and then comparing non-popular resolved package names with a local hot-package list. Warning levels:
     - Medium severity: `requsets` vs `requests`
-    - Medium severity: `pandaz` vs `pandas`
+    - Medium severity: `panda` vs `pandas`
     - Low severity: `sixth` vs `six`
 - [x] Direct URL dependency checks: If the install target or a resolved dependency uses a direct URL, VCS URL, or PEP 508 direct reference, `secured_pip` will raise a `MEDIUM` warning.
 - [x] Fresh release checks: If the selected PyPI release was published less than 2 days ago, `secured_pip` will raise a `MEDIUM` warning.

@@ -168,6 +168,7 @@ def detect_recent_release_alerts(
     *,
     client: OfficialPyPIClient | None = None,
     now: datetime | None = None,
+    report_metadata_available: bool | None = None,
 ) -> list[ReleaseAgeAlert]:
     client = client or OfficialPyPIClient()
     now = datetime.now(timezone.utc) if now is None else now
@@ -249,6 +250,7 @@ def detect_empty_description_alerts(
     packages: Iterable[PackageLike],
     *,
     client: OfficialPyPIClient | None = None,
+    report_metadata_available: bool | None = None,
 ) -> list[EmptyDescriptionAlert]:
     client = client or OfficialPyPIClient()
     alerts: list[EmptyDescriptionAlert] = []
@@ -257,7 +259,7 @@ def detect_empty_description_alerts(
     if not candidates:
         return alerts
 
-    if _all_packages_have_report_metadata(candidates):
+    if _report_metadata_available(candidates, report_metadata_available):
         lookups = [
             _fetch_description_lookup_result(package, client)
             for package in candidates
@@ -338,6 +340,7 @@ def detect_suspicious_metadata_url_alerts(
     packages: Iterable[PackageLike],
     *,
     client: OfficialPyPIClient | None = None,
+    report_metadata_available: bool | None = None,
 ) -> list[MetadataUrlAlert]:
     client = client or OfficialPyPIClient()
     alerts: list[MetadataUrlAlert] = []
@@ -346,7 +349,7 @@ def detect_suspicious_metadata_url_alerts(
     if not candidates:
         return alerts
 
-    if _all_packages_have_report_metadata(candidates):
+    if _report_metadata_available(candidates, report_metadata_available):
         lookups = [
             _fetch_suspicious_url_lookup_result(package, client)
             for package in candidates
@@ -386,6 +389,7 @@ def detect_repository_mismatch_alerts(
     packages: Iterable[PackageLike],
     *,
     client: OfficialPyPIClient | None = None,
+    report_metadata_available: bool | None = None,
 ) -> list[RepositoryMismatchAlert]:
     client = client or OfficialPyPIClient()
     alerts: list[RepositoryMismatchAlert] = []
@@ -394,7 +398,7 @@ def detect_repository_mismatch_alerts(
     if not candidates:
         return alerts
 
-    if _all_packages_have_report_metadata(candidates):
+    if _report_metadata_available(candidates, report_metadata_available):
         lookups = [
             _fetch_repository_mismatch_lookup_result(package, client)
             for package in candidates
@@ -435,6 +439,7 @@ def detect_email_domain_drift_alerts(
     *,
     client: OfficialPyPIClient | None = None,
     update_history: bool = True,
+    report_metadata_available: bool | None = None,
 ) -> list[EmailDomainDriftAlert]:
     client = client or OfficialPyPIClient()
     alerts: list[EmailDomainDriftAlert] = []
@@ -446,7 +451,7 @@ def detect_email_domain_drift_alerts(
     history = client.load_email_domain_history()
     updated_history = dict(history)
 
-    if _all_packages_have_report_metadata(candidates):
+    if _report_metadata_available(candidates, report_metadata_available):
         current_domains = [
             _fetch_contact_email_domains(package, client)
             for package in candidates
@@ -596,6 +601,15 @@ def _package_can_use_registry_metadata(package: PackageLike) -> bool:
 
 def _all_packages_have_report_metadata(packages: Iterable[PackageLike]) -> bool:
     return all(_package_report_metadata(package) is not None for package in packages)
+
+
+def _report_metadata_available(
+    packages: Iterable[PackageLike],
+    available: bool | None,
+) -> bool:
+    if available is not None:
+        return available
+    return _all_packages_have_report_metadata(packages)
 
 
 def _unique_packages_for_recent_release_check(

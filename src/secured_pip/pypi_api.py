@@ -21,6 +21,19 @@ DEFAULT_JSON_API_TIMEOUT_SECONDS = 2.5
 _RELEASE_CACHE_LOCK = threading.RLock()
 _EMAIL_DOMAIN_HISTORY_LOCK = threading.RLock()
 _METADATA_CACHE_LOCK = threading.RLock()
+_PROJECT_NAME_CACHE_LOCK = threading.RLock()
+_PROJECT_NAME_CACHE: dict[
+    tuple[str, tuple[int, int] | None],
+    tuple[str, ...],
+] = {}
+_EMAIL_DOMAIN_HISTORY_CACHE: dict[
+    tuple[str, tuple[int, int] | None],
+    dict[str, tuple[str, ...]],
+] = {}
+_RELEASE_CACHE_PAYLOAD_CACHE: dict[
+    tuple[str, tuple[int, int] | None],
+    dict[str, str | None],
+] = {}
 _METADATA_CACHE: dict[tuple[str, str, str], dict] = {}
 BOOTSTRAP_CACHE_PATH = (
     Path(__file__).resolve().parent / "data" / "pypi-project-names.json"
@@ -119,12 +132,12 @@ class OfficialPyPIClient:
         return sorted(project["name"] for project in payload.get("projects", []))
 
     def load_cached_project_names(self) -> list[str]:
-        if self.cache_path.exists():
-            payload = json.loads(self.cache_path.read_text(encoding="utf-8"))
-            return sorted(payload.get("projects", []))
-        if BOOTSTRAP_CACHE_PATH.exists():
-            payload = json.loads(BOOTSTRAP_CACHE_PATH.read_text(encoding="utf-8"))
-            return sorted(payload.get("projects", []))
+        cached = _load_cached_project_names_for_path(self.cache_path)
+        if cached is not None:
+            return list(cached)
+        cached = _load_cached_project_names_for_path(BOOTSTRAP_CACHE_PATH)
+        if cached is not None:
+            return list(cached)
         return sorted(BOOTSTRAP_PROJECT_NAMES)
 
     def refresh_project_name_cache(self) -> int:
@@ -139,6 +152,12 @@ class OfficialPyPIClient:
             json.dumps(payload, indent=2, sort_keys=True),
             encoding="utf-8",
         )
+        with _PROJECT_NAME_CACHE_LOCK:
+            signature = _path_signature(self.cache_path)
+            if signature is not None:
+                _PROJECT_NAME_CACHE[(str(self.cache_path.resolve()), signature)] = tuple(
+                    sorted(names)
+                )
         return len(names)
 
     def project_exists(self, name: str) -> bool:
@@ -160,9 +179,8 @@ class OfficialPyPIClient:
         except Exception as exc:
             if not _is_timeout_error(exc):
                 raise
-            return name.lower() in {
-                project.lower() for project in self.load_cached_project_names()
-            }
+            cached_names = self.load_cached_project_names()
+            return name.lower() in {project.lower() for project in cached_names}
 
     def fetch_release_metadata(self, name: str, version: str) -> dict:
         if not self.network_enabled:
@@ -244,34 +262,10 @@ class OfficialPyPIClient:
         )
 
     def load_email_domain_history(self) -> dict[str, tuple[str, ...]]:
-        with _EMAIL_DOMAIN_HISTORY_LOCK:
-            if not self.email_domain_history_path.exists():
-                return {}
-            try:
-                payload = json.loads(
-                    self.email_domain_history_path.read_text(encoding="utf-8")
-                )
-            except Exception:
-                return {}
-        projects = payload.get("projects") if isinstance(payload, dict) else None
-        if not isinstance(projects, dict):
+        cached = _load_email_domain_history_for_path(self.email_domain_history_path)
+        if cached is None:
             return {}
-        result: dict[str, tuple[str, ...]] = {}
-        for name, domains in projects.items():
-            if not isinstance(name, str) or not isinstance(domains, list):
-                continue
-            cleaned = tuple(
-                sorted(
-                    {
-                        str(domain).strip().lower()
-                        for domain in domains
-                        if str(domain).strip()
-                    }
-                )
-            )
-            if cleaned:
-                result[name.lower()] = cleaned
-        return result
+        return dict(cached)
 
     def store_email_domain_history(self, history: dict[str, Iterable[str]]) -> None:
         projects = {
@@ -287,6 +281,13 @@ class OfficialPyPIClient:
                 json.dumps(payload, indent=2, sort_keys=True),
                 encoding="utf-8",
             )
+            signature = _path_signature(self.email_domain_history_path)
+            if signature is not None:
+                _EMAIL_DOMAIN_HISTORY_CACHE[
+                    (str(self.email_domain_history_path.resolve()), signature)
+                ] = {
+                    name: tuple(domains) for name, domains in projects.items()
+                }
 
     def load_cached_release_upload_time(
         self,
@@ -316,7 +317,6 @@ class OfficialPyPIClient:
         download_url: str | None = None,
         filename: str | None = None,
     ) -> None:
-        payload = self._load_release_cache_payload()
         key = self._release_cache_key(
             name,
             version,
@@ -333,23 +333,17 @@ class OfficialPyPIClient:
                 json.dumps(payload, indent=2, sort_keys=True),
                 encoding="utf-8",
             )
+            signature = _path_signature(self.release_cache_path)
+            if signature is not None:
+                _RELEASE_CACHE_PAYLOAD_CACHE[
+                    (str(self.release_cache_path.resolve()), signature)
+                ] = dict(payload)
 
     def _load_release_cache_payload(self) -> dict[str, str | None]:
-        with _RELEASE_CACHE_LOCK:
-            if not self.release_cache_path.exists():
-                return {}
-            try:
-                payload = json.loads(
-                    self.release_cache_path.read_text(encoding="utf-8")
-                )
-            except Exception:
-                return {}
-        entries = payload.get("entries") if isinstance(payload, dict) else None
-        if isinstance(entries, dict):
-            return entries
-        if isinstance(payload, dict):
-            return payload
-        return {}
+        cached = _load_release_cache_payload_for_path(self.release_cache_path)
+        if cached is None:
+            return {}
+        return dict(cached)
 
     def _release_cache_key(
         self,
@@ -385,6 +379,99 @@ def _parse_upload_time(value: str | None) -> datetime | None:
         return None
     normalized = value.replace("Z", "+00:00")
     return datetime.fromisoformat(normalized)
+
+
+def _path_signature(path: Path) -> tuple[int, int] | None:
+    try:
+        stat = path.stat()
+    except OSError:
+        return None
+    return stat.st_mtime_ns, stat.st_size
+
+
+def _load_cached_project_names_for_path(path: Path) -> tuple[str, ...] | None:
+    signature = _path_signature(path)
+    key = (str(path.resolve()), signature)
+    with _PROJECT_NAME_CACHE_LOCK:
+        cached = _PROJECT_NAME_CACHE.get(key)
+    if cached is not None:
+        return cached
+    if signature is None:
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    projects = payload.get("projects") if isinstance(payload, dict) else None
+    if not isinstance(projects, list):
+        return None
+    names = tuple(sorted(str(name) for name in projects if str(name)))
+    with _PROJECT_NAME_CACHE_LOCK:
+        _PROJECT_NAME_CACHE[key] = names
+    return names
+
+
+def _load_email_domain_history_for_path(
+    path: Path,
+) -> dict[str, tuple[str, ...]] | None:
+    signature = _path_signature(path)
+    key = (str(path.resolve()), signature)
+    with _EMAIL_DOMAIN_HISTORY_LOCK:
+        cached = _EMAIL_DOMAIN_HISTORY_CACHE.get(key)
+    if cached is not None:
+        return cached
+    if signature is None:
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    projects = payload.get("projects") if isinstance(payload, dict) else None
+    if not isinstance(projects, dict):
+        return None
+    result: dict[str, tuple[str, ...]] = {}
+    for name, domains in projects.items():
+        if not isinstance(name, str) or not isinstance(domains, list):
+            continue
+        cleaned = tuple(
+            sorted(
+                {
+                    str(domain).strip().lower()
+                    for domain in domains
+                    if str(domain).strip()
+                }
+            )
+        )
+        if cleaned:
+            result[name.lower()] = cleaned
+    with _EMAIL_DOMAIN_HISTORY_LOCK:
+        _EMAIL_DOMAIN_HISTORY_CACHE[key] = result
+    return result
+
+
+def _load_release_cache_payload_for_path(
+    path: Path,
+) -> dict[str, str | None] | None:
+    signature = _path_signature(path)
+    key = (str(path.resolve()), signature)
+    with _RELEASE_CACHE_LOCK:
+        cached = _RELEASE_CACHE_PAYLOAD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    if signature is None:
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    entries = payload.get("entries") if isinstance(payload, dict) else None
+    if isinstance(entries, dict):
+        payload = entries
+    if not isinstance(payload, dict):
+        return None
+    with _RELEASE_CACHE_LOCK:
+        _RELEASE_CACHE_PAYLOAD_CACHE[key] = payload
+    return payload
 
 
 def client_from_pip_args(

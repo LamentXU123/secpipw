@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from difflib import SequenceMatcher
+from functools import lru_cache
 from pathlib import Path
 from typing import Iterable, Protocol
 
@@ -334,7 +335,7 @@ def _extract_names_from_requirement_file(path: Path, visited: set[Path]) -> list
     visited.add(path)
 
     names: list[str] = []
-    for raw_line in path.read_text(encoding="utf-8").splitlines():
+    for raw_line in _read_requirement_file_text(path).splitlines():
         line = _strip_comment(raw_line).strip()
         if not line:
             continue
@@ -354,6 +355,29 @@ def _extract_names_from_requirement_file(path: Path, visited: set[Path]) -> list
         if name is not None:
             names.append(name)
     return names
+
+
+def _read_requirement_file_text(path: Path) -> str:
+    signature = _path_signature(path)
+    if signature is None:
+        return ""
+    return _read_requirement_file_text_cached(str(path.resolve()), signature)
+
+
+@lru_cache(maxsize=2048)
+def _read_requirement_file_text_cached(
+    path: str,
+    signature: tuple[int, int],
+) -> str:
+    return Path(path).read_text(encoding="utf-8")
+
+
+def _path_signature(path: Path) -> tuple[int, int] | None:
+    try:
+        stat = path.stat()
+    except OSError:
+        return None
+    return stat.st_mtime_ns, stat.st_size
 
 
 def _extract_name_from_requirement(value: str) -> str | None:

@@ -149,6 +149,139 @@ source ~/.zshrc</textarea>
             </p>
           </section>
 
+          <section id="checks">
+            <h2>Checks</h2>
+            <p>
+              secured_pip runs these checks around the resolved install plan and installed artifacts when
+              you use <code>spip install</code>.
+            </p>
+
+            <div class="docs-param-list">
+              <section id="check-typo" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>typo-suspect</code>
+                  <span>MEDIUM / LOW</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Detects packages whose names look like fake typos of popular packages after pip has
+                    resolved the install plan. Non-popular resolved package names are compared with the
+                    local hot-package list.
+                  </p>
+                  <p>
+                    Examples include <code>requsets</code> versus <code>requests</code>,
+                    <code>panda</code> versus <code>pandas</code>, and <code>sixth</code> versus
+                    <code>six</code>.
+                  </p>
+                </div>
+              </section>
+
+              <section id="check-direct-url" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>direct-url</code>
+                  <span>MEDIUM</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Warns when the install target or a resolved dependency uses a direct URL, VCS URL, or
+                    PEP 508 direct reference instead of a normal registry package reference.
+                  </p>
+                </div>
+              </section>
+
+              <section id="check-recent-release" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>recent-release</code>
+                  <span>MEDIUM</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Warns when the selected PyPI release was published less than 2 days ago, because very
+                    fresh releases leave less time for community review.
+                  </p>
+                </div>
+              </section>
+
+              <section id="check-empty-description" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>empty-description</code>
+                  <span>LOW</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Warns when the selected PyPI release metadata has neither a summary nor a long
+                    description.
+                  </p>
+                </div>
+              </section>
+
+              <section id="check-suspicious-url" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>suspicious-url</code>
+                  <span>LOW</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Warns when PyPI metadata links to a shortener, raw IP address, suspicious top-level
+                    domain, embedded credentials, or a similar suspicious URL pattern.
+                  </p>
+                </div>
+              </section>
+
+              <section id="check-repository-mismatch" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>repository-mismatch</code>
+                  <span>LOW</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Warns when PyPI metadata points to a GitHub or GitLab repository whose repository name
+                    appears unrelated to the package name.
+                  </p>
+                </div>
+              </section>
+
+              <section id="check-email-domain-drift" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>email-domain-drift</code>
+                  <span>LOW</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Warns when a package maintainer email domain changes compared with the local
+                    secured_pip history cache.
+                  </p>
+                </div>
+              </section>
+
+              <section id="check-zero-version" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>zero-version</code>
+                  <span>LOW</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Warns when the selected package version is <code>0.0</code> or <code>0.0.0</code>.
+                  </p>
+                </div>
+              </section>
+
+              <section id="check-suspicious-pth" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>suspicious-pth</code>
+                  <span>MEDIUM</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Detects newly installed or changed <code>.pth</code> files that start executable
+                    lines with <code>import</code>. The warning asks whether the suspicious installed
+                    <code>.pth</code> file should be deleted.
+                  </p>
+                </div>
+              </section>
+            </div>
+          </section>
+
           <section id="workflow">
             <h2>Workflow</h2>
             <p>
@@ -167,10 +300,6 @@ source ~/.zshrc</textarea>
               This only disables remote metadata lookups. The local install path is still checked for
               direct references, prepared artifact content, and post-install <code>.pth</code> changes.
             </p>
-            <div class="docs-terminal">
-              <span>Shell alias</span>
-              <pre><code><span class="code-command">alias</span> pip=<span class="code-string">'spip'</span></code></pre>
-            </div>
           </section>
 
           <section id="next">
@@ -188,6 +317,7 @@ source ~/.zshrc</textarea>
           <a href="#overview">Overview</a>
           <a href="#install">Install</a>
           <a href="#warnings">Warning mechanism</a>
+          <a href="#checks">Checks</a>
           <a href="#workflow">Workflow</a>
           <a href="#next">Next</a>
         </aside>

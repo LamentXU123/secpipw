@@ -66,7 +66,6 @@
             <div class="docs-terminal">
               <span>Terminal window</span>
               <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-var">[spip options]</span> <span class="code-var">[pip install options]</span> <span class="code-var">[requirements]</span>
-<span class="code-command">spip</span> <span class="code-arg">refresh-cache</span>
 <span class="code-command">spip</span> <span class="code-var">[any other pip command]</span></code></pre>
             </div>
           </section>
@@ -197,24 +196,6 @@
             </div>
           </section>
 
-          <section id="top-level">
-            <h2>Top-level secured_pip commands</h2>
-            <p>These are handled before secured_pip falls back to pip passthrough behavior.</p>
-            <div class="docs-param-list">
-              <section id="refresh-cache" class="docs-param-item">
-                <div>
-                  <h3><code>refresh-cache</code></h3>
-                  <span>cache</span>
-                </div>
-                <p>
-                  Refresh the local cache used by secured_pip checks, namely the PyPI project-name cache.
-                </p>
-                <pre><code><span class="code-command">spip</span> <span class="code-arg">refresh-cache</span></code></pre>
-              </section>
-
-            </div>
-          </section>
-
           <section id="passthrough">
             <h2>Pip passthrough</h2>
             <p>
@@ -247,7 +228,6 @@
           <a href="#command-shape">Command shape</a>
           <a href="#install-options">Install options</a>
           <a href="#sensitivity">Sensitivity</a>
-          <a href="#top-level">Top-level commands</a>
           <a href="#passthrough">Pip passthrough</a>
         </aside>
       </main>

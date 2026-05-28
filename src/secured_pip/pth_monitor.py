@@ -38,9 +38,16 @@ class SuspiciousPthAlert:
 
 
 @dataclass(frozen=True)
+class PthSnapshotEntry:
+    mtime_ns: int
+    size: int
+    digest: str
+
+
+@dataclass(frozen=True)
 class PthMonitor:
     directories: tuple[Path, ...]
-    snapshot: dict[Path, str]
+    snapshot: dict[Path, PthSnapshotEntry]
 
     @classmethod
     def from_install_args(cls, pip_args: list[str]) -> "PthMonitor":
@@ -49,10 +56,10 @@ class PthMonitor:
         return cls(directories=directories, snapshot=snapshot)
 
     def inspect(self) -> list[SuspiciousPthAlert]:
-        after = snapshot_pth_files(self.directories)
+        after = snapshot_pth_files(self.directories, previous_snapshot=self.snapshot)
         alerts: list[SuspiciousPthAlert] = []
-        for path, digest in after.items():
-            if self.snapshot.get(path) == digest:
+        for path, entry in after.items():
+            if self.snapshot.get(path) == entry:
                 continue
             import_lines = tuple(find_import_lines(path))
             if not import_lines:
@@ -279,13 +286,36 @@ def resolve_watch_directories(pip_args: list[str]) -> list[Path]:
     return [_apply_root(Path(root).resolve(), path) for path in install_dirs]
 
 
-def snapshot_pth_files(directories: Iterable[Path]) -> dict[Path, str]:
-    snapshot: dict[Path, str] = {}
+def snapshot_pth_files(
+    directories: Iterable[Path],
+    *,
+    previous_snapshot: dict[Path, PthSnapshotEntry] | None = None,
+) -> dict[Path, PthSnapshotEntry]:
+    snapshot: dict[Path, PthSnapshotEntry] = {}
     for directory in directories:
         if not directory.exists() or not directory.is_dir():
             continue
         for path in directory.glob("*.pth"):
-            snapshot[path.resolve()] = _file_digest(path)
+            resolved = path.resolve()
+            try:
+                stat = path.stat()
+            except OSError:
+                continue
+            previous = (
+                previous_snapshot.get(resolved) if previous_snapshot is not None else None
+            )
+            if (
+                previous is not None
+                and previous.mtime_ns == stat.st_mtime_ns
+                and previous.size == stat.st_size
+            ):
+                snapshot[resolved] = previous
+                continue
+            snapshot[resolved] = PthSnapshotEntry(
+                mtime_ns=stat.st_mtime_ns,
+                size=stat.st_size,
+                digest=_file_digest(path),
+            )
     return snapshot
 
 

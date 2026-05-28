@@ -7,6 +7,8 @@ from typing import Iterable, Protocol
 from secured_pip.install_plan import InstallPlan, render_install_plan
 from secured_pip.pypi_api import client_from_pip_args
 from secured_pip.release_checks import (
+    _all_packages_have_report_metadata,
+    _packages_with_registry_metadata,
     detect_direct_url_alerts,
     detect_email_domain_drift_alerts,
     detect_empty_description_alerts,
@@ -84,36 +86,44 @@ def run_install_checks(
 
 def detect_install_alerts(plan: InstallPlan, pip_args: list[str]) -> InstallAlerts:
     release_client = client_from_pip_args(pip_args)
+    registry_metadata_packages = _packages_with_registry_metadata(plan.packages)
+    report_metadata_available = _all_packages_have_report_metadata(
+        registry_metadata_packages
+    )
     typo_alerts = tuple(detect_typos_in_resolved_packages(plan.packages))
     direct_url_alerts = tuple(detect_direct_url_alerts(pip_args, plan.packages))
     recent_release_alerts = tuple(
         detect_recent_release_alerts(
-            plan.packages,
+            registry_metadata_packages,
             client=release_client,
         )
     )
     empty_description_alerts = tuple(
         detect_empty_description_alerts(
-            plan.packages,
+            registry_metadata_packages,
             client=release_client,
+            report_metadata_available=report_metadata_available,
         )
     )
     suspicious_metadata_url_alerts = tuple(
         detect_suspicious_metadata_url_alerts(
-            plan.packages,
+            registry_metadata_packages,
             client=release_client,
+            report_metadata_available=report_metadata_available,
         )
     )
     repository_mismatch_alerts = tuple(
         detect_repository_mismatch_alerts(
-            plan.packages,
+            registry_metadata_packages,
             client=release_client,
+            report_metadata_available=report_metadata_available,
         )
     )
     email_domain_drift_alerts = tuple(
         detect_email_domain_drift_alerts(
-            plan.packages,
+            registry_metadata_packages,
             client=release_client,
+            report_metadata_available=report_metadata_available,
         )
     )
     zero_version_alerts = tuple(detect_zero_version_alerts(plan.packages))
