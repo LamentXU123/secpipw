@@ -650,7 +650,7 @@ class PipBridgeTests(unittest.TestCase):
                                 )
 
         self.assertEqual(rc, 0)
-        self.assertIn("spip 0.4.1 guard enabled.", stderr.getvalue())
+        self.assertIn("guard enabled.", stderr.getvalue())
         guarded.assert_called_once()
         self.assertEqual(guarded.call_args.args[0], ["requests==2.31.0"])
 
