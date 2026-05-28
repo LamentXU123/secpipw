@@ -463,22 +463,25 @@ def _ratio(left: str, right: str) -> float:
 
 
 def _levenshtein_distance_fallback(left: str, right: str) -> int:
+    if left == right:
+        return 0
     rows = len(left) + 1
     cols = len(right) + 1
-    table = [[0] * cols for _ in range(rows)]
-
-    for i in range(rows):
-        table[i][0] = i
-    for j in range(cols):
-        table[0][j] = j
+    prev = list(range(cols))
+    curr = [0] * cols
 
     for i in range(1, rows):
+        curr[0] = i
+        row_min = i
         for j in range(1, cols):
             cost = 0 if left[i - 1] == right[j - 1] else 1
-            table[i][j] = min(
-                table[i - 1][j] + 1,
-                table[i][j - 1] + 1,
-                table[i - 1][j - 1] + cost,
+            curr[j] = min(
+                prev[j] + 1,
+                curr[j - 1] + 1,
+                prev[j - 1] + cost,
             )
+            if curr[j] < row_min:
+                row_min = curr[j]
+        prev, curr = curr, prev
 
-    return table[-1][-1]
+    return prev[-1]

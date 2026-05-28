@@ -1087,7 +1087,26 @@ def _repository_looks_unrelated(package_name: str, repository_name: str) -> bool
     repository_tokens = {token for token in repository.split("-") if len(token) >= 4}
     if package_tokens.intersection(repository_tokens):
         return False
-    return SequenceMatcher(None, package, repository).ratio() < 0.72
+    return _fast_similarity(package, repository) < 0.72
+
+
+def _fast_similarity(a: str, b: str) -> float:
+    if a == b:
+        return 1.0
+    la, lb = len(a), len(b)
+    if la == 0 or lb == 0:
+        return 0.0
+    # Use character set overlap as a fast pre-check.
+    sa, sb = set(a), set(b)
+    intersection = len(sa & sb)
+    union = len(sa | sb)
+    if union == 0:
+        return 0.0
+    char_sim = intersection / union
+    if char_sim < 0.5:
+        return char_sim
+    # Fall back to SequenceMatcher only when ambiguous.
+    return SequenceMatcher(None, a, b).ratio()
 
 
 def _format_age(age: timedelta) -> str:
