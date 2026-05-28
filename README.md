@@ -87,8 +87,9 @@ Today, many independent developers have suffered CI server compromises that leak
 Contributions welcome:
 
 - Framework
-    - [ ] Support `uv pip`
+    - [ ] Support `uv`
     - [ ] Support `pipx`
+    - [ ] Support `conda`
 - CI
     - [ ] Write a benchmark CI in the github workflow to compare the performance of `spip install` and `pip install`
 - Documentation
