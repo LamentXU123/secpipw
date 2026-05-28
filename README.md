@@ -86,9 +86,17 @@ Today, many independent developers have suffered CI server compromises that leak
 
 Contributions welcome:
 
-- [ ] Support `uv pip`
-- [ ] Support `pipx
-- [ ] Write a benchmark CI in the github workflow to compare the performance of `spip install` and `pip install`
+- Framework
+    - [ ] Support `uv pip`
+    - [ ] Support `pipx`
+- CI
+    - [ ] Write a benchmark CI in the github workflow to compare the performance of `spip install` and `pip install`
+- Documentation
+    - [ ] Use some modern documentation framework to refactor the /doc/docs directory.
+- Checks
+    - [ ] Add check of the diff between the last version of the package and the to-be-installed version, search for malicious changes
+        - [ ] If new .pth file is added
+        - [ ] If setup.py has been changed
 
 We currently have three install warning policies:
 
