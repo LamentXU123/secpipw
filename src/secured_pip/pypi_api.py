@@ -353,15 +353,12 @@ class OfficialPyPIClient:
         download_url: str | None = None,
         filename: str | None = None,
     ) -> str:
-        return json.dumps(
-            {
-                "base_url": self.base_url.rstrip("/").lower(),
-                "name": name.lower(),
-                "version": version,
-                "download_url": download_url or "",
-                "filename": filename or "",
-            },
-            sort_keys=True,
+        return (
+            f"{self.base_url.rstrip('/').lower()}"
+            f"|{name.lower()}"
+            f"|{version}"
+            f"|{download_url or ''}"
+            f"|{filename or ''}"
         )
 
 

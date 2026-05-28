@@ -679,6 +679,28 @@ class ReleaseCheckTests(unittest.TestCase):
 
         self.assertEqual(alerts, [])
 
+    def test_repository_mismatch_allows_similar_repeated_character_names(self) -> None:
+        package = FakePackage(
+            name="aaaaab",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/aaaaab-1.0.0.whl",
+            artifact_name="aaaaab-1.0.0.whl",
+        )
+        client = FakePyPIClient(
+            {},
+            metadata={
+                ("aaaaab", "1.0.0"): {
+                    "info": {
+                        "project_urls": {"Source": "https://github.com/example/aaaaac"}
+                    }
+                }
+            },
+        )
+
+        alerts = detect_repository_mismatch_alerts([package], client=client)
+
+        self.assertEqual(alerts, [])
+
     def test_email_domain_drift_alerts_when_domain_changes(self) -> None:
         package = FakePackage(
             name="demo",

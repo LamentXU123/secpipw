@@ -1087,7 +1087,19 @@ def _repository_looks_unrelated(package_name: str, repository_name: str) -> bool
     repository_tokens = {token for token in repository.split("-") if len(token) >= 4}
     if package_tokens.intersection(repository_tokens):
         return False
-    return SequenceMatcher(None, package, repository).ratio() < 0.72
+    return _similarity_below_threshold(package, repository, 0.72)
+
+
+def _similarity_below_threshold(a: str, b: str, threshold: float) -> bool:
+    if a == b:
+        return False
+    la, lb = len(a), len(b)
+    if la == 0 or lb == 0:
+        return True
+    # SequenceMatcher's ratio cannot exceed this length-only upper bound.
+    if (2 * min(la, lb) / (la + lb)) < threshold:
+        return True
+    return SequenceMatcher(None, a, b).ratio() < threshold
 
 
 def _format_age(age: timedelta) -> str:
