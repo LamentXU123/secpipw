@@ -12,12 +12,10 @@ from unittest.mock import patch
 
 from secured_pip.release_checks import (
     _DESCRIPTION_LOOKUP_CACHE,
-    _DISPOSABLE_EMAIL_LOOKUP_CACHE,
     _REPOSITORY_MISMATCH_LOOKUP_CACHE,
     _RELEASE_LOOKUP_CACHE,
     _SUSPICIOUS_URL_LOOKUP_CACHE,
     detect_direct_url_alerts,
-    detect_disposable_email_alerts,
     detect_email_domain_drift_alerts,
     detect_empty_description_alerts,
     detect_recent_release_alerts,
@@ -130,7 +128,6 @@ class NoNetworkMetadataClient(FakePyPIClient):
 class ReleaseCheckTests(unittest.TestCase):
     def setUp(self) -> None:
         _RELEASE_LOOKUP_CACHE.clear()
-        _DISPOSABLE_EMAIL_LOOKUP_CACHE.clear()
         _DESCRIPTION_LOOKUP_CACHE.clear()
         _SUSPICIOUS_URL_LOOKUP_CACHE.clear()
         _REPOSITORY_MISMATCH_LOOKUP_CACHE.clear()
@@ -453,24 +450,6 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertEqual(len(alerts), 1)
         self.assertEqual(alerts[0].severity, Severity.MEDIUM)
 
-    def test_metadata_checks_skip_direct_installs(self) -> None:
-        package = FakePackage(
-            name="demo",
-            version="1.0.0",
-            download_url="https://example.test/demo-1.0.0.whl",
-            artifact_name="demo-1.0.0.whl",
-            is_direct=True,
-            metadata={"author_email": "author@mailinator.com"},
-        )
-
-        alerts = detect_disposable_email_alerts(
-            [package],
-            client=NoNetworkMetadataClient(),
-            disposable_domains={"mailinator.com"},
-        )
-
-        self.assertEqual(alerts, [])
-
     def test_zero_version_raises_low_alert(self) -> None:
         package = FakePackage(
             name="demo",
@@ -484,91 +463,6 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertEqual(len(alerts), 1)
         self.assertEqual(alerts[0].severity, Severity.LOW)
         self.assertIn("zero release version", alerts[0].message)
-
-    def test_disposable_email_raises_low_alert(self) -> None:
-        package = FakePackage(
-            name="demo",
-            version="1.0.0",
-            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
-            artifact_name="demo-1.0.0.whl",
-        )
-        client = FakePyPIClient(
-            {},
-            contact_emails={("demo", "1.0.0"): ("author@mailinator.com",)},
-        )
-
-        alerts = detect_disposable_email_alerts(
-            [package],
-            client=client,
-            disposable_domains={"mailinator.com"},
-        )
-
-        self.assertEqual(len(alerts), 1)
-        self.assertEqual(alerts[0].severity, Severity.LOW)
-        self.assertIn("disposable email", alerts[0].message)
-        self.assertIn("mailinator.com", alerts[0].message)
-
-    def test_disposable_email_matches_parent_domain_suffix(self) -> None:
-        package = FakePackage(
-            name="demo",
-            version="1.0.0",
-            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
-            artifact_name="demo-1.0.0.whl",
-        )
-        client = FakePyPIClient(
-            {},
-            contact_emails={("demo", "1.0.0"): ("author@foo.mailinator.com",)},
-        )
-
-        alerts = detect_disposable_email_alerts(
-            [package],
-            client=client,
-            disposable_domains={"mailinator.com"},
-        )
-
-        self.assertEqual(len(alerts), 1)
-
-    def test_disposable_email_uses_package_metadata_without_client_fetch(self) -> None:
-        package = FakePackage(
-            name="demo",
-            version="1.0.0",
-            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
-            artifact_name="demo-1.0.0.whl",
-            metadata={"author_email": "Demo Maintainer <author@mailinator.com>"},
-        )
-
-        alerts = detect_disposable_email_alerts(
-            [package],
-            client=NoNetworkMetadataClient(),
-            disposable_domains={"mailinator.com"},
-        )
-
-        self.assertEqual(len(alerts), 1)
-        self.assertIn("author@mailinator.com", alerts[0].message)
-
-    def test_disposable_email_timeout_raises_low_alert(self) -> None:
-        package = FakePackage(
-            name="demo",
-            version="1.0.0",
-            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
-            artifact_name="demo-1.0.0.whl",
-        )
-
-        class TimeoutClient(FakePyPIClient):
-            def fetch_release_contact_emails(
-                self, name: str, version: str
-            ) -> tuple[str, ...]:
-                raise TimeoutError("timed out")
-
-        alerts = detect_disposable_email_alerts(
-            [package],
-            client=TimeoutClient({}),
-            disposable_domains={"mailinator.com"},
-        )
-
-        self.assertEqual(len(alerts), 1)
-        self.assertEqual(alerts[0].severity, Severity.LOW)
-        self.assertIn("PyPI timed out", alerts[0].message)
 
     def test_empty_description_raises_low_alert_when_summary_and_description_are_empty(
         self,

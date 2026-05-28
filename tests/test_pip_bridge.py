@@ -121,15 +121,9 @@ class PipBridgeTests(unittest.TestCase):
                     "secured_pip.install_checks.detect_recent_release_alerts",
                     return_value=[],
                 ):
-                    with (
-                        patch(
-                            "secured_pip.install_checks.detect_disposable_email_alerts",
-                            return_value=[],
-                        ),
-                        patch(
-                            "secured_pip.install_checks.detect_empty_description_alerts",
-                            return_value=[],
-                        ),
+                    with patch(
+                        "secured_pip.install_checks.detect_empty_description_alerts",
+                        return_value=[],
                     ):
                         with patch(
                             "secured_pip.cli.run_guarded_pip_install",
@@ -160,15 +154,9 @@ class PipBridgeTests(unittest.TestCase):
                     "secured_pip.install_checks.detect_recent_release_alerts",
                     return_value=[],
                 ):
-                    with (
-                        patch(
-                            "secured_pip.install_checks.detect_disposable_email_alerts",
-                            return_value=[],
-                        ),
-                        patch(
-                            "secured_pip.install_checks.detect_empty_description_alerts",
-                            return_value=[],
-                        ),
+                    with patch(
+                        "secured_pip.install_checks.detect_empty_description_alerts",
+                        return_value=[],
                     ):
                         with patch(
                             "secured_pip.cli.run_guarded_pip_install",
@@ -201,15 +189,9 @@ class PipBridgeTests(unittest.TestCase):
                     "secured_pip.install_checks.detect_recent_release_alerts",
                     return_value=[],
                 ):
-                    with (
-                        patch(
-                            "secured_pip.install_checks.detect_disposable_email_alerts",
-                            return_value=[],
-                        ),
-                        patch(
-                            "secured_pip.install_checks.detect_empty_description_alerts",
-                            return_value=[],
-                        ),
+                    with patch(
+                        "secured_pip.install_checks.detect_empty_description_alerts",
+                        return_value=[],
                     ):
                         with patch(
                             "secured_pip.cli.run_guarded_pip_install",
@@ -244,15 +226,9 @@ class PipBridgeTests(unittest.TestCase):
                     "secured_pip.install_checks.detect_recent_release_alerts",
                     return_value=[],
                 ):
-                    with (
-                        patch(
-                            "secured_pip.install_checks.detect_disposable_email_alerts",
-                            return_value=[],
-                        ),
-                        patch(
-                            "secured_pip.install_checks.detect_empty_description_alerts",
-                            return_value=[],
-                        ),
+                    with patch(
+                        "secured_pip.install_checks.detect_empty_description_alerts",
+                        return_value=[],
                     ):
                         with patch(
                             "secured_pip.cli.run_guarded_pip_install",
@@ -282,15 +258,9 @@ class PipBridgeTests(unittest.TestCase):
                     "secured_pip.install_checks.detect_recent_release_alerts",
                     return_value=[],
                 ):
-                    with (
-                        patch(
-                            "secured_pip.install_checks.detect_disposable_email_alerts",
-                            return_value=[],
-                        ),
-                        patch(
-                            "secured_pip.install_checks.detect_empty_description_alerts",
-                            return_value=[],
-                        ),
+                    with patch(
+                        "secured_pip.install_checks.detect_empty_description_alerts",
+                        return_value=[],
                     ):
                         with patch(
                             "secured_pip.cli.run_guarded_pip_install",
@@ -319,15 +289,9 @@ class PipBridgeTests(unittest.TestCase):
                     "secured_pip.install_checks.detect_recent_release_alerts",
                     return_value=[],
                 ):
-                    with (
-                        patch(
-                            "secured_pip.install_checks.detect_disposable_email_alerts",
-                            return_value=[],
-                        ),
-                        patch(
-                            "secured_pip.install_checks.detect_empty_description_alerts",
-                            return_value=[],
-                        ),
+                    with patch(
+                        "secured_pip.install_checks.detect_empty_description_alerts",
+                        return_value=[],
                     ):
                         with patch(
                             "secured_pip.cli.run_guarded_pip_install",
@@ -363,15 +327,9 @@ class PipBridgeTests(unittest.TestCase):
                     "secured_pip.install_checks.detect_recent_release_alerts",
                     return_value=[],
                 ):
-                    with (
-                        patch(
-                            "secured_pip.install_checks.detect_disposable_email_alerts",
-                            return_value=[],
-                        ),
-                        patch(
-                            "secured_pip.install_checks.detect_empty_description_alerts",
-                            return_value=[],
-                        ),
+                    with patch(
+                        "secured_pip.install_checks.detect_empty_description_alerts",
+                        return_value=[],
                     ):
                         with patch(
                             "secured_pip.cli.run_guarded_pip_install",
@@ -472,15 +430,9 @@ class PipBridgeTests(unittest.TestCase):
                     "secured_pip.install_checks.detect_recent_release_alerts",
                     return_value=[],
                 ):
-                    with (
-                        patch(
-                            "secured_pip.install_checks.detect_disposable_email_alerts",
-                            return_value=[],
-                        ),
-                        patch(
-                            "secured_pip.install_checks.detect_empty_description_alerts",
-                            return_value=[],
-                        ),
+                    with patch(
+                        "secured_pip.install_checks.detect_empty_description_alerts",
+                        return_value=[],
                     ):
                         with patch(
                             "secured_pip.cli.run_guarded_pip_install",
@@ -566,15 +518,9 @@ class PipBridgeTests(unittest.TestCase):
                     "secured_pip.install_checks.detect_recent_release_alerts",
                     return_value=[],
                 ):
-                    with (
-                        patch(
-                            "secured_pip.install_checks.detect_disposable_email_alerts",
-                            return_value=[],
-                        ),
-                        patch(
-                            "secured_pip.install_checks.detect_empty_description_alerts",
-                            return_value=[],
-                        ),
+                    with patch(
+                        "secured_pip.install_checks.detect_empty_description_alerts",
+                        return_value=[],
                     ):
                         with patch(
                             "secured_pip.cli.run_guarded_pip_install",
@@ -601,7 +547,6 @@ class PipBridgeTests(unittest.TestCase):
         stdout = io.StringIO()
         fake_client = SimpleNamespace(
             cache_path="cache.json",
-            disposable_email_cache_path="disposable.txt",
         )
         with patch(
             "secured_pip.cli.refresh_all_caches",
@@ -610,11 +555,6 @@ class PipBridgeTests(unittest.TestCase):
                     description="PyPI project name cache",
                     count=123,
                     location="cache.json",
-                ),
-                SimpleNamespace(
-                    description="disposable email domain cache",
-                    count=456,
-                    location="disposable.txt",
                 ),
             ],
         ):
@@ -625,10 +565,6 @@ class PipBridgeTests(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertIn(
             "refreshed PyPI project name cache with 123 entries", stdout.getvalue()
-        )
-        self.assertIn(
-            "refreshed disposable email domain cache with 456 entries",
-            stdout.getvalue(),
         )
 
     def test_refresh_package_cache_is_no_longer_a_spip_command(self) -> None:
@@ -673,15 +609,9 @@ class PipBridgeTests(unittest.TestCase):
                     "secured_pip.install_checks.detect_recent_release_alerts",
                     return_value=[],
                 ):
-                    with (
-                        patch(
-                            "secured_pip.install_checks.detect_disposable_email_alerts",
-                            return_value=[],
-                        ),
-                        patch(
-                            "secured_pip.install_checks.detect_empty_description_alerts",
-                            return_value=[],
-                        ),
+                    with patch(
+                        "secured_pip.install_checks.detect_empty_description_alerts",
+                        return_value=[],
                     ):
                         with patch(
                             "secured_pip.cli.run_guarded_pip_install",
@@ -706,15 +636,9 @@ class PipBridgeTests(unittest.TestCase):
                     "secured_pip.install_checks.detect_recent_release_alerts",
                     return_value=[],
                 ):
-                    with (
-                        patch(
-                            "secured_pip.install_checks.detect_disposable_email_alerts",
-                            return_value=[],
-                        ),
-                        patch(
-                            "secured_pip.install_checks.detect_empty_description_alerts",
-                            return_value=[],
-                        ),
+                    with patch(
+                        "secured_pip.install_checks.detect_empty_description_alerts",
+                        return_value=[],
                     ):
                         with patch(
                             "secured_pip.cli.run_guarded_pip_install",
@@ -745,15 +669,9 @@ class PipBridgeTests(unittest.TestCase):
                     "secured_pip.install_checks.detect_recent_release_alerts",
                     return_value=[],
                 ):
-                    with (
-                        patch(
-                            "secured_pip.install_checks.detect_disposable_email_alerts",
-                            return_value=[],
-                        ),
-                        patch(
-                            "secured_pip.install_checks.detect_empty_description_alerts",
-                            return_value=[],
-                        ),
+                    with patch(
+                        "secured_pip.install_checks.detect_empty_description_alerts",
+                        return_value=[],
                     ):
                         with patch(
                             "secured_pip.cli.run_guarded_pip_install",
@@ -831,3 +749,4 @@ class PipBridgeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

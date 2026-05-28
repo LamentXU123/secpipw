@@ -119,35 +119,15 @@ def gate_suspicious_pth_alerts(
 
 
 def inspect_wheel_for_suspicious_pth(path: Path) -> list[SuspiciousPthAlert]:
-    alerts: list[SuspiciousPthAlert] = []
     with zipfile.ZipFile(path) as archive:
-        for member_name in archive.namelist():
-            if not member_name.lower().endswith(".pth"):
-                continue
-            import_lines = tuple(
-                _import_lines_from_text(
-                    archive.read(member_name).decode("utf-8", errors="ignore")
-                )
+        return _inspect_zip_archive_for_suspicious_pth(
+            archive,
+            archive_path=path,
+            remediation=(
+                "review the package artifact before installation, or rerun "
+                "with --ignore-warning if this .pth file is expected"
             )
-            if not import_lines:
-                continue
-            alert_path = path / member_name
-            alerts.append(
-                SuspiciousPthAlert(
-                    severity=Severity.MEDIUM,
-                    path=alert_path,
-                    import_lines=import_lines,
-                    message=(
-                        f"'{member_name}' inside '{path.name}' contains executable "
-                        "import statements in a .pth file"
-                    ),
-                    remediation=(
-                        "review the package artifact before installation, or rerun "
-                        "with --ignore-warning if this .pth file is expected"
-                    ),
-                )
-            )
-    return alerts
+        )
 
 
 def inspect_source_artifact_for_suspicious_pth(path: Path) -> list[SuspiciousPthAlert]:
@@ -183,35 +163,15 @@ def inspect_sdist_for_suspicious_pth(path: Path) -> list[SuspiciousPthAlert]:
 
 
 def inspect_zip_sdist_for_suspicious_pth(path: Path) -> list[SuspiciousPthAlert]:
-    alerts: list[SuspiciousPthAlert] = []
     with zipfile.ZipFile(path) as archive:
-        for member_name in archive.namelist():
-            if not member_name.lower().endswith(".pth"):
-                continue
-            import_lines = tuple(
-                _import_lines_from_text(
-                    archive.read(member_name).decode("utf-8", errors="ignore")
-                )
+        return _inspect_zip_archive_for_suspicious_pth(
+            archive,
+            archive_path=path,
+            remediation=(
+                "review the source artifact before installation, or rerun "
+                "with --ignore-warning if this .pth file is expected"
             )
-            if not import_lines:
-                continue
-            alert_path = path / member_name
-            alerts.append(
-                SuspiciousPthAlert(
-                    severity=Severity.MEDIUM,
-                    path=alert_path,
-                    import_lines=import_lines,
-                    message=(
-                        f"'{member_name}' inside '{path.name}' contains executable "
-                        "import statements in a .pth file"
-                    ),
-                    remediation=(
-                        "review the source artifact before installation, or rerun "
-                        "with --ignore-warning if this .pth file is expected"
-                    ),
-                )
-            )
-    return alerts
+        )
 
 
 def handle_suspicious_pth_alerts(
@@ -440,13 +400,53 @@ def _import_lines_from_text(text: str) -> Iterator[str]:
 
 
 def _iter_sdist_pth_files(archive: tarfile.TarFile) -> Iterator[tuple[str, str]]:
-    for member in archive.getmembers():
+    for member in archive:
         if not member.isfile() or not member.name.lower().endswith(".pth"):
             continue
         handle = archive.extractfile(member)
         if handle is None:
             continue
         yield member.name, handle.read().decode("utf-8", errors="ignore")
+
+
+def _inspect_zip_archive_for_suspicious_pth(
+    archive: zipfile.ZipFile,
+    *,
+    archive_path: Path,
+    remediation: str,
+) -> list[SuspiciousPthAlert]:
+    alerts: list[SuspiciousPthAlert] = []
+    pth_members = [
+        info
+        for info in archive.infolist()
+        if not info.is_dir() and info.filename.lower().endswith(".pth")
+    ]
+    if not pth_members:
+        return alerts
+
+    for member in pth_members:
+        member_name = member.filename
+        import_lines = tuple(
+            _import_lines_from_text(
+                archive.read(member).decode("utf-8", errors="ignore")
+            )
+        )
+        if not import_lines:
+            continue
+        alert_path = archive_path / member_name
+        alerts.append(
+            SuspiciousPthAlert(
+                severity=Severity.MEDIUM,
+                path=alert_path,
+                import_lines=import_lines,
+                message=(
+                    f"'{member_name}' inside '{archive_path.name}' contains "
+                    "executable import statements in a .pth file"
+                ),
+                remediation=remediation,
+            )
+        )
+    return alerts
 
 
 def _is_supported_sdist_path(path: Path) -> bool:

@@ -81,6 +81,14 @@ Today, many independent developers have suffered CI server compromises that leak
 
 ## Warning policies
 
+## TODO
+
+Contributions welcome:
+
+- [ ] Support `uv pip`
+- [ ] Support `pipx
+- [ ] Write a benchmark CI in the github workflow to compare the performance of `spip install` and `pip install`
+
 We currently have three install warning policies:
 
 - `HIGH`: pause installation and require `--ignore-warning`
@@ -103,7 +111,6 @@ For now, the project has several major check points:
     - Low severity: `sixth` vs `six`
 - [x] Direct URL dependency checks: If the install target or a resolved dependency uses a direct URL, VCS URL, or PEP 508 direct reference, `secured_pip` will raise a `MEDIUM` warning.
 - [x] Fresh release checks: If the selected PyPI release was published less than 2 days ago, `secured_pip` will raise a `MEDIUM` warning.
-- [x] Disposable email checks: If the PyPI release metadata uses a known disposable author or maintainer email domain, `secured_pip` will raise a `LOW` warning. The built-in blocklist is vendored from `disposable/disposable-email-domains` strict mode.
 - [x] Empty description checks: If the selected PyPI release metadata has no summary and no long description, `secured_pip` will raise a `LOW` warning.
 - [x] Suspicious metadata URL checks: If PyPI metadata points to a shortener, raw IP, suspicious TLD, embedded credentials, or similar suspicious URL, `secured_pip` will raise a `LOW` warning.
 - [x] Repository mismatch checks: If PyPI metadata points to a GitHub/GitLab repository whose repo name appears unrelated to the package name, `secured_pip` will raise a `LOW` warning.

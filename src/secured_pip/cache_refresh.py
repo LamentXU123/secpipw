@@ -31,26 +31,11 @@ def _refresh_project_name_cache(client: OfficialPyPIClient) -> CacheRefreshResul
     )
 
 
-def _refresh_disposable_email_cache(client: OfficialPyPIClient) -> CacheRefreshResult:
-    count = client.refresh_disposable_email_domain_cache()
-    return CacheRefreshResult(
-        key="disposable-email-domains",
-        description="disposable email domain cache",
-        count=count,
-        location=str(client.disposable_email_cache_path),
-    )
-
-
 REFRESH_TASKS: tuple[CacheRefreshTask, ...] = (
     CacheRefreshTask(
         key="pypi-project-names",
         description="PyPI project name cache",
         run=_refresh_project_name_cache,
-    ),
-    CacheRefreshTask(
-        key="disposable-email-domains",
-        description="disposable email domain cache",
-        run=_refresh_disposable_email_cache,
     ),
 )
 

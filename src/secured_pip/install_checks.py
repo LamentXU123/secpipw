@@ -8,7 +8,6 @@ from secured_pip.install_plan import InstallPlan, render_install_plan
 from secured_pip.pypi_api import client_from_pip_args
 from secured_pip.release_checks import (
     detect_direct_url_alerts,
-    detect_disposable_email_alerts,
     detect_email_domain_drift_alerts,
     detect_empty_description_alerts,
     detect_recent_release_alerts,
@@ -16,7 +15,6 @@ from secured_pip.release_checks import (
     detect_suspicious_metadata_url_alerts,
     detect_zero_version_alerts,
     render_direct_url_alerts,
-    render_disposable_email_alerts,
     render_email_domain_drift_alerts,
     render_empty_description_alerts,
     render_release_age_alerts,
@@ -39,7 +37,6 @@ class InstallAlerts:
     typo_alerts: tuple[WarningLike, ...]
     direct_url_alerts: tuple[WarningLike, ...]
     recent_release_alerts: tuple[WarningLike, ...]
-    disposable_email_alerts: tuple[WarningLike, ...]
     empty_description_alerts: tuple[WarningLike, ...]
     suspicious_metadata_url_alerts: tuple[WarningLike, ...]
     repository_mismatch_alerts: tuple[WarningLike, ...]
@@ -52,7 +49,6 @@ class InstallAlerts:
             *self.typo_alerts,
             *self.direct_url_alerts,
             *self.recent_release_alerts,
-            *self.disposable_email_alerts,
             *self.empty_description_alerts,
             *self.suspicious_metadata_url_alerts,
             *self.repository_mismatch_alerts,
@@ -96,12 +92,6 @@ def detect_install_alerts(plan: InstallPlan, pip_args: list[str]) -> InstallAler
             client=release_client,
         )
     )
-    disposable_email_alerts = tuple(
-        detect_disposable_email_alerts(
-            plan.packages,
-            client=release_client,
-        )
-    )
     empty_description_alerts = tuple(
         detect_empty_description_alerts(
             plan.packages,
@@ -131,7 +121,6 @@ def detect_install_alerts(plan: InstallPlan, pip_args: list[str]) -> InstallAler
         typo_alerts=typo_alerts,
         direct_url_alerts=direct_url_alerts,
         recent_release_alerts=recent_release_alerts,
-        disposable_email_alerts=disposable_email_alerts,
         empty_description_alerts=empty_description_alerts,
         suspicious_metadata_url_alerts=suspicious_metadata_url_alerts,
         repository_mismatch_alerts=repository_mismatch_alerts,
@@ -145,10 +134,6 @@ def render_install_alerts(alerts: InstallAlerts) -> str:
     _append_rendered(rendered, render_alerts(alerts.typo_alerts))
     _append_rendered(rendered, render_direct_url_alerts(alerts.direct_url_alerts))
     _append_rendered(rendered, render_release_age_alerts(alerts.recent_release_alerts))
-    _append_rendered(
-        rendered,
-        render_disposable_email_alerts(alerts.disposable_email_alerts),
-    )
     _append_rendered(
         rendered,
         render_empty_description_alerts(alerts.empty_description_alerts),

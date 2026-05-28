@@ -14,13 +14,10 @@ from unittest.mock import patch
 from secured_pip import pypi_api
 from secured_pip.pypi_api import (
     BOOTSTRAP_PROJECT_NAMES,
-    BOOTSTRAP_DISPOSABLE_EMAIL_DOMAINS_PATH,
     DEFAULT_PYPI_BASE_URL,
     DEFAULT_JSON_API_TIMEOUT_SECONDS,
-    DISPOSABLE_EMAIL_DOMAINS_SOURCE_URL,
     OfficialPyPIClient,
     client_from_pip_args,
-    load_disposable_email_domains,
     resolve_index_url,
 )
 
@@ -179,59 +176,6 @@ class OfficialPyPIClientTests(unittest.TestCase):
         self.assertEqual(payload["source"], "https://pypi.org/simple/")
         self.assertEqual(payload["project_count"], 2)
         self.assertEqual(payload["projects"], ["alpha", "zeta"])
-
-    def test_load_disposable_email_domains_prefers_explicit_cache(self) -> None:
-        tmpdir = self.make_temp_dir()
-        cache_path = tmpdir / "disposable.txt"
-        cache_path.write_text(
-            "Mailinator.com\n# comment\ntrashmail.com\n", encoding="utf-8"
-        )
-        client = OfficialPyPIClient(disposable_email_cache_path=cache_path)
-
-        domains = client.load_disposable_email_domains()
-
-        self.assertEqual(domains, {"mailinator.com", "trashmail.com"})
-
-    def test_load_disposable_email_domains_module_helper_uses_bootstrap_file(
-        self,
-    ) -> None:
-        domains = load_disposable_email_domains()
-
-        self.assertIn("mailinator.com", domains)
-        self.assertTrue(BOOTSTRAP_DISPOSABLE_EMAIL_DOMAINS_PATH.exists())
-
-    def test_refresh_disposable_email_domain_cache_writes_expected_payload(
-        self,
-    ) -> None:
-        tmpdir = self.make_temp_dir()
-        cache_path = tmpdir / "disposable.txt"
-        client = OfficialPyPIClient(disposable_email_cache_path=cache_path)
-
-        with patch.object(
-            OfficialPyPIClient,
-            "fetch_disposable_email_domains",
-            return_value=["mailinator.com", "trashmail.com"],
-        ):
-            count = client.refresh_disposable_email_domain_cache()
-
-        self.assertEqual(count, 2)
-        self.assertEqual(
-            cache_path.read_text(encoding="utf-8"),
-            "mailinator.com\ntrashmail.com\n",
-        )
-
-    def test_fetch_disposable_email_domains_uses_upstream_source(self) -> None:
-        client = OfficialPyPIClient()
-
-        with patch(
-            "secured_pip.pypi_api.urlopen",
-            return_value=FakeHTTPResponse(b"Mailinator.com\ntrashmail.com\n"),
-        ) as mocked:
-            domains = client.fetch_disposable_email_domains()
-
-        self.assertEqual(domains, ["mailinator.com", "trashmail.com"])
-        request = mocked.call_args.args[0]
-        self.assertEqual(request.full_url, DISPOSABLE_EMAIL_DOMAINS_SOURCE_URL)
 
     def test_project_exists_returns_true_when_json_endpoint_resolves(self) -> None:
         client = OfficialPyPIClient(base_url="https://example.test")

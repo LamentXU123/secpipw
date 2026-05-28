@@ -17,7 +17,7 @@ from packaging.requirements import InvalidRequirement, Requirement
 from packaging.utils import canonicalize_name
 from packaging.version import InvalidVersion, Version
 
-from secured_pip.pypi_api import OfficialPyPIClient, load_disposable_email_domains
+from secured_pip.pypi_api import OfficialPyPIClient
 from secured_pip.severity import Severity
 from secured_pip.terminal import colorize
 from secured_pip.typo import PIP_OPTIONS_WITH_VALUE
@@ -25,9 +25,6 @@ from secured_pip.typo import PIP_OPTIONS_WITH_VALUE
 RECENT_RELEASE_THRESHOLD = timedelta(days=2)
 RECENT_RELEASE_MAX_WORKERS = 8
 _RELEASE_LOOKUP_CACHE: dict[tuple[str, str, str, str, str], "_ReleaseLookupResult"] = {}
-_DISPOSABLE_EMAIL_LOOKUP_CACHE: dict[
-    tuple[str, str, str], "_DisposableEmailLookupResult"
-] = {}
 _DESCRIPTION_LOOKUP_CACHE: dict[tuple[str, str, str], "_DescriptionLookupResult"] = {}
 _SUSPICIOUS_URL_LOOKUP_CACHE: dict[
     tuple[str, str, str], "_SuspiciousUrlLookupResult"
@@ -99,15 +96,6 @@ class VersionAlert:
 
 
 @dataclass(frozen=True)
-class DisposableEmailAlert:
-    severity: Severity
-    package_name: str
-    version: str
-    email: str
-    message: str
-
-
-@dataclass(frozen=True)
 class EmptyDescriptionAlert:
     severity: Severity
     package_name: str
@@ -158,12 +146,6 @@ class EmailDomainDriftAlert:
 class _ReleaseLookupResult:
     timed_out: bool
     published_at: datetime | None
-
-
-@dataclass(frozen=True)
-class _DisposableEmailLookupResult:
-    timed_out: bool
-    matched_emails: tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -263,68 +245,6 @@ def detect_zero_version_alerts(
     return alerts
 
 
-def detect_disposable_email_alerts(
-    packages: Iterable[PackageLike],
-    *,
-    client: OfficialPyPIClient | None = None,
-    disposable_domains: set[str] | None = None,
-) -> list[DisposableEmailAlert]:
-    client = client or OfficialPyPIClient()
-    disposable_domains = (
-        load_disposable_email_domains()
-        if disposable_domains is None
-        else {domain.lower() for domain in disposable_domains}
-    )
-    alerts: list[DisposableEmailAlert] = []
-    candidates = _packages_with_registry_metadata(packages)
-
-    if not candidates:
-        return alerts
-
-    max_workers = min(RECENT_RELEASE_MAX_WORKERS, len(candidates))
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        lookups = list(
-            executor.map(
-                lambda package: _fetch_disposable_email_lookup_result(
-                    package,
-                    client,
-                    disposable_domains=disposable_domains,
-                ),
-                candidates,
-            )
-        )
-
-    for package, lookup in zip(candidates, lookups):
-        if lookup.timed_out:
-            alerts.append(
-                DisposableEmailAlert(
-                    severity=Severity.LOW,
-                    package_name=package.name,
-                    version=package.version,
-                    email="",
-                    message=(
-                        f"could not verify whether '{package.name}=={package.version}' "
-                        "uses a disposable maintainer email because PyPI timed out"
-                    ),
-                )
-            )
-            continue
-        for email in lookup.matched_emails:
-            alerts.append(
-                DisposableEmailAlert(
-                    severity=Severity.LOW,
-                    package_name=package.name,
-                    version=package.version,
-                    email=email,
-                    message=(
-                        f"'{package.name}=={package.version}' publishes metadata with "
-                        f"disposable email '{email}'"
-                    ),
-                )
-            )
-    return alerts
-
-
 def detect_empty_description_alerts(
     packages: Iterable[PackageLike],
     *,
@@ -337,14 +257,20 @@ def detect_empty_description_alerts(
     if not candidates:
         return alerts
 
-    max_workers = min(RECENT_RELEASE_MAX_WORKERS, len(candidates))
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        lookups = list(
-            executor.map(
-                lambda package: _fetch_description_lookup_result(package, client),
-                candidates,
+    if _all_packages_have_report_metadata(candidates):
+        lookups = [
+            _fetch_description_lookup_result(package, client)
+            for package in candidates
+        ]
+    else:
+        max_workers = min(RECENT_RELEASE_MAX_WORKERS, len(candidates))
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            lookups = list(
+                executor.map(
+                    lambda package: _fetch_description_lookup_result(package, client),
+                    candidates,
+                )
             )
-        )
 
     for package, lookup in zip(candidates, lookups):
         if not lookup.has_empty_description:
@@ -420,14 +346,23 @@ def detect_suspicious_metadata_url_alerts(
     if not candidates:
         return alerts
 
-    max_workers = min(RECENT_RELEASE_MAX_WORKERS, len(candidates))
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        lookups = list(
-            executor.map(
-                lambda package: _fetch_suspicious_url_lookup_result(package, client),
-                candidates,
+    if _all_packages_have_report_metadata(candidates):
+        lookups = [
+            _fetch_suspicious_url_lookup_result(package, client)
+            for package in candidates
+        ]
+    else:
+        max_workers = min(RECENT_RELEASE_MAX_WORKERS, len(candidates))
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            lookups = list(
+                executor.map(
+                    lambda package: _fetch_suspicious_url_lookup_result(
+                        package,
+                        client,
+                    ),
+                    candidates,
+                )
             )
-        )
 
     for package, lookup in zip(candidates, lookups):
         for url, reason in lookup.findings:
@@ -459,17 +394,23 @@ def detect_repository_mismatch_alerts(
     if not candidates:
         return alerts
 
-    max_workers = min(RECENT_RELEASE_MAX_WORKERS, len(candidates))
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        lookups = list(
-            executor.map(
-                lambda package: _fetch_repository_mismatch_lookup_result(
-                    package,
-                    client,
-                ),
-                candidates,
+    if _all_packages_have_report_metadata(candidates):
+        lookups = [
+            _fetch_repository_mismatch_lookup_result(package, client)
+            for package in candidates
+        ]
+    else:
+        max_workers = min(RECENT_RELEASE_MAX_WORKERS, len(candidates))
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            lookups = list(
+                executor.map(
+                    lambda package: _fetch_repository_mismatch_lookup_result(
+                        package,
+                        client,
+                    ),
+                    candidates,
+                )
             )
-        )
 
     for package, lookup in zip(candidates, lookups):
         for url, repository_name in lookup.findings:
@@ -505,14 +446,20 @@ def detect_email_domain_drift_alerts(
     history = client.load_email_domain_history()
     updated_history = dict(history)
 
-    max_workers = min(RECENT_RELEASE_MAX_WORKERS, len(candidates))
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        current_domains = list(
-            executor.map(
-                lambda package: _fetch_contact_email_domains(package, client),
-                candidates,
+    if _all_packages_have_report_metadata(candidates):
+        current_domains = [
+            _fetch_contact_email_domains(package, client)
+            for package in candidates
+        ]
+    else:
+        max_workers = min(RECENT_RELEASE_MAX_WORKERS, len(candidates))
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            current_domains = list(
+                executor.map(
+                    lambda package: _fetch_contact_email_domains(package, client),
+                    candidates,
+                )
             )
-        )
 
     for package, domains in zip(candidates, current_domains):
         if not domains:
@@ -558,18 +505,6 @@ def render_version_alerts(alerts: Iterable[VersionAlert]) -> str:
         lines.append(
             colorize(
                 f"[{alert.severity.label.upper()}] zero-version: {alert.message}",
-                alert.severity,
-            )
-        )
-    return "\n".join(lines)
-
-
-def render_disposable_email_alerts(alerts: Iterable[DisposableEmailAlert]) -> str:
-    lines = []
-    for alert in alerts:
-        lines.append(
-            colorize(
-                f"[{alert.severity.label.upper()}] disposable-email: {alert.message}",
                 alert.severity,
             )
         )
@@ -659,6 +594,10 @@ def _package_can_use_registry_metadata(package: PackageLike) -> bool:
     return bool(package.name and package.version)
 
 
+def _all_packages_have_report_metadata(packages: Iterable[PackageLike]) -> bool:
+    return all(_package_report_metadata(package) is not None for package in packages)
+
+
 def _unique_packages_for_recent_release_check(
     packages: Iterable[PackageLike],
 ) -> list[PackageLike]:
@@ -726,52 +665,6 @@ def _fetch_release_lookup_result(
         )
 
     _RELEASE_LOOKUP_CACHE[key] = result
-    return result
-
-
-def _fetch_disposable_email_lookup_result(
-    package: PackageLike,
-    client: OfficialPyPIClient,
-    *,
-    disposable_domains: set[str],
-) -> _DisposableEmailLookupResult:
-    key = (
-        client.base_url.rstrip("/").lower(),
-        package.name.lower(),
-        package.version,
-    )
-    cached = _DISPOSABLE_EMAIL_LOOKUP_CACHE.get(key)
-    if cached is not None:
-        return cached
-
-    metadata = _package_report_metadata(package)
-    if metadata is not None:
-        emails = _contact_emails_from_metadata(metadata)
-    else:
-        try:
-            emails = client.fetch_release_contact_emails(package.name, package.version)
-        except Exception as exc:
-            if _is_timeout_error(exc):
-                result = _DisposableEmailLookupResult(timed_out=True, matched_emails=())
-            else:
-                result = _DisposableEmailLookupResult(
-                    timed_out=False,
-                    matched_emails=(),
-                )
-            _DISPOSABLE_EMAIL_LOOKUP_CACHE[key] = result
-            return result
-
-    matched_emails = tuple(
-        email
-        for email in emails
-        if _email_uses_disposable_domain(email, disposable_domains)
-    )
-    result = _DisposableEmailLookupResult(
-        timed_out=False,
-        matched_emails=matched_emails,
-    )
-
-    _DISPOSABLE_EMAIL_LOOKUP_CACHE[key] = result
     return result
 
 
@@ -920,17 +813,6 @@ def _is_zero_version(version: str) -> bool:
         return False
     release = parsed.release
     return len(release) >= 2 and all(component == 0 for component in release)
-
-
-def _email_uses_disposable_domain(email: str, disposable_domains: set[str]) -> bool:
-    domain = _domain_from_email(email)
-    if domain is None:
-        return False
-    parts = domain.split(".")
-    for index in range(len(parts) - 1):
-        if ".".join(parts[index:]) in disposable_domains:
-            return True
-    return False
 
 
 def _domain_from_email(email: str) -> str | None:
