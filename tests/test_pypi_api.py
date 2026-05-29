@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import socket
 import unittest
@@ -176,6 +177,23 @@ class OfficialPyPIClientTests(unittest.TestCase):
         self.assertEqual(payload["source"], "https://pypi.org/simple/")
         self.assertEqual(payload["project_count"], 2)
         self.assertEqual(payload["projects"], ["alpha", "zeta"])
+
+    def test_default_cache_paths_use_configured_user_cache_root(self) -> None:
+        tmpdir = self.make_temp_dir()
+
+        with patch.dict(os.environ, {"SPIP_CACHE_DIR": str(tmpdir)}):
+            self.assertEqual(
+                pypi_api._default_cache_path(),
+                tmpdir / "pypi-project-names.json",
+            )
+            self.assertEqual(
+                pypi_api._default_release_cache_path(),
+                tmpdir / "pypi-release-times.json",
+            )
+            self.assertEqual(
+                pypi_api._default_email_domain_history_path(),
+                tmpdir / "pypi-email-domains.json",
+            )
 
     def test_project_exists_returns_true_when_json_endpoint_resolves(self) -> None:
         client = OfficialPyPIClient(base_url="https://example.test")

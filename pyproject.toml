@@ -36,4 +36,4 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.setuptools.package-data]
-secured_pip = ["data/*.json", "data/*.txt"]
+secured_pip = ["data/*.json"]

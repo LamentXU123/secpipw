@@ -2,19 +2,64 @@ from __future__ import annotations
 
 import sys
 
-from secured_pip.cache_refresh import refresh_all_caches
 from secured_pip import __version__
 from secured_pip.severity import Severity, parse_severity
-from secured_pip.install_checks import run_install_checks
-from secured_pip.pip_bridge import run_pip
-from secured_pip.pip_guard import run_guarded_pip_install
-from secured_pip.pth_monitor import (
-    PthMonitor,
-    gate_suspicious_pth_alerts,
-    handle_suspicious_pth_alerts,
-    inspect_install_artifacts,
-)
-from secured_pip.pypi_api import OfficialPyPIClient
+
+
+def run_pip(*args, **kwargs):
+    from secured_pip.pip_bridge import run_pip as impl
+
+    return impl(*args, **kwargs)
+
+
+def refresh_all_caches(*args, **kwargs):
+    from secured_pip.cache_refresh import refresh_all_caches as impl
+
+    return impl(*args, **kwargs)
+
+
+def OfficialPyPIClient(*args, **kwargs):
+    from secured_pip.pypi_api import OfficialPyPIClient as client_class
+
+    return client_class(*args, **kwargs)
+
+
+def run_install_checks(*args, **kwargs):
+    from secured_pip.install_checks import run_install_checks as impl
+
+    return impl(*args, **kwargs)
+
+
+def run_guarded_pip_install(*args, **kwargs):
+    from secured_pip.pip_guard import run_guarded_pip_install as impl
+
+    return impl(*args, **kwargs)
+
+
+class PthMonitor:
+    @classmethod
+    def from_install_args(cls, *args, **kwargs):
+        from secured_pip.pth_monitor import PthMonitor as monitor_class
+
+        return monitor_class.from_install_args(*args, **kwargs)
+
+
+def gate_suspicious_pth_alerts(*args, **kwargs):
+    from secured_pip.pth_monitor import gate_suspicious_pth_alerts as impl
+
+    return impl(*args, **kwargs)
+
+
+def handle_suspicious_pth_alerts(*args, **kwargs):
+    from secured_pip.pth_monitor import handle_suspicious_pth_alerts as impl
+
+    return impl(*args, **kwargs)
+
+
+def inspect_install_artifacts(*args, **kwargs):
+    from secured_pip.pth_monitor import inspect_install_artifacts as impl
+
+    return impl(*args, **kwargs)
 
 
 def main(argv: list[str] | None = None) -> int:

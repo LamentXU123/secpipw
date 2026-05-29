@@ -17,6 +17,7 @@ from secured_pip.release_checks import (
     detect_repository_mismatch_alerts,
     detect_suspicious_metadata_url_alerts,
     detect_zero_version_alerts,
+    prefetch_release_metadata,
     render_direct_url_alerts,
     render_email_domain_drift_alerts,
     render_empty_description_alerts,
@@ -91,6 +92,14 @@ def detect_install_alerts(plan: InstallPlan, pip_args: list[str]) -> InstallAler
     report_metadata_available = _all_packages_have_report_metadata(
         registry_metadata_packages
     )
+    prefetched_registry_metadata = (
+        {}
+        if report_metadata_available
+        else prefetch_release_metadata(
+            registry_metadata_packages,
+            client=release_client,
+        )
+    )
 
     # CPU-only checks (no network).
     typo_alerts = tuple(detect_typos_in_resolved_packages(plan.packages))
@@ -103,30 +112,35 @@ def detect_install_alerts(plan: InstallPlan, pip_args: list[str]) -> InstallAler
             detect_recent_release_alerts,
             registry_metadata_packages,
             client=release_client,
+            registry_metadata=prefetched_registry_metadata,
         )
         f_desc = executor.submit(
             detect_empty_description_alerts,
             registry_metadata_packages,
             client=release_client,
             report_metadata_available=report_metadata_available,
+            registry_metadata=prefetched_registry_metadata,
         )
         f_suspicious = executor.submit(
             detect_suspicious_metadata_url_alerts,
             registry_metadata_packages,
             client=release_client,
             report_metadata_available=report_metadata_available,
+            registry_metadata=prefetched_registry_metadata,
         )
         f_repo = executor.submit(
             detect_repository_mismatch_alerts,
             registry_metadata_packages,
             client=release_client,
             report_metadata_available=report_metadata_available,
+            registry_metadata=prefetched_registry_metadata,
         )
         f_email = executor.submit(
             detect_email_domain_drift_alerts,
             registry_metadata_packages,
             client=release_client,
             report_metadata_available=report_metadata_available,
+            registry_metadata=prefetched_registry_metadata,
         )
 
     return InstallAlerts(

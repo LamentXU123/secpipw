@@ -4,6 +4,7 @@ import json
 import operator
 import os
 import inspect
+from functools import lru_cache
 from optparse import Values
 from typing import Callable, Iterable, List, Optional
 
@@ -94,7 +95,7 @@ def build(
     global_options: list[str] | None = None,
 ):
     build_func = _wheel_builder_build()
-    parameters = inspect.signature(build_func).parameters
+    parameters = _signature_parameter_names(build_func)
     kwargs = {
         "wheel_cache": wheel_cache,
         "verify": verify,
@@ -125,7 +126,7 @@ def install_given_reqs(
     pycompile: bool,
     progress_bar: str,
 ):
-    parameters = inspect.signature(_pip_install_given_reqs).parameters
+    parameters = _signature_parameter_names(_pip_install_given_reqs)
     kwargs = {
         "root": root,
         "home": home,
@@ -146,9 +147,14 @@ def install_given_reqs(
 
 
 def make_resolver(command, **kwargs):
-    parameters = inspect.signature(command.make_resolver).parameters
+    parameters = _signature_parameter_names(command.make_resolver)
     resolver_kwargs = {key: value for key, value in kwargs.items() if key in parameters}
     return command.make_resolver(**resolver_kwargs)
+
+
+@lru_cache(maxsize=None)
+def _signature_parameter_names(callable_obj) -> frozenset[str]:
+    return frozenset(inspect.signature(callable_obj).parameters)
 
 
 def prepare_linked_requirements_more(preparer, requirement_set) -> None:

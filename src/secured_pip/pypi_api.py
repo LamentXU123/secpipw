@@ -82,16 +82,33 @@ BOOTSTRAP_PROJECT_NAMES = [
     "wheel",
 ]
 
+
+def _default_cache_root() -> Path:
+    configured = os.environ.get("SPIP_CACHE_DIR")
+    if configured:
+        return Path(configured).expanduser()
+
+    if os.name == "nt":
+        local_app_data = os.environ.get("LOCALAPPDATA") or os.environ.get("APPDATA")
+        if local_app_data:
+            return Path(local_app_data) / "spip" / "cache"
+
+    xdg_cache_home = os.environ.get("XDG_CACHE_HOME")
+    if xdg_cache_home:
+        return Path(xdg_cache_home) / "spip"
+    return Path.home() / ".cache" / "spip"
+
+
 def _default_cache_path() -> Path:
-    return Path.cwd() / ".spip-cache" / "pypi-project-names.json"
+    return _default_cache_root() / "pypi-project-names.json"
 
 
 def _default_release_cache_path() -> Path:
-    return Path.cwd() / ".spip-cache" / "pypi-release-times.json"
+    return _default_cache_root() / "pypi-release-times.json"
 
 
 def _default_email_domain_history_path() -> Path:
-    return Path.cwd() / ".spip-cache" / "pypi-email-domains.json"
+    return _default_cache_root() / "pypi-email-domains.json"
 
 
 @dataclass(frozen=True)

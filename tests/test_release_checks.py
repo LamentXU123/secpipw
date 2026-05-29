@@ -8,6 +8,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import shutil
 import uuid
+from io import BytesIO
+from urllib.error import HTTPError
 from unittest.mock import patch
 
 from secured_pip.release_checks import (
@@ -22,6 +24,7 @@ from secured_pip.release_checks import (
     detect_repository_mismatch_alerts,
     detect_suspicious_metadata_url_alerts,
     detect_zero_version_alerts,
+    prefetch_release_metadata,
 )
 from secured_pip.pypi_api import OfficialPyPIClient
 from secured_pip.severity import Severity
@@ -54,6 +57,7 @@ class FakePyPIClient:
         self.metadata = dict(metadata or {})
         self.email_domain_history = dict(email_domain_history or {})
         self.calls = []
+        self.metadata_calls = []
 
     def fetch_release_upload_time(
         self,
@@ -75,6 +79,7 @@ class FakePyPIClient:
         return self.description_fields.get((name, version), ("", ""))
 
     def fetch_release_metadata(self, name: str, version: str) -> dict:
+        self.metadata_calls.append((name, version))
         return self.metadata.get((name, version), {"info": {}})
 
     def load_email_domain_history(self) -> dict[str, tuple[str, ...]]:
@@ -425,6 +430,46 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertEqual(alerts[0].severity, Severity.LOW)
         self.assertIn("PyPI timed out", alerts[0].message)
 
+    def test_recent_release_caches_json_not_found_as_negative_lookup(self) -> None:
+        now = datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc)
+        package = FakePackage(
+            name="demo",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
+        )
+
+        class NotFoundClient:
+            def __init__(self) -> None:
+                self.stored = []
+
+            @property
+            def base_url(self) -> str:
+                return "https://mirror.example"
+
+            def load_cached_release_upload_time(self, *args, **kwargs):
+                return False, None
+
+            def store_cached_release_upload_time(self, *args, **kwargs):
+                self.stored.append((args, kwargs))
+
+            def fetch_release_upload_time(self, *args, **kwargs):
+                raise HTTPError(
+                    url="https://mirror.example/pypi/demo/1.0.0/json",
+                    code=404,
+                    msg="not found",
+                    hdrs=None,
+                    fp=BytesIO(b""),
+                )
+
+        client = NotFoundClient()
+
+        alerts = detect_recent_release_alerts([package], client=client, now=now)
+
+        self.assertEqual(alerts, [])
+        self.assertEqual(len(client.stored), 1)
+        self.assertIsNone(client.stored[0][0][2])
+
     def test_recent_release_checks_private_index_artifact_when_not_direct(self) -> None:
         now = datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc)
         package = FakePackage(
@@ -607,6 +652,78 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertEqual(len(alerts), 2)
         self.assertIn("shortener", alerts[0].message)
         self.assertIn("raw IP", alerts[1].message)
+
+    def test_prefetched_registry_metadata_is_reused_by_metadata_checks(self) -> None:
+        package = FakePackage(
+            name="demo-package",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-package-1.0.0.whl",
+            artifact_name="demo-package-1.0.0.whl",
+        )
+        client = FakePyPIClient(
+            {},
+            metadata={
+                ("demo-package", "1.0.0"): {
+                    "info": {
+                        "summary": "",
+                        "description": "",
+                        "maintainer_email": "maintainer@example.org",
+                        "project_urls": {
+                            "Docs": "https://bit.ly/demo",
+                            "Source": "https://github.com/example/unrelated-tool",
+                        },
+                    }
+                }
+            },
+        )
+
+        registry_metadata = prefetch_release_metadata([package], client=client)
+
+        self.assertEqual(client.metadata_calls, [("demo-package", "1.0.0")])
+        self.assertEqual(
+            len(
+                detect_empty_description_alerts(
+                    [package],
+                    client=client,
+                    report_metadata_available=False,
+                    registry_metadata=registry_metadata,
+                )
+            ),
+            1,
+        )
+        self.assertEqual(
+            len(
+                detect_suspicious_metadata_url_alerts(
+                    [package],
+                    client=client,
+                    report_metadata_available=False,
+                    registry_metadata=registry_metadata,
+                )
+            ),
+            1,
+        )
+        self.assertEqual(
+            len(
+                detect_repository_mismatch_alerts(
+                    [package],
+                    client=client,
+                    report_metadata_available=False,
+                    registry_metadata=registry_metadata,
+                )
+            ),
+            1,
+        )
+        self.assertEqual(
+            detect_email_domain_drift_alerts(
+                [package],
+                client=client,
+                update_history=False,
+                report_metadata_available=False,
+                registry_metadata=registry_metadata,
+            ),
+            [],
+        )
+        self.assertEqual(client.metadata_calls, [("demo-package", "1.0.0")])
 
     def test_repository_mismatch_alerts_when_repo_name_is_unrelated(self) -> None:
         package = FakePackage(

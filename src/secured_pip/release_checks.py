@@ -9,8 +9,8 @@ from email.utils import getaddresses, parseaddr
 from difflib import SequenceMatcher
 from ipaddress import ip_address
 from pathlib import Path
-from typing import Iterable, Protocol
-from urllib.error import URLError
+from typing import Iterable, Mapping, Protocol
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 
 from packaging.requirements import InvalidRequirement, Requirement
@@ -32,6 +32,7 @@ _SUSPICIOUS_URL_LOOKUP_CACHE: dict[
 _REPOSITORY_MISMATCH_LOOKUP_CACHE: dict[
     tuple[str, str, str], "_RepositoryMismatchLookupResult"
 ] = {}
+_NO_PREFETCHED_METADATA = object()
 
 VCS_URL_PREFIXES = ("git+", "hg+", "svn+", "bzr+")
 SHORTENER_DOMAINS = {
@@ -163,12 +164,63 @@ class _RepositoryMismatchLookupResult:
     findings: tuple[tuple[str, str], ...]
 
 
+@dataclass(frozen=True)
+class _RegistryMetadataLookupResult:
+    timed_out: bool
+    metadata: dict | None
+
+
+RegistryMetadataLookup = Mapping[
+    tuple[str, str, str],
+    _RegistryMetadataLookupResult,
+]
+
+
+def prefetch_release_metadata(
+    packages: Iterable[PackageLike],
+    *,
+    client: OfficialPyPIClient | None = None,
+) -> dict[tuple[str, str, str], _RegistryMetadataLookupResult]:
+    client = client or OfficialPyPIClient()
+    candidates = [
+        package
+        for package in _packages_with_registry_metadata(packages)
+        if _package_report_metadata(package) is None
+    ]
+    if not candidates:
+        return {}
+
+    if not getattr(client, "network_enabled", True):
+        return {
+            _registry_metadata_cache_key(package, client): _RegistryMetadataLookupResult(
+                timed_out=False,
+                metadata=None,
+            )
+            for package in candidates
+        }
+
+    max_workers = min(RECENT_RELEASE_MAX_WORKERS, len(candidates))
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        lookups = list(
+            executor.map(
+                lambda package: _fetch_registry_metadata_lookup(package, client),
+                candidates,
+            )
+        )
+
+    return {
+        _registry_metadata_cache_key(package, client): lookup
+        for package, lookup in zip(candidates, lookups)
+    }
+
+
 def detect_recent_release_alerts(
     packages: Iterable[PackageLike],
     *,
     client: OfficialPyPIClient | None = None,
     now: datetime | None = None,
     report_metadata_available: bool | None = None,
+    registry_metadata: RegistryMetadataLookup | None = None,
 ) -> list[ReleaseAgeAlert]:
     client = client or OfficialPyPIClient()
     now = datetime.now(timezone.utc) if now is None else now
@@ -182,7 +234,11 @@ def detect_recent_release_alerts(
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         lookups = list(
             executor.map(
-                lambda package: _fetch_release_lookup_result(package, client),
+                lambda package: _fetch_release_lookup_result(
+                    package,
+                    client,
+                    registry_metadata=registry_metadata,
+                ),
                 candidates,
             )
         )
@@ -251,6 +307,7 @@ def detect_empty_description_alerts(
     *,
     client: OfficialPyPIClient | None = None,
     report_metadata_available: bool | None = None,
+    registry_metadata: RegistryMetadataLookup | None = None,
 ) -> list[EmptyDescriptionAlert]:
     client = client or OfficialPyPIClient()
     alerts: list[EmptyDescriptionAlert] = []
@@ -261,7 +318,11 @@ def detect_empty_description_alerts(
 
     if _report_metadata_available(candidates, report_metadata_available):
         lookups = [
-            _fetch_description_lookup_result(package, client)
+            _fetch_description_lookup_result(
+                package,
+                client,
+                registry_metadata=registry_metadata,
+            )
             for package in candidates
         ]
     else:
@@ -269,7 +330,11 @@ def detect_empty_description_alerts(
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             lookups = list(
                 executor.map(
-                    lambda package: _fetch_description_lookup_result(package, client),
+                    lambda package: _fetch_description_lookup_result(
+                        package,
+                        client,
+                        registry_metadata=registry_metadata,
+                    ),
                     candidates,
                 )
             )
@@ -341,6 +406,7 @@ def detect_suspicious_metadata_url_alerts(
     *,
     client: OfficialPyPIClient | None = None,
     report_metadata_available: bool | None = None,
+    registry_metadata: RegistryMetadataLookup | None = None,
 ) -> list[MetadataUrlAlert]:
     client = client or OfficialPyPIClient()
     alerts: list[MetadataUrlAlert] = []
@@ -351,7 +417,11 @@ def detect_suspicious_metadata_url_alerts(
 
     if _report_metadata_available(candidates, report_metadata_available):
         lookups = [
-            _fetch_suspicious_url_lookup_result(package, client)
+            _fetch_suspicious_url_lookup_result(
+                package,
+                client,
+                registry_metadata=registry_metadata,
+            )
             for package in candidates
         ]
     else:
@@ -362,6 +432,7 @@ def detect_suspicious_metadata_url_alerts(
                     lambda package: _fetch_suspicious_url_lookup_result(
                         package,
                         client,
+                        registry_metadata=registry_metadata,
                     ),
                     candidates,
                 )
@@ -390,6 +461,7 @@ def detect_repository_mismatch_alerts(
     *,
     client: OfficialPyPIClient | None = None,
     report_metadata_available: bool | None = None,
+    registry_metadata: RegistryMetadataLookup | None = None,
 ) -> list[RepositoryMismatchAlert]:
     client = client or OfficialPyPIClient()
     alerts: list[RepositoryMismatchAlert] = []
@@ -400,7 +472,11 @@ def detect_repository_mismatch_alerts(
 
     if _report_metadata_available(candidates, report_metadata_available):
         lookups = [
-            _fetch_repository_mismatch_lookup_result(package, client)
+            _fetch_repository_mismatch_lookup_result(
+                package,
+                client,
+                registry_metadata=registry_metadata,
+            )
             for package in candidates
         ]
     else:
@@ -411,6 +487,7 @@ def detect_repository_mismatch_alerts(
                     lambda package: _fetch_repository_mismatch_lookup_result(
                         package,
                         client,
+                        registry_metadata=registry_metadata,
                     ),
                     candidates,
                 )
@@ -440,6 +517,7 @@ def detect_email_domain_drift_alerts(
     client: OfficialPyPIClient | None = None,
     update_history: bool = True,
     report_metadata_available: bool | None = None,
+    registry_metadata: RegistryMetadataLookup | None = None,
 ) -> list[EmailDomainDriftAlert]:
     client = client or OfficialPyPIClient()
     alerts: list[EmailDomainDriftAlert] = []
@@ -453,7 +531,11 @@ def detect_email_domain_drift_alerts(
 
     if _report_metadata_available(candidates, report_metadata_available):
         current_domains = [
-            _fetch_contact_email_domains(package, client)
+            _fetch_contact_email_domains(
+                package,
+                client,
+                registry_metadata=registry_metadata,
+            )
             for package in candidates
         ]
     else:
@@ -461,7 +543,11 @@ def detect_email_domain_drift_alerts(
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             current_domains = list(
                 executor.map(
-                    lambda package: _fetch_contact_email_domains(package, client),
+                    lambda package: _fetch_contact_email_domains(
+                        package,
+                        client,
+                        registry_metadata=registry_metadata,
+                    ),
                     candidates,
                 )
             )
@@ -627,9 +713,49 @@ def _unique_packages_for_recent_release_check(
     return selected
 
 
+def _registry_metadata_cache_key(
+    package: PackageLike,
+    client: OfficialPyPIClient,
+) -> tuple[str, str, str]:
+    return (
+        client.base_url.rstrip("/").lower(),
+        package.name.lower(),
+        package.version,
+    )
+
+
+def _fetch_registry_metadata_lookup(
+    package: PackageLike,
+    client: OfficialPyPIClient,
+) -> _RegistryMetadataLookupResult:
+    try:
+        metadata = client.fetch_release_metadata(package.name, package.version)
+    except Exception as exc:
+        return _RegistryMetadataLookupResult(
+            timed_out=_is_timeout_error(exc),
+            metadata=None,
+        )
+    return _RegistryMetadataLookupResult(timed_out=False, metadata=metadata)
+
+
+def _lookup_prefetched_registry_metadata(
+    package: PackageLike,
+    client: OfficialPyPIClient,
+    registry_metadata: RegistryMetadataLookup | None,
+) -> _RegistryMetadataLookupResult | object:
+    if registry_metadata is None:
+        return _NO_PREFETCHED_METADATA
+    return registry_metadata.get(
+        _registry_metadata_cache_key(package, client),
+        _NO_PREFETCHED_METADATA,
+    )
+
+
 def _fetch_release_lookup_result(
     package: PackageLike,
     client: OfficialPyPIClient,
+    *,
+    registry_metadata: RegistryMetadataLookup | None = None,
 ) -> _ReleaseLookupResult:
     key = (
         client.base_url.rstrip("/").lower(),
@@ -656,6 +782,37 @@ def _fetch_release_lookup_result(
         _RELEASE_LOOKUP_CACHE[key] = result
         return result
 
+    prefetched = _lookup_prefetched_registry_metadata(
+        package,
+        client,
+        registry_metadata,
+    )
+    if prefetched is not _NO_PREFETCHED_METADATA:
+        assert isinstance(prefetched, _RegistryMetadataLookupResult)
+        published_at = (
+            _upload_time_from_release_metadata(
+                prefetched.metadata,
+                download_url=package.download_url,
+                filename=package.artifact_name,
+            )
+            if prefetched.metadata is not None
+            else None
+        )
+        result = _ReleaseLookupResult(
+            timed_out=prefetched.timed_out,
+            published_at=published_at,
+        )
+        if prefetched.metadata is not None:
+            client.store_cached_release_upload_time(
+                package.name,
+                package.version,
+                published_at,
+                download_url=package.download_url,
+                filename=package.artifact_name,
+            )
+        _RELEASE_LOOKUP_CACHE[key] = result
+        return result
+
     try:
         published_at = client.fetch_release_upload_time(
             package.name,
@@ -668,6 +825,14 @@ def _fetch_release_lookup_result(
             result = _ReleaseLookupResult(timed_out=True, published_at=None)
         else:
             result = _ReleaseLookupResult(timed_out=False, published_at=None)
+            if _is_not_found_error(exc):
+                client.store_cached_release_upload_time(
+                    package.name,
+                    package.version,
+                    None,
+                    download_url=package.download_url,
+                    filename=package.artifact_name,
+                )
     else:
         result = _ReleaseLookupResult(timed_out=False, published_at=published_at)
         client.store_cached_release_upload_time(
@@ -685,6 +850,8 @@ def _fetch_release_lookup_result(
 def _fetch_description_lookup_result(
     package: PackageLike,
     client: OfficialPyPIClient,
+    *,
+    registry_metadata: RegistryMetadataLookup | None = None,
 ) -> _DescriptionLookupResult:
     key = (
         client.base_url.rstrip("/").lower(),
@@ -699,15 +866,30 @@ def _fetch_description_lookup_result(
     if metadata is not None:
         summary, description = _description_fields_from_metadata(metadata)
     else:
-        try:
-            summary, description = client.fetch_release_description_fields(
-                package.name,
-                package.version,
+        prefetched = _lookup_prefetched_registry_metadata(
+            package,
+            client,
+            registry_metadata,
+        )
+        if prefetched is not _NO_PREFETCHED_METADATA:
+            assert isinstance(prefetched, _RegistryMetadataLookupResult)
+            if prefetched.metadata is None:
+                result = _DescriptionLookupResult(has_empty_description=False)
+                _DESCRIPTION_LOOKUP_CACHE[key] = result
+                return result
+            summary, description = _description_fields_from_metadata(
+                prefetched.metadata
             )
-        except Exception:
-            result = _DescriptionLookupResult(has_empty_description=False)
-            _DESCRIPTION_LOOKUP_CACHE[key] = result
-            return result
+        else:
+            try:
+                summary, description = client.fetch_release_description_fields(
+                    package.name,
+                    package.version,
+                )
+            except Exception:
+                result = _DescriptionLookupResult(has_empty_description=False)
+                _DESCRIPTION_LOOKUP_CACHE[key] = result
+                return result
 
     result = _DescriptionLookupResult(
         has_empty_description=(
@@ -722,6 +904,8 @@ def _fetch_description_lookup_result(
 def _fetch_suspicious_url_lookup_result(
     package: PackageLike,
     client: OfficialPyPIClient,
+    *,
+    registry_metadata: RegistryMetadataLookup | None = None,
 ) -> _SuspiciousUrlLookupResult:
     key = (
         client.base_url.rstrip("/").lower(),
@@ -734,12 +918,25 @@ def _fetch_suspicious_url_lookup_result(
 
     metadata = _package_report_metadata(package)
     if metadata is None:
-        try:
-            metadata = client.fetch_release_metadata(package.name, package.version)
-        except Exception:
-            result = _SuspiciousUrlLookupResult(findings=())
-            _SUSPICIOUS_URL_LOOKUP_CACHE[key] = result
-            return result
+        prefetched = _lookup_prefetched_registry_metadata(
+            package,
+            client,
+            registry_metadata,
+        )
+        if prefetched is not _NO_PREFETCHED_METADATA:
+            assert isinstance(prefetched, _RegistryMetadataLookupResult)
+            if prefetched.metadata is None:
+                result = _SuspiciousUrlLookupResult(findings=())
+                _SUSPICIOUS_URL_LOOKUP_CACHE[key] = result
+                return result
+            metadata = prefetched.metadata
+        else:
+            try:
+                metadata = client.fetch_release_metadata(package.name, package.version)
+            except Exception:
+                result = _SuspiciousUrlLookupResult(findings=())
+                _SUSPICIOUS_URL_LOOKUP_CACHE[key] = result
+                return result
 
     findings = tuple(
         (url, reason)
@@ -755,6 +952,8 @@ def _fetch_suspicious_url_lookup_result(
 def _fetch_repository_mismatch_lookup_result(
     package: PackageLike,
     client: OfficialPyPIClient,
+    *,
+    registry_metadata: RegistryMetadataLookup | None = None,
 ) -> _RepositoryMismatchLookupResult:
     key = (
         client.base_url.rstrip("/").lower(),
@@ -767,12 +966,25 @@ def _fetch_repository_mismatch_lookup_result(
 
     metadata = _package_report_metadata(package)
     if metadata is None:
-        try:
-            metadata = client.fetch_release_metadata(package.name, package.version)
-        except Exception:
-            result = _RepositoryMismatchLookupResult(findings=())
-            _REPOSITORY_MISMATCH_LOOKUP_CACHE[key] = result
-            return result
+        prefetched = _lookup_prefetched_registry_metadata(
+            package,
+            client,
+            registry_metadata,
+        )
+        if prefetched is not _NO_PREFETCHED_METADATA:
+            assert isinstance(prefetched, _RegistryMetadataLookupResult)
+            if prefetched.metadata is None:
+                result = _RepositoryMismatchLookupResult(findings=())
+                _REPOSITORY_MISMATCH_LOOKUP_CACHE[key] = result
+                return result
+            metadata = prefetched.metadata
+        else:
+            try:
+                metadata = client.fetch_release_metadata(package.name, package.version)
+            except Exception:
+                result = _RepositoryMismatchLookupResult(findings=())
+                _REPOSITORY_MISMATCH_LOOKUP_CACHE[key] = result
+                return result
 
     findings = tuple(
         (url, repository_name)
@@ -791,15 +1003,30 @@ def _fetch_repository_mismatch_lookup_result(
 def _fetch_contact_email_domains(
     package: PackageLike,
     client: OfficialPyPIClient,
+    *,
+    registry_metadata: RegistryMetadataLookup | None = None,
 ) -> tuple[str, ...]:
     metadata = _package_report_metadata(package)
     if metadata is not None:
         emails = _contact_emails_from_metadata(metadata)
     else:
-        try:
-            emails = client.fetch_release_contact_emails(package.name, package.version)
-        except Exception:
-            return ()
+        prefetched = _lookup_prefetched_registry_metadata(
+            package,
+            client,
+            registry_metadata,
+        )
+        if prefetched is not _NO_PREFETCHED_METADATA:
+            assert isinstance(prefetched, _RegistryMetadataLookupResult)
+            if prefetched.metadata is None:
+                return ()
+            emails = _contact_emails_from_metadata(prefetched.metadata)
+        else:
+            try:
+                emails = client.fetch_release_contact_emails(
+                    package.name, package.version
+                )
+            except Exception:
+                return ()
     return tuple(
         sorted(
             {
@@ -811,6 +1038,42 @@ def _fetch_contact_email_domains(
     )
 
 
+def _upload_time_from_release_metadata(
+    metadata: dict,
+    *,
+    download_url: str | None = None,
+    filename: str | None = None,
+) -> datetime | None:
+    urls = metadata.get("urls", [])
+    selected = None
+
+    for item in urls:
+        if download_url and item.get("url") == download_url:
+            selected = item
+            break
+        if filename and item.get("filename") == filename:
+            selected = item
+            break
+
+    if selected is None and urls:
+        selected = max(
+            urls,
+            key=lambda item: _parse_upload_time(item.get("upload_time_iso_8601"))
+            or datetime.min.replace(tzinfo=timezone.utc),
+        )
+
+    if selected is None:
+        return None
+    return _parse_upload_time(selected.get("upload_time_iso_8601"))
+
+
+def _parse_upload_time(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    normalized = value.replace("Z", "+00:00")
+    return datetime.fromisoformat(normalized)
+
+
 def _is_timeout_error(exc: Exception) -> bool:
     if isinstance(exc, (TimeoutError, socket.timeout)):
         return True
@@ -818,6 +1081,10 @@ def _is_timeout_error(exc: Exception) -> bool:
         reason = getattr(exc, "reason", None)
         return isinstance(reason, (TimeoutError, socket.timeout))
     return False
+
+
+def _is_not_found_error(exc: Exception) -> bool:
+    return isinstance(exc, HTTPError) and exc.code == 404
 
 
 def _is_zero_version(version: str) -> bool:

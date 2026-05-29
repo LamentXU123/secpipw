@@ -112,6 +112,12 @@ the gate stricter with `--sensitivity medium` or `--sensitivity high`:
 - `--sensitivity medium`: `MEDIUM` and above pause installation; `LOW` prompts.
 - `--sensitivity high`: `LOW` and above pause installation.
 
+## Caches
+
+secured_pip stores PyPI name, release-time, and maintainer email history caches in
+the user's cache directory by default, so the same cache is reused across projects.
+Set `SPIP_CACHE_DIR` to override the cache directory.
+
 When `secured_pip` detects a potential risk, a warning will be raised, with the level depending on the severity the risk is.
 
 For now, the project has several major check points:
