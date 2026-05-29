@@ -75,6 +75,8 @@ const runScene = async (scene) => {
   const guides = document.querySelectorAll('[data-command-guides]')
   const base = scene.getAttribute('data-command-base') || 'pip install packages'
   const finalText = scene.getAttribute('data-command-final') || `s${base}`
+  let currentCaretValue = ''
+  let resizeFrame = 0
 
   if (!commandText || !measure || !caret || !copy || !terminalWindow) {
     return
@@ -82,10 +84,25 @@ const runScene = async (scene) => {
 
   document.body.classList.add('home-prelude')
 
-  const setCaret = (value) => {
-    measure.innerHTML = renderCommand(value)
-    const width = Math.max(0, measure.getBoundingClientRect().width + 3)
+  const updateCaretPosition = () => {
+    measure.innerHTML = renderCommand(currentCaretValue)
+    const width = Math.max(0, measure.getBoundingClientRect().width)
     caret.style.transform = `translateX(${width}px)`
+  }
+
+  const setCaret = (value) => {
+    currentCaretValue = value
+    updateCaretPosition()
+  }
+
+  const syncCaret = () => {
+    window.cancelAnimationFrame(resizeFrame)
+    resizeFrame = window.requestAnimationFrame(updateCaretPosition)
+  }
+
+  window.addEventListener('resize', syncCaret)
+  if (document.fonts) {
+    document.fonts.ready.then(syncCaret)
   }
 
   const stopBlink = () => {
@@ -150,10 +167,12 @@ const runScene = async (scene) => {
   }
 
   await sleep(90)
-  for (let i = 2; i <= finalText.length; i += 1) {
+  const caretText = prefix
+  for (let i = caretText.length + 1; i <= finalText.length; i += 1) {
     setCaret(finalText.slice(0, i))
     await sleep(34)
   }
+  setCaret(finalText)
   startBlink()
 }
 
