@@ -1,5 +1,5 @@
 *Not Finished Yet. Contribution Welcome. Site at https://spip.lamentxu.top/*
-
+English | [简体中文](./README.zh-CN.md)
 # secured_pip
 
 [![Test](https://github.com/LamentXU123/spip/actions/workflows/test.yml/badge.svg)](https://github.com/LamentXU123/spip/actions/workflows/test.yml)
