@@ -169,6 +169,23 @@
                 </p>
               </div>
             </section>
+
+            <section id="check-artifact-history" class="cli-option">
+              <div class="cli-option-signature">
+                <code>artifact-history</code>
+                <span>MEDIUM / LOW</span>
+              </div>
+              <div class="cli-option-body">
+                <p>
+                  在一次 <code>spip install</code> 成功后，为已安装包记录本地安装产物 baseline。之后再次安装同名包时，如果已安装
+                  <code>.pth</code> 文件新增、删除或内容变化，就会报警。
+                </p>
+                <p>
+                  <code>.pth</code> 文件变化是 <strong>MEDIUM</strong>。entry-point 元数据或生成的脚本文件名新增、删除是
+                  <strong>LOW</strong>。脚本文件内容不会比较，因为生成的 wrapper 在不同环境里可能不同。
+                </p>
+              </div>
+            </section>
           </div>
         </article>
 
@@ -183,6 +200,7 @@
           <a href="#check-email-domain-drift">email-domain-drift</a>
           <a href="#check-zero-version">zero-version</a>
           <a href="#check-suspicious-pth">suspicious-pth</a>
+          <a href="#check-artifact-history">artifact-history</a>
         </aside>
       </main>
     </div>

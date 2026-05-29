@@ -84,7 +84,7 @@
               <article class="release-copy-block">
                 <h3>解决了什么问题</h3>
                 <p>供应链投毒一直是网络安全里永恒的话题。现在市面上对此的解决方案，有成熟却性能开销大的 GuardDog，也有完全依赖付费 socket API 的 sfw。它们的问题在于：成熟如 GuardDog 的太笨重，不适合进入 CI 反而适合安全研究员静态解析。若对每一个 pip install 的下载产物（包括各种依赖）都跑一次 GuardDog 无疑会拖慢安装进度；而 sfw 虽然轻量，却是完全依靠付费的 socket API 完成，对于日常开发者而言，无疑又是一次经济负担。</p>
-                <p>secured_pip 解决了这个问题。它通过给 pip 的安装器上钩子，将安全检查完美地融合到了 pip install 的下载和安装流程中去。同时，性能影响通常很小，但不是固定数值。secured_pip 完全免费提供给所有人。</p>
+                <p>secured_pip 解决了这个问题。它通过给 pip 的安装器上钩子，将安全检查完美地融合到了 pip install 的下载和安装流程中去。同时，性能影响通常很小。secured_pip 完全免费提供给所有人。</p>
                 <p>当代，很多独立开发者的 CI 服务器被攻击导致 secret key 泄露，造成严重后果。如果安装了 secured_pip，这样的风险会大大降低，同时<strong>不需要付费，不需要额外的性能开支，也不需要学习和配置</strong>。只有一次的 <code>pip install secured_pip</code> 再设置一次别名，你就可以接着用 pip，却在无形中获得一层至关重要的保护网。</p>
               </article>
 

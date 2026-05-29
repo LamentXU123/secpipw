@@ -184,6 +184,26 @@
                 </p>
               </div>
             </section>
+
+            <section id="check-artifact-history" class="cli-option">
+              <div class="cli-option-signature">
+                <code>artifact-history</code>
+                <span>MEDIUM / LOW</span>
+              </div>
+              <div class="cli-option-body">
+                <p>
+                  Records a local baseline of installed package artifacts after a successful
+                  <code>spip install</code>. A later install of the same package warns when installed
+                  <code>.pth</code> files are added, removed, or changed.
+                </p>
+                <p>
+                  Changes to <code>.pth</code> files are <strong>MEDIUM</strong>. Added or removed
+                  entry-point metadata and generated script file names are <strong>LOW</strong>.
+                  Script file contents are not compared because generated wrappers can vary across
+                  environments.
+                </p>
+              </div>
+            </section>
           </div>
         </article>
 
@@ -198,6 +218,7 @@
           <a href="#check-email-domain-drift">email-domain-drift</a>
           <a href="#check-zero-version">zero-version</a>
           <a href="#check-suspicious-pth">suspicious-pth</a>
+          <a href="#check-artifact-history">artifact-history</a>
         </aside>
       </main>
     </div>
