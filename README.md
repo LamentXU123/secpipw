@@ -82,24 +82,6 @@ Today, many independent developers have suffered CI server compromises that leak
 
 ## Warning policies
 
-## TODO
-
-Contributions welcome:
-
-- Framework
-    - [ ] Support `uv`
-    - [ ] Support `pipx`
-    - [ ] Support `conda`
-- CI
-    - [ ] Write a benchmark CI in the github workflow to compare the performance of `spip install` and `pip install`
-- Documentation
-    - [ ] Use some modern documentation framework to refactor the /doc/docs directory.
-    - [ ] Support website view on mobile phones. @didongji91
-- Checks
-    - [ ] Add check of the diff between the last version of the package and the to-be-installed version, search for malicious changes
-        - [ ] If new .pth file is added
-        - [ ] If setup.py has been changed
-
 We currently have three install warning policies:
 
 - `HIGH`: pause installation and require `--ignore-warning`
@@ -111,12 +93,6 @@ the gate stricter with `--sensitivity medium` or `--sensitivity high`:
 
 - `--sensitivity medium`: `MEDIUM` and above pause installation; `LOW` prompts.
 - `--sensitivity high`: `LOW` and above pause installation.
-
-## Caches
-
-secured_pip stores PyPI name, release-time, and maintainer email history caches in
-the user's cache directory by default, so the same cache is reused across projects.
-Set `SPIP_CACHE_DIR` to override the cache directory.
 
 When `secured_pip` detects a potential risk, a warning will be raised, with the level depending on the severity the risk is.
 
@@ -135,3 +111,21 @@ For now, the project has several major check points:
 - [x] Zero-version checks: If the selected package version is `0.0` or `0.0.0`, `secured_pip` will raise a `LOW` warning.
 - [x] `.pth` file detection: Instead of directly injecting malicious code inside the package, today most hackers will place their bad stuff under a `.pth` file, with an `import` as the beginning. `secured_pip` only checks the installed file-system diff after installation. The warning level is always `MEDIUM`, and `secured_pip` will ask whether to delete the suspicious installed `.pth` file.
 - [ ] TODO ...
+
+## TODO
+
+Contributions welcome:
+
+- Framework
+    - [ ] Support `uv`
+    - [ ] Support `pipx`
+    - [ ] Support `conda`
+- CI
+    - [ ] Write a benchmark CI in the github workflow to compare the performance of `spip install` and `pip install`
+- Documentation
+    - [ ] Use some modern documentation framework to refactor the /doc/docs directory.
+    - [ ] Support website view on mobile phones. @didongji91
+- Checks
+    - [ ] Add check of the diff between the last version of the package and the to-be-installed version, search for malicious changes
+        - [ ] If new .pth file is added
+        - [ ] If setup.py has been changed
