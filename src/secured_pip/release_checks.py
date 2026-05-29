@@ -22,7 +22,8 @@ from secured_pip.severity import Severity
 from secured_pip.terminal import colorize
 from secured_pip.typo import PIP_OPTIONS_WITH_VALUE
 
-RECENT_RELEASE_THRESHOLD = timedelta(days=2)
+RECENT_RELEASE_MEDIUM_THRESHOLD = timedelta(hours=8)
+RECENT_RELEASE_LOW_THRESHOLD = timedelta(hours=48)
 RECENT_RELEASE_MAX_WORKERS = 8
 _RELEASE_LOOKUP_CACHE: dict[tuple[str, str, str, str, str], "_ReleaseLookupResult"] = {}
 _DESCRIPTION_LOOKUP_CACHE: dict[tuple[str, str, str], "_DescriptionLookupResult"] = {}
@@ -263,11 +264,15 @@ def detect_recent_release_alerts(
         if published_at is None:
             continue
         age = now - published_at
-        if age >= RECENT_RELEASE_THRESHOLD:
+        if age < RECENT_RELEASE_MEDIUM_THRESHOLD:
+            severity = Severity.MEDIUM
+        elif age < RECENT_RELEASE_LOW_THRESHOLD:
+            severity = Severity.LOW
+        else:
             continue
         alerts.append(
             ReleaseAgeAlert(
-                severity=Severity.MEDIUM,
+                severity=severity,
                 package_name=package.name,
                 version=package.version,
                 published_at=published_at,

@@ -97,12 +97,13 @@
             <section id="check-recent-release" class="cli-option">
               <div class="cli-option-signature">
                 <code>recent-release</code>
-                <span>MEDIUM</span>
+                <span>MEDIUM / LOW</span>
               </div>
               <div class="cli-option-body">
                 <p>
-                  Warns when the selected PyPI release was published less than 2 days ago, because very
-                  fresh releases leave less time for community review.
+                  Warns when the selected PyPI release is very fresh. Releases published less than 8
+                  hours ago are <strong>MEDIUM</strong>; releases published less than 48 hours ago
+                  are <strong>LOW</strong>.
                 </p>
               </div>
             </section>

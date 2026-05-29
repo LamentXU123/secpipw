@@ -129,7 +129,7 @@ For now, the project has several major check points:
     - Medium severity: `panda` vs `pandas`
     - Low severity: `sixth` vs `six`
 - [x] Direct URL dependency checks: If the install target or a resolved dependency uses a direct URL, VCS URL, or PEP 508 direct reference, `secured_pip` will raise a `MEDIUM` warning.
-- [x] Fresh release checks: If the selected PyPI release was published less than 2 days ago, `secured_pip` will raise a `MEDIUM` warning.
+- [x] Fresh release checks: If the selected PyPI release was published less than 8 hours ago, `secured_pip` will raise a `MEDIUM` warning; if it was published less than 48 hours ago, `secured_pip` will raise a `LOW` warning.
 - [x] Empty description checks: If the selected PyPI release metadata has no summary and no long description, `secured_pip` will raise a `LOW` warning.
 - [x] Suspicious metadata URL checks: If PyPI metadata points to a shortener, raw IP, suspicious TLD, embedded credentials, or similar suspicious URL, `secured_pip` will raise a `LOW` warning.
 - [x] Repository mismatch checks: If PyPI metadata points to a GitHub/GitLab repository whose repo name appears unrelated to the package name, `secured_pip` will raise a `LOW` warning.

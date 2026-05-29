@@ -145,7 +145,7 @@ class ReleaseCheckTests(unittest.TestCase):
         self.addCleanup(shutil.rmtree, path, True)
         return path
 
-    def test_recent_release_raises_medium_alert(self) -> None:
+    def test_recent_release_raises_medium_alert_under_eight_hours(self) -> None:
         now = datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc)
         package = FakePackage(
             name="demo",
@@ -195,46 +195,95 @@ class ReleaseCheckTests(unittest.TestCase):
 
         self.assertEqual(alerts, [])
 
-    def test_two_day_threshold_is_still_recent_but_exact_boundary_is_not(self) -> None:
+    def test_recent_release_raises_low_alert_under_forty_eight_hours(self) -> None:
         now = datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc)
-        recent = FakePackage(
-            name="recent",
+        package = FakePackage(
+            name="demo",
             version="1.0.0",
-            download_url="https://files.pythonhosted.org/packages/recent-1.0.0.whl",
-            artifact_name="recent-1.0.0.whl",
-        )
-        boundary = FakePackage(
-            name="boundary",
-            version="1.0.0",
-            download_url="https://files.pythonhosted.org/packages/boundary-1.0.0.whl",
-            artifact_name="boundary-1.0.0.whl",
+            download_url="https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+            artifact_name="demo-1.0.0.whl",
         )
         client = FakePyPIClient(
             {
                 (
-                    "recent",
+                    "demo",
                     "1.0.0",
-                    "https://files.pythonhosted.org/packages/recent-1.0.0.whl",
-                    "recent-1.0.0.whl",
+                    "https://files.pythonhosted.org/packages/demo-1.0.0.whl",
+                    "demo-1.0.0.whl",
                 ): now
-                - timedelta(days=1, hours=23, minutes=59),
+                - timedelta(hours=12)
+            }
+        )
+
+        alerts = detect_recent_release_alerts([package], client=client, now=now)
+
+        self.assertEqual(len(alerts), 1)
+        self.assertEqual(alerts[0].severity, Severity.LOW)
+        self.assertIn("published 12h 0m ago", alerts[0].message)
+
+    def test_recent_release_threshold_boundaries(self) -> None:
+        now = datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc)
+        eight_hour_boundary = FakePackage(
+            name="eight-hour-boundary",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/eight-hour-boundary-1.0.0.whl",
+            artifact_name="eight-hour-boundary-1.0.0.whl",
+        )
+        forty_eight_hour_recent = FakePackage(
+            name="forty-eight-hour-recent",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/forty-eight-hour-recent-1.0.0.whl",
+            artifact_name="forty-eight-hour-recent-1.0.0.whl",
+        )
+        forty_eight_hour_boundary = FakePackage(
+            name="forty-eight-hour-boundary",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/forty-eight-hour-boundary-1.0.0.whl",
+            artifact_name="forty-eight-hour-boundary-1.0.0.whl",
+        )
+        client = FakePyPIClient(
+            {
                 (
-                    "boundary",
+                    "eight-hour-boundary",
                     "1.0.0",
-                    "https://files.pythonhosted.org/packages/boundary-1.0.0.whl",
-                    "boundary-1.0.0.whl",
+                    "https://files.pythonhosted.org/packages/eight-hour-boundary-1.0.0.whl",
+                    "eight-hour-boundary-1.0.0.whl",
                 ): now
-                - timedelta(days=2),
+                - timedelta(hours=8),
+                (
+                    "forty-eight-hour-recent",
+                    "1.0.0",
+                    "https://files.pythonhosted.org/packages/forty-eight-hour-recent-1.0.0.whl",
+                    "forty-eight-hour-recent-1.0.0.whl",
+                ): now
+                - timedelta(hours=47, minutes=59),
+                (
+                    "forty-eight-hour-boundary",
+                    "1.0.0",
+                    "https://files.pythonhosted.org/packages/forty-eight-hour-boundary-1.0.0.whl",
+                    "forty-eight-hour-boundary-1.0.0.whl",
+                ): now
+                - timedelta(hours=48),
             }
         )
 
         alerts = detect_recent_release_alerts(
-            [recent, boundary],
+            [
+                eight_hour_boundary,
+                forty_eight_hour_recent,
+                forty_eight_hour_boundary,
+            ],
             client=client,
             now=now,
         )
 
-        self.assertEqual([alert.package_name for alert in alerts], ["recent"])
+        self.assertEqual(
+            [(alert.package_name, alert.severity) for alert in alerts],
+            [
+                ("eight-hour-boundary", Severity.LOW),
+                ("forty-eight-hour-recent", Severity.LOW),
+            ],
+        )
 
     def test_recent_release_checks_only_requested_packages(self) -> None:
         now = datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc)

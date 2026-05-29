@@ -92,11 +92,12 @@
             <section id="check-recent-release" class="cli-option">
               <div class="cli-option-signature">
                 <code>recent-release</code>
-                <span>MEDIUM</span>
+                <span>MEDIUM / LOW</span>
               </div>
               <div class="cli-option-body">
                 <p>
-                  当选中的 PyPI release 发布时间不到 2 天时报警，因为非常新的 release 留给社区审查的时间更少。
+                  当选中的 PyPI release 发布时间非常近时报警。发布时间小于 8 小时是
+                  <strong>MEDIUM</strong>；小于 48 小时是 <strong>LOW</strong>。
                 </p>
               </div>
             </section>
