@@ -100,9 +100,10 @@ class TypoDetector:
         if not requested:
             return None
 
-        project_name_set = self._load_project_name_set()
         if requested in self._popular_exact_names:
             return None
+
+        project_name_set = self._load_project_name_set()
         best_match, score, distance = _search_best_match(
             requested,
             self._candidate_pool_for(requested),

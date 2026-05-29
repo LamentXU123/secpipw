@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import Iterable, Protocol
 
@@ -106,51 +105,48 @@ def detect_install_alerts(plan: InstallPlan, pip_args: list[str]) -> InstallAler
     direct_url_alerts = tuple(detect_direct_url_alerts(pip_args, plan.packages))
     zero_version_alerts = tuple(detect_zero_version_alerts(plan.packages))
 
-    # Run all network-dependent checks in parallel.
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        f_recent = executor.submit(
-            detect_recent_release_alerts,
-            registry_metadata_packages,
-            client=release_client,
-            registry_metadata=prefetched_registry_metadata,
-        )
-        f_desc = executor.submit(
-            detect_empty_description_alerts,
-            registry_metadata_packages,
-            client=release_client,
-            report_metadata_available=report_metadata_available,
-            registry_metadata=prefetched_registry_metadata,
-        )
-        f_suspicious = executor.submit(
-            detect_suspicious_metadata_url_alerts,
-            registry_metadata_packages,
-            client=release_client,
-            report_metadata_available=report_metadata_available,
-            registry_metadata=prefetched_registry_metadata,
-        )
-        f_repo = executor.submit(
-            detect_repository_mismatch_alerts,
-            registry_metadata_packages,
-            client=release_client,
-            report_metadata_available=report_metadata_available,
-            registry_metadata=prefetched_registry_metadata,
-        )
-        f_email = executor.submit(
-            detect_email_domain_drift_alerts,
-            registry_metadata_packages,
-            client=release_client,
-            report_metadata_available=report_metadata_available,
-            registry_metadata=prefetched_registry_metadata,
-        )
-
     return InstallAlerts(
         typo_alerts=typo_alerts,
         direct_url_alerts=direct_url_alerts,
-        recent_release_alerts=tuple(f_recent.result()),
-        empty_description_alerts=tuple(f_desc.result()),
-        suspicious_metadata_url_alerts=tuple(f_suspicious.result()),
-        repository_mismatch_alerts=tuple(f_repo.result()),
-        email_domain_drift_alerts=tuple(f_email.result()),
+        recent_release_alerts=tuple(
+            detect_recent_release_alerts(
+                registry_metadata_packages,
+                client=release_client,
+                registry_metadata=prefetched_registry_metadata,
+            )
+        ),
+        empty_description_alerts=tuple(
+            detect_empty_description_alerts(
+                registry_metadata_packages,
+                client=release_client,
+                report_metadata_available=report_metadata_available,
+                registry_metadata=prefetched_registry_metadata,
+            )
+        ),
+        suspicious_metadata_url_alerts=tuple(
+            detect_suspicious_metadata_url_alerts(
+                registry_metadata_packages,
+                client=release_client,
+                report_metadata_available=report_metadata_available,
+                registry_metadata=prefetched_registry_metadata,
+            )
+        ),
+        repository_mismatch_alerts=tuple(
+            detect_repository_mismatch_alerts(
+                registry_metadata_packages,
+                client=release_client,
+                report_metadata_available=report_metadata_available,
+                registry_metadata=prefetched_registry_metadata,
+            )
+        ),
+        email_domain_drift_alerts=tuple(
+            detect_email_domain_drift_alerts(
+                registry_metadata_packages,
+                client=release_client,
+                report_metadata_available=report_metadata_available,
+                registry_metadata=prefetched_registry_metadata,
+            )
+        ),
         zero_version_alerts=zero_version_alerts,
     )
 

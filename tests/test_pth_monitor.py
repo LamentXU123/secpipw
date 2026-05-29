@@ -11,6 +11,7 @@ from secured_pip import Severity
 from secured_pip.pth_monitor import (
     PthMonitor,
     collect_package_artifact_records,
+    compare_package_artifact_record,
     handle_package_artifact_history_alerts,
     find_import_lines,
     gate_suspicious_pth_alerts,
@@ -304,7 +305,7 @@ class PthMonitorTests(unittest.TestCase):
             record["entry_points"],
             ["console_scripts:demo=demo:main"],
         )
-        self.assertIn("scripts/demo-cli", record["script_files"])
+        self.assertEqual(record["script_files"], ["scripts/demo-cli"])
 
     def test_package_artifact_history_alerts_on_changed_pth_and_entry_points(
         self,
@@ -346,6 +347,40 @@ class PthMonitorTests(unittest.TestCase):
         self.assertEqual(second[1].severity, Severity.LOW)
         self.assertIn("changed site/demo.pth", second[0].message)
         self.assertIn("demo:changed", second[1].message)
+
+    def test_package_artifact_history_accepts_old_record_shape(self) -> None:
+        previous = {
+            "name": "demo",
+            "version": "1.0.0",
+            "pth_files": {
+                "site/demo.pth": {
+                    "digest": "abc",
+                    "import_lines": ["import demo_bootstrap"],
+                    "size": 128,
+                }
+            },
+            "entry_points": ["console_scripts:demo=demo:main"],
+            "script_files": {
+                "scripts/demo-cli": {
+                    "digest": "def",
+                    "size": 256,
+                }
+            },
+        }
+        current = {
+            "name": "demo",
+            "version": "1.0.0",
+            "pth_files": {
+                "site/demo.pth": {
+                    "digest": "abc",
+                    "import_lines": ["import demo_bootstrap"],
+                }
+            },
+            "entry_points": ["console_scripts:demo=demo:main"],
+            "script_files": ["scripts/demo-cli"],
+        }
+
+        self.assertEqual(compare_package_artifact_record(previous, current), [])
 
     def test_handle_package_artifact_history_alerts_renders_and_gates(self) -> None:
         stderr = io.StringIO()

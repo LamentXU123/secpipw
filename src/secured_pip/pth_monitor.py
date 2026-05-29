@@ -414,8 +414,8 @@ def compare_package_artifact_record(
     alerts: list[PackageArtifactHistoryAlert] = []
 
     pth_changes = _changed_keys(
-        previous.get("pth_files"),
-        current.get("pth_files"),
+        _normalized_pth_files(previous.get("pth_files")),
+        _normalized_pth_files(current.get("pth_files")),
         compare_values=True,
     )
     if pth_changes:
@@ -440,10 +440,9 @@ def compare_package_artifact_record(
         previous.get("entry_points"),
         current.get("entry_points"),
     )
-    script_changes = _changed_keys(
+    script_changes = _changed_sequence(
         previous.get("script_files"),
         current.get("script_files"),
-        compare_values=False,
     )
     combined_entry_changes = [*entry_changes, *script_changes]
     if combined_entry_changes:
@@ -726,7 +725,7 @@ def _package_artifact_record(
     script_roots: list[Path],
 ) -> dict:
     pth_files: dict[str, dict] = {}
-    script_files: dict[str, dict] = {}
+    script_files: list[str] = []
 
     for installed_path in _record_paths(dist_info):
         if installed_path.suffix.lower() == ".pth" and installed_path.exists():
@@ -734,22 +733,18 @@ def _package_artifact_record(
             pth_files[key] = {
                 "digest": _file_digest(installed_path),
                 "import_lines": find_import_lines(installed_path),
-                "size": installed_path.stat().st_size,
             }
             continue
         if _is_under_any(installed_path, script_roots) and installed_path.is_file():
             key = _relative_artifact_key(installed_path, script_roots, prefix="scripts")
-            script_files[key] = {
-                "digest": _file_digest(installed_path),
-                "size": installed_path.stat().st_size,
-            }
+            script_files.append(key)
 
     return {
         "name": name,
         "version": version,
         "pth_files": pth_files,
         "entry_points": _entry_points_from_dist_info(dist_info),
-        "script_files": script_files,
+        "script_files": sorted(set(script_files)),
     }
 
 
@@ -850,12 +845,36 @@ def _changed_keys(
 
 
 def _changed_sequence(previous: object, current: object) -> list[str]:
-    previous_items = set(previous if isinstance(previous, list) else [])
-    current_items = set(current if isinstance(current, list) else [])
+    previous_items = set(_artifact_sequence_items(previous))
+    current_items = set(_artifact_sequence_items(current))
     changes: list[str] = []
     changes.extend(f"added {item}" for item in sorted(current_items - previous_items))
     changes.extend(f"removed {item}" for item in sorted(previous_items - current_items))
     return changes
+
+
+def _artifact_sequence_items(value: object) -> tuple[str, ...]:
+    if isinstance(value, dict):
+        return tuple(str(item) for item in value)
+    if isinstance(value, (list, tuple)):
+        return tuple(str(item) for item in value)
+    return ()
+
+
+def _normalized_pth_files(value: object) -> dict[str, dict]:
+    if not isinstance(value, dict):
+        return {}
+    normalized: dict[str, dict] = {}
+    for path, metadata in value.items():
+        if not isinstance(path, str) or not isinstance(metadata, dict):
+            continue
+        normalized[path] = {
+            "digest": metadata.get("digest"),
+            "import_lines": metadata.get("import_lines")
+            if isinstance(metadata.get("import_lines"), list)
+            else [],
+        }
+    return normalized
 
 
 def _history_message(

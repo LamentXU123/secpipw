@@ -15,6 +15,7 @@ from secured_pip.pip_bridge import (
     collect_pip_output,
     replay_events,
 )
+from secured_pip.warning_gate import GateDecision
 
 
 class TtyInput(io.StringIO):
@@ -475,7 +476,10 @@ class PipBridgeTests(unittest.TestCase):
                 with patch(
                     "secured_pip.cli.handle_suspicious_pth_alerts"
                 ) as handle_post:
-                    handle_post.return_value = SimpleNamespace(exit_code=0)
+                    handle_post.return_value = GateDecision(
+                        allow_install=True,
+                        exit_code=0,
+                    )
 
                     rc = cli._install_with_guard(
                         ["requests", "--target", "vendor"],

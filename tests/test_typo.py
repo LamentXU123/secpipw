@@ -92,6 +92,13 @@ class TypoDetectorTests(unittest.TestCase):
 
         self.assertIsNone(detector.detect("requests"))
 
+    def test_exact_popular_package_skips_cache_load(self) -> None:
+        client = FakePyPIClient(fail=True)
+        detector = TypoDetector(client)
+
+        self.assertIsNone(detector.detect("requests"))
+        self.assertEqual(client.load_cached_project_names_calls, 0)
+
     def test_exact_popular_package_skips_close_competitor_alert(self) -> None:
         detector = TypoDetector(
             FakePyPIClient(project_names=["requests", "requestsh", "numpy"])
