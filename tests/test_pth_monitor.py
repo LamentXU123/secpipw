@@ -10,9 +10,12 @@ from pathlib import Path
 from secured_pip import Severity
 from secured_pip.pth_monitor import (
     PthMonitor,
+    collect_package_artifact_records,
+    handle_package_artifact_history_alerts,
     find_import_lines,
     gate_suspicious_pth_alerts,
     handle_suspicious_pth_alerts,
+    inspect_package_artifact_history,
     inspect_install_artifacts,
     inspect_source_artifact_for_suspicious_pth,
     inspect_wheel_for_suspicious_pth,
@@ -41,6 +44,12 @@ class FlushingStringIO(io.StringIO):
     def flush(self) -> None:
         self.flush_calls += 1
         super().flush()
+
+
+class FakePackage:
+    def __init__(self, name: str, version: str) -> None:
+        self.name = name
+        self.version = version
 
 
 class PthMonitorTests(unittest.TestCase):
@@ -266,6 +275,95 @@ class PthMonitorTests(unittest.TestCase):
         directories = resolve_watch_directories(["--target", "vendor"])
         self.assertEqual(directories, [Path("vendor").resolve()])
 
+    def test_collect_package_artifact_records_reads_pth_and_entry_files(self) -> None:
+        with temporary_workspace_dir() as tmp:
+            site_packages = tmp / "site-packages"
+            scripts = tmp / "Scripts"
+            _write_installed_distribution(
+                site_packages,
+                scripts,
+                pth_text="import demo_bootstrap\n",
+                entry_point="demo:main",
+            )
+
+            records = collect_package_artifact_records(
+                [FakePackage("demo", "1.0.0")],
+                [site_packages],
+                script_directories=[scripts],
+            )
+
+        record = records["demo"]
+        self.assertEqual(record["name"], "demo")
+        self.assertEqual(record["version"], "1.0.0")
+        self.assertIn("site/demo.pth", record["pth_files"])
+        self.assertEqual(
+            record["pth_files"]["site/demo.pth"]["import_lines"],
+            ["import demo_bootstrap"],
+        )
+        self.assertEqual(
+            record["entry_points"],
+            ["console_scripts:demo=demo:main"],
+        )
+        self.assertIn("scripts/demo-cli", record["script_files"])
+
+    def test_package_artifact_history_alerts_on_changed_pth_and_entry_points(
+        self,
+    ) -> None:
+        with temporary_workspace_dir() as tmp:
+            site_packages = tmp / "site-packages"
+            scripts = tmp / "Scripts"
+            history_path = tmp / "history.json"
+            package = FakePackage("demo", "1.0.0")
+            _write_installed_distribution(
+                site_packages,
+                scripts,
+                pth_text="import demo_bootstrap\n",
+                entry_point="demo:main",
+            )
+
+            first = inspect_package_artifact_history(
+                [package],
+                [site_packages],
+                pip_args=[],
+                history_path=history_path,
+            )
+            _write_installed_distribution(
+                site_packages,
+                scripts,
+                pth_text="import changed_bootstrap\n",
+                entry_point="demo:changed",
+            )
+            second = inspect_package_artifact_history(
+                [package],
+                [site_packages],
+                pip_args=[],
+                history_path=history_path,
+            )
+
+        self.assertEqual(first, [])
+        self.assertEqual([alert.change_type for alert in second], ["pth", "entry"])
+        self.assertEqual(second[0].severity, Severity.MEDIUM)
+        self.assertEqual(second[1].severity, Severity.LOW)
+        self.assertIn("changed site/demo.pth", second[0].message)
+        self.assertIn("demo:changed", second[1].message)
+
+    def test_handle_package_artifact_history_alerts_renders_and_gates(self) -> None:
+        stderr = io.StringIO()
+        alert = _history_alert()
+
+        decision = handle_package_artifact_history_alerts(
+            [alert],
+            ignore_warning=False,
+            sensitivity=Severity.LOW,
+            stderr=stderr,
+            is_tty=lambda: False,
+        )
+
+        self.assertFalse(decision.allow_install)
+        self.assertEqual(decision.exit_code, 2)
+        self.assertIn("artifact-history", stderr.getvalue())
+        self.assertIn("requires confirmation", stderr.getvalue())
+
     def test_rendered_alert_includes_pth_path(self) -> None:
         with temporary_workspace_dir() as tmp:
             path = tmp / "evil.pth"
@@ -290,6 +388,19 @@ def _alert_for(path: Path):
     )
 
 
+def _history_alert():
+    from secured_pip.pth_monitor import PackageArtifactHistoryAlert
+
+    return PackageArtifactHistoryAlert(
+        severity=Severity.MEDIUM,
+        package_name="demo",
+        previous_version="1.0.0",
+        current_version="1.0.0",
+        change_type="pth",
+        message="'demo' installed .pth files changed: changed site/demo.pth",
+    )
+
+
 def _write_zip_archive(path: Path, files: dict[str, str]) -> None:
     with zipfile.ZipFile(path, "w") as archive:
         for name, content in files.items():
@@ -303,6 +414,44 @@ def _write_tar_archive(path: Path, files: dict[str, str]) -> None:
             info = tarfile.TarInfo(name)
             info.size = len(data)
             archive.addfile(info, io.BytesIO(data))
+
+
+def _write_installed_distribution(
+    site_packages: Path,
+    scripts: Path,
+    *,
+    pth_text: str,
+    entry_point: str,
+) -> None:
+    site_packages.mkdir(parents=True, exist_ok=True)
+    scripts.mkdir(parents=True, exist_ok=True)
+    pth_path = site_packages / "demo.pth"
+    script_path = scripts / "demo-cli"
+    dist_info = site_packages / "demo-1.0.0.dist-info"
+    dist_info.mkdir(parents=True, exist_ok=True)
+
+    pth_path.write_text(pth_text, encoding="utf-8")
+    script_path.write_text("#!/usr/bin/env python\n", encoding="utf-8")
+    (dist_info / "METADATA").write_text(
+        "Name: demo\nVersion: 1.0.0\n",
+        encoding="utf-8",
+    )
+    (dist_info / "entry_points.txt").write_text(
+        f"[console_scripts]\ndemo = {entry_point}\n",
+        encoding="utf-8",
+    )
+    (dist_info / "RECORD").write_text(
+        "\n".join(
+            [
+                "demo.pth,,",
+                "../Scripts/demo-cli,,",
+                "demo-1.0.0.dist-info/METADATA,,",
+                "demo-1.0.0.dist-info/entry_points.txt,,",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
 
 if __name__ == "__main__":

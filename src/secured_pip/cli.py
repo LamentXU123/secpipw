@@ -62,6 +62,18 @@ def inspect_install_artifacts(*args, **kwargs):
     return impl(*args, **kwargs)
 
 
+def inspect_package_artifact_history(*args, **kwargs):
+    from secured_pip.pth_monitor import inspect_package_artifact_history as impl
+
+    return impl(*args, **kwargs)
+
+
+def handle_package_artifact_history_alerts(*args, **kwargs):
+    from secured_pip.pth_monitor import handle_package_artifact_history_alerts as impl
+
+    return impl(*args, **kwargs)
+
+
 def main(argv: list[str] | None = None) -> int:
     args = list(sys.argv[1:] if argv is None else argv)
     if args[:1] == ["refresh-cache"]:
@@ -174,8 +186,11 @@ def _install_with_guard(
             "Refusing to continue because post-install .pth protection would be disabled.\n"
         )
         return 2
+    resolved_plan = None
 
     def plan_hook(plan):
+        nonlocal resolved_plan
+        resolved_plan = plan
         return run_install_checks(
             plan,
             pip_args,
@@ -202,4 +217,19 @@ def _install_with_guard(
         monitor.inspect(),
         ignore_warning=ignore_warning,
     )
-    return decision.exit_code
+    if not decision.allow_install:
+        return decision.exit_code
+
+    if resolved_plan is None:
+        return decision.exit_code
+    history_alerts = inspect_package_artifact_history(
+        resolved_plan.packages,
+        getattr(monitor, "directories", ()),
+        pip_args=pip_args,
+    )
+    history_decision = handle_package_artifact_history_alerts(
+        history_alerts,
+        ignore_warning=ignore_warning,
+        sensitivity=sensitivity,
+    )
+    return history_decision.exit_code

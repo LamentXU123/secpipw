@@ -96,8 +96,10 @@ Contributions welcome:
     - [ ] Use some modern documentation framework to refactor the /doc/docs directory.
     - [ ] Support website view on mobile phones. @didongji91
 - Checks
+    - [x] Record and compare installed package entry-point and `.pth` baselines across `spip` installs
+        - [x] If new or changed `.pth` file is added
+        - [x] If entry-point metadata or script files change
     - [ ] Add check of the diff between the last version of the package and the to-be-installed version, search for malicious changes
-        - [ ] If new .pth file is added
         - [ ] If setup.py has been changed
 
 We currently have three install warning policies:
