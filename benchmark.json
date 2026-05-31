@@ -1,0 +1,251 @@
+{
+  "generated_at": "2026-05-31T17:57:42.417551Z",
+  "mode": "network download + install, --no-cache-dir, --no-deps, fresh --target per run",
+  "primary_metric": "median",
+  "records": [
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-pip-target",
+        "uv"
+      ],
+      "duration_seconds": 1.1435854419999885,
+      "label": "pip",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-spip-target",
+        "uv"
+      ],
+      "duration_seconds": 1.266179907999998,
+      "label": "spip",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-spip-target",
+        "uv"
+      ],
+      "duration_seconds": 1.177146351999994,
+      "label": "spip",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-pip-target",
+        "uv"
+      ],
+      "duration_seconds": 1.1357388730000082,
+      "label": "pip",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-pip-target",
+        "uv"
+      ],
+      "duration_seconds": 1.1265507650000188,
+      "label": "pip",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-spip-target",
+        "uv"
+      ],
+      "duration_seconds": 1.247081645999998,
+      "label": "spip",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-spip-target",
+        "uv"
+      ],
+      "duration_seconds": 1.1691819959999918,
+      "label": "spip",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-pip-target",
+        "uv"
+      ],
+      "duration_seconds": 1.162015249999996,
+      "label": "pip",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-pip-target",
+        "uv"
+      ],
+      "duration_seconds": 1.1156946790000006,
+      "label": "pip",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-spip-target",
+        "uv"
+      ],
+      "duration_seconds": 1.1568503790000193,
+      "label": "spip",
+      "returncode": 0
+    }
+  ],
+  "requirement": "uv",
+  "runs": 5,
+  "summary": {
+    "overhead": {
+      "avg_percent": 5.8564316619336285,
+      "avg_seconds": 0.066571054399998,
+      "median_percent": 3.645862617223772,
+      "median_seconds": 0.04140747899998587
+    },
+    "pip": {
+      "avg": 1.1367170018000023,
+      "max": 1.162015249999996,
+      "median": 1.1357388730000082,
+      "min": 1.1156946790000006
+    },
+    "ratio": {
+      "avg": 1.0585643166193364,
+      "avg_label": "x1.0586",
+      "median": 1.0364586261722377,
+      "median_label": "x1.0365"
+    },
+    "spip": {
+      "avg": 1.2032880562000003,
+      "max": 1.266179907999998,
+      "median": 1.177146351999994,
+      "min": 1.1568503790000193
+    }
+  },
+  "warmups": 0
+}
