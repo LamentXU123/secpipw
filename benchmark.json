@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-31T18:14:12.087610Z",
+  "generated_at": "2026-05-31T18:26:11.381790Z",
   "mode": "network download + install, --no-cache-dir, --no-deps, fresh --target per run",
   "primary_metric": "median",
   "records": [
@@ -17,282 +17,11 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-0-uv-pip-target",
-        "uv"
-      ],
-      "duration_seconds": 1.1542293020000045,
-      "label": "pip",
-      "requirement": "uv",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "secured_pip",
-        "install",
-        "--ignore-warning",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-0-uv-spip-target",
-        "uv"
-      ],
-      "duration_seconds": 1.3513698510000154,
-      "label": "spip",
-      "requirement": "uv",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "secured_pip",
-        "install",
-        "--ignore-warning",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-1-uv-spip-target",
-        "uv"
-      ],
-      "duration_seconds": 1.1773335560000078,
-      "label": "spip",
-      "requirement": "uv",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "pip",
-        "install",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-1-uv-pip-target",
-        "uv"
-      ],
-      "duration_seconds": 1.1117304440000169,
-      "label": "pip",
-      "requirement": "uv",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "pip",
-        "install",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-2-uv-pip-target",
-        "uv"
-      ],
-      "duration_seconds": 1.130135064000001,
-      "label": "pip",
-      "requirement": "uv",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "secured_pip",
-        "install",
-        "--ignore-warning",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-2-uv-spip-target",
-        "uv"
-      ],
-      "duration_seconds": 1.173045476999988,
-      "label": "spip",
-      "requirement": "uv",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "secured_pip",
-        "install",
-        "--ignore-warning",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-3-uv-spip-target",
-        "uv"
-      ],
-      "duration_seconds": 1.2011427099999992,
-      "label": "spip",
-      "requirement": "uv",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "pip",
-        "install",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-3-uv-pip-target",
-        "uv"
-      ],
-      "duration_seconds": 1.1181108680000023,
-      "label": "pip",
-      "requirement": "uv",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "pip",
-        "install",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-4-uv-pip-target",
-        "uv"
-      ],
-      "duration_seconds": 1.1291903619999744,
-      "label": "pip",
-      "requirement": "uv",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "secured_pip",
-        "install",
-        "--ignore-warning",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-4-uv-spip-target",
-        "uv"
-      ],
-      "duration_seconds": 1.1934384719999969,
-      "label": "spip",
-      "requirement": "uv",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "secured_pip",
-        "install",
-        "--ignore-warning",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-0-ruff-spip-target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.1209889199999736,
-      "label": "spip",
-      "requirement": "ruff",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "pip",
-        "install",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-0-ruff-pip-target",
-        "ruff"
-      ],
-      "duration_seconds": 1.0107289539999726,
+      "duration_seconds": 1.2303499550000083,
       "label": "pip",
-      "requirement": "ruff",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "pip",
-        "install",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-1-ruff-pip-target",
-        "ruff"
-      ],
-      "duration_seconds": 1.0152740860000051,
-      "label": "pip",
-      "requirement": "ruff",
       "returncode": 0
     },
     {
@@ -310,12 +39,11 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-1-ruff-spip-target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-spip-target",
         "ruff"
       ],
-      "duration_seconds": 1.0708863799999904,
+      "duration_seconds": 1.394586698999973,
       "label": "spip",
-      "requirement": "ruff",
       "returncode": 0
     },
     {
@@ -333,12 +61,11 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-2-ruff-spip-target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-spip-target",
         "ruff"
       ],
-      "duration_seconds": 1.0691354880000006,
+      "duration_seconds": 1.2929750330000047,
       "label": "spip",
-      "requirement": "ruff",
       "returncode": 0
     },
     {
@@ -355,12 +82,11 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-2-ruff-pip-target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.0140954419999844,
+      "duration_seconds": 1.1780213609999919,
       "label": "pip",
-      "requirement": "ruff",
       "returncode": 0
     },
     {
@@ -377,12 +103,11 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-3-ruff-pip-target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.0416696730000012,
+      "duration_seconds": 1.1190154589999963,
       "label": "pip",
-      "requirement": "ruff",
       "returncode": 0
     },
     {
@@ -400,12 +125,11 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-3-ruff-spip-target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-spip-target",
         "ruff"
       ],
-      "duration_seconds": 1.0591003309999962,
+      "duration_seconds": 1.2858458970000015,
       "label": "spip",
-      "requirement": "ruff",
       "returncode": 0
     },
     {
@@ -423,12 +147,11 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-4-ruff-spip-target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-spip-target",
         "ruff"
       ],
-      "duration_seconds": 1.0809211560000165,
+      "duration_seconds": 1.2754778359999932,
       "label": "spip",
-      "requirement": "ruff",
       "returncode": 0
     },
     {
@@ -445,12 +168,11 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-4-ruff-pip-target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.0186562590000108,
+      "duration_seconds": 1.2099412780000023,
       "label": "pip",
-      "requirement": "ruff",
       "returncode": 0
     },
     {
@@ -467,12 +189,11 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-0-numpy-pip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-pip-target",
+        "ruff"
       ],
-      "duration_seconds": 2.8761749619999932,
+      "duration_seconds": 1.2041026079999995,
       "label": "pip",
-      "requirement": "numpy",
       "returncode": 0
     },
     {
@@ -490,315 +211,40 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-0-numpy-spip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-spip-target",
+        "ruff"
       ],
-      "duration_seconds": 3.23152627799999,
+      "duration_seconds": 1.2690844789999858,
       "label": "spip",
-      "requirement": "numpy",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "secured_pip",
-        "install",
-        "--ignore-warning",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-1-numpy-spip-target",
-        "numpy"
-      ],
-      "duration_seconds": 3.208758488000001,
-      "label": "spip",
-      "requirement": "numpy",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "pip",
-        "install",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-1-numpy-pip-target",
-        "numpy"
-      ],
-      "duration_seconds": 2.862288991000014,
-      "label": "pip",
-      "requirement": "numpy",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "pip",
-        "install",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-2-numpy-pip-target",
-        "numpy"
-      ],
-      "duration_seconds": 2.8252473560000055,
-      "label": "pip",
-      "requirement": "numpy",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "secured_pip",
-        "install",
-        "--ignore-warning",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-2-numpy-spip-target",
-        "numpy"
-      ],
-      "duration_seconds": 3.195407103000008,
-      "label": "spip",
-      "requirement": "numpy",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "secured_pip",
-        "install",
-        "--ignore-warning",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-3-numpy-spip-target",
-        "numpy"
-      ],
-      "duration_seconds": 3.202347393999986,
-      "label": "spip",
-      "requirement": "numpy",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "pip",
-        "install",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-3-numpy-pip-target",
-        "numpy"
-      ],
-      "duration_seconds": 2.869356113000009,
-      "label": "pip",
-      "requirement": "numpy",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "pip",
-        "install",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-4-numpy-pip-target",
-        "numpy"
-      ],
-      "duration_seconds": 2.8233571700000084,
-      "label": "pip",
-      "requirement": "numpy",
-      "returncode": 0
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-m",
-        "secured_pip",
-        "install",
-        "--ignore-warning",
-        "--disable-pip-version-check",
-        "--no-cache-dir",
-        "--no-deps",
-        "--progress-bar",
-        "off",
-        "--timeout",
-        "120",
-        "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-4-numpy-spip-target",
-        "numpy"
-      ],
-      "duration_seconds": 3.1729591950000042,
-      "label": "spip",
-      "requirement": "numpy",
       "returncode": 0
     }
   ],
-  "requirement": "uv",
-  "requirements": [
-    "uv",
-    "ruff",
-    "numpy"
-  ],
+  "requirement": "ruff",
   "runs": 5,
-  "scenarios": [
-    {
-      "requirement": "uv",
-      "summary": {
-        "overhead": {
-          "avg_percent": 8.025912461036636,
-          "avg_seconds": 0.09058680520000162,
-          "median_percent": 5.68975012204576,
-          "median_seconds": 0.0642481100000225
-        },
-        "pip": {
-          "avg": 1.1286792079999999,
-          "max": 1.1542293020000045,
-          "median": 1.1291903619999744,
-          "min": 1.1117304440000169
-        },
-        "ratio": {
-          "avg": 1.0802591246103663,
-          "avg_label": "x1.0803",
-          "median": 1.0568975012204576,
-          "median_label": "x1.0569"
-        },
-        "spip": {
-          "avg": 1.2192660132000015,
-          "max": 1.3513698510000154,
-          "median": 1.1934384719999969,
-          "min": 1.173045476999988
-        }
-      }
-    },
-    {
-      "requirement": "ruff",
-      "summary": {
-        "overhead": {
-          "avg_percent": 5.893781313078085,
-          "avg_seconds": 0.060121572200000584,
-          "median_percent": 5.477564607118808,
-          "median_seconds": 0.05561229399998524
-        },
-        "pip": {
-          "avg": 1.0200848827999949,
-          "max": 1.0416696730000012,
-          "median": 1.0152740860000051,
-          "min": 1.0107289539999726
-        },
-        "ratio": {
-          "avg": 1.058937813130781,
-          "avg_label": "x1.0589",
-          "median": 1.0547756460711881,
-          "median_label": "x1.0548"
-        },
-        "spip": {
-          "avg": 1.0802064549999955,
-          "max": 1.1209889199999736,
-          "median": 1.0708863799999904,
-          "min": 1.0591003309999962
-        }
-      }
-    },
-    {
-      "requirement": "numpy",
-      "summary": {
-        "overhead": {
-          "avg_percent": 12.307250353532092,
-          "avg_seconds": 0.350914773199992,
-          "median_percent": 11.880645318108286,
-          "median_seconds": 0.34005840299997203
-        },
-        "pip": {
-          "avg": 2.851284918400006,
-          "max": 2.8761749619999932,
-          "median": 2.862288991000014,
-          "min": 2.8233571700000084
-        },
-        "ratio": {
-          "avg": 1.1230725035353208,
-          "avg_label": "x1.1231",
-          "median": 1.1188064531810828,
-          "median_label": "x1.1188"
-        },
-        "spip": {
-          "avg": 3.202199691599998,
-          "max": 3.23152627799999,
-          "median": 3.202347393999986,
-          "min": 3.1729591950000042
-        }
-      }
-    }
-  ],
   "summary": {
     "overhead": {
-      "avg_percent": 8.025912461036636,
-      "avg_seconds": 0.09058680520000162,
-      "median_percent": 5.68975012204576,
-      "median_seconds": 0.0642481100000225
+      "avg_percent": 9.703711376864298,
+      "avg_seconds": 0.1153078565999921,
+      "median_percent": 6.7887311643462604,
+      "median_seconds": 0.08174328900000205
     },
     "pip": {
-      "avg": 1.1286792079999999,
-      "max": 1.1542293020000045,
-      "median": 1.1291903619999744,
-      "min": 1.1117304440000169
+      "avg": 1.1882861321999996,
+      "max": 1.2303499550000083,
+      "median": 1.2041026079999995,
+      "min": 1.1190154589999963
     },
     "ratio": {
-      "avg": 1.0802591246103663,
-      "avg_label": "x1.0803",
-      "median": 1.0568975012204576,
-      "median_label": "x1.0569"
+      "avg": 1.097037113768643,
+      "avg_label": "x1.0970",
+      "median": 1.0678873116434626,
+      "median_label": "x1.0679"
     },
     "spip": {
-      "avg": 1.2192660132000015,
-      "max": 1.3513698510000154,
-      "median": 1.1934384719999969,
-      "min": 1.173045476999988
+      "avg": 1.3035939887999917,
+      "max": 1.394586698999973,
+      "median": 1.2858458970000015,
+      "min": 1.2690844789999858
     }
   },
   "warmups": 0
