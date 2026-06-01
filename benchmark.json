@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-01T06:02:39.739525Z",
+  "generated_at": "2026-06-01T06:10:27.892874Z",
   "mode": "network download + install, --no-cache-dir, --no-deps, fresh --target per run",
   "primary_metric": "median",
   "records": [
@@ -20,7 +20,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.3495483230000005,
+      "duration_seconds": 1.1309863949999936,
       "label": "pip",
       "returncode": 0,
       "scenario": "pip"
@@ -43,7 +43,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-spip-default-target",
         "ruff"
       ],
-      "duration_seconds": 1.5266143010000022,
+      "duration_seconds": 1.3933449529999962,
       "label": "spip",
       "returncode": 0,
       "scenario": "spip-default"
@@ -68,7 +68,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-spip-ignore-low-target",
         "ruff"
       ],
-      "duration_seconds": 1.415705090000003,
+      "duration_seconds": 1.445051711000005,
       "label": "spip --ignore LOW",
       "returncode": 0,
       "scenario": "spip-ignore-low"
@@ -93,7 +93,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-spip-ignore-medium-target",
         "ruff"
       ],
-      "duration_seconds": 1.3570890580000068,
+      "duration_seconds": 1.2034125200000005,
       "label": "spip --ignore MEDIUM",
       "returncode": 0,
       "scenario": "spip-ignore-medium"
@@ -116,7 +116,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-spip-default-target",
         "ruff"
       ],
-      "duration_seconds": 1.395327155000004,
+      "duration_seconds": 1.4370944169999973,
       "label": "spip",
       "returncode": 0,
       "scenario": "spip-default"
@@ -141,7 +141,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-spip-ignore-low-target",
         "ruff"
       ],
-      "duration_seconds": 1.4029339370000002,
+      "duration_seconds": 1.4134756750000008,
       "label": "spip --ignore LOW",
       "returncode": 0,
       "scenario": "spip-ignore-low"
@@ -166,7 +166,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-spip-ignore-medium-target",
         "ruff"
       ],
-      "duration_seconds": 1.374367092,
+      "duration_seconds": 1.1492118640000086,
       "label": "spip --ignore MEDIUM",
       "returncode": 0,
       "scenario": "spip-ignore-medium"
@@ -188,7 +188,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.3767796899999993,
+      "duration_seconds": 1.1437146809999916,
       "label": "pip",
       "returncode": 0,
       "scenario": "pip"
@@ -213,7 +213,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-spip-ignore-low-target",
         "ruff"
       ],
-      "duration_seconds": 1.436905484999997,
+      "duration_seconds": 1.173584317999996,
       "label": "spip --ignore LOW",
       "returncode": 0,
       "scenario": "spip-ignore-low"
@@ -238,7 +238,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-spip-ignore-medium-target",
         "ruff"
       ],
-      "duration_seconds": 1.3652705969999985,
+      "duration_seconds": 1.1064406320000018,
       "label": "spip --ignore MEDIUM",
       "returncode": 0,
       "scenario": "spip-ignore-medium"
@@ -260,7 +260,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.3486027719999996,
+      "duration_seconds": 1.0998935159999945,
       "label": "pip",
       "returncode": 0,
       "scenario": "pip"
@@ -283,7 +283,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-spip-default-target",
         "ruff"
       ],
-      "duration_seconds": 1.4107336730000029,
+      "duration_seconds": 1.1629220350000082,
       "label": "spip",
       "returncode": 0,
       "scenario": "spip-default"
@@ -308,7 +308,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-spip-ignore-medium-target",
         "ruff"
       ],
-      "duration_seconds": 1.3596981620000008,
+      "duration_seconds": 1.106848056000004,
       "label": "spip --ignore MEDIUM",
       "returncode": 0,
       "scenario": "spip-ignore-medium"
@@ -330,7 +330,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.3413111670000006,
+      "duration_seconds": 1.1193248189999991,
       "label": "pip",
       "returncode": 0,
       "scenario": "pip"
@@ -353,7 +353,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-spip-default-target",
         "ruff"
       ],
-      "duration_seconds": 1.406468432000004,
+      "duration_seconds": 1.3771379079999946,
       "label": "spip",
       "returncode": 0,
       "scenario": "spip-default"
@@ -378,7 +378,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-spip-ignore-low-target",
         "ruff"
       ],
-      "duration_seconds": 1.4412184649999986,
+      "duration_seconds": 1.203385967999992,
       "label": "spip --ignore LOW",
       "returncode": 0,
       "scenario": "spip-ignore-low"
@@ -400,7 +400,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.3570409900000016,
+      "duration_seconds": 1.142415334000006,
       "label": "pip",
       "returncode": 0,
       "scenario": "pip"
@@ -423,7 +423,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-spip-default-target",
         "ruff"
       ],
-      "duration_seconds": 1.4055661449999945,
+      "duration_seconds": 1.3758809060000061,
       "label": "spip",
       "returncode": 0,
       "scenario": "spip-default"
@@ -448,7 +448,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-spip-ignore-low-target",
         "ruff"
       ],
-      "duration_seconds": 1.4230316259999967,
+      "duration_seconds": 1.3841192889999974,
       "label": "spip --ignore LOW",
       "returncode": 0,
       "scenario": "spip-ignore-low"
@@ -473,97 +473,762 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-spip-ignore-medium-target",
         "ruff"
       ],
-      "duration_seconds": 1.352231863,
+      "duration_seconds": 1.134630763000004,
       "label": "spip --ignore MEDIUM",
       "returncode": 0,
       "scenario": "spip-ignore-medium"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-spip-default-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.2366266410000009,
+      "label": "spip",
+      "returncode": 0,
+      "scenario": "spip-default"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--ignore",
+        "LOW",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-spip-ignore-low-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.400590274999999,
+      "label": "spip --ignore LOW",
+      "returncode": 0,
+      "scenario": "spip-ignore-low"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--ignore",
+        "MEDIUM",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-spip-ignore-medium-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.107617119000011,
+      "label": "spip --ignore MEDIUM",
+      "returncode": 0,
+      "scenario": "spip-ignore-medium"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-pip-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.100318442999992,
+      "label": "pip",
+      "returncode": 0,
+      "scenario": "pip"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--ignore",
+        "LOW",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-spip-ignore-low-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.3681124009999905,
+      "label": "spip --ignore LOW",
+      "returncode": 0,
+      "scenario": "spip-ignore-low"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--ignore",
+        "MEDIUM",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-spip-ignore-medium-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.1124114729999803,
+      "label": "spip --ignore MEDIUM",
+      "returncode": 0,
+      "scenario": "spip-ignore-medium"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-pip-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.105828392999996,
+      "label": "pip",
+      "returncode": 0,
+      "scenario": "pip"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-spip-default-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.367156012999999,
+      "label": "spip",
+      "returncode": 0,
+      "scenario": "spip-default"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--ignore",
+        "MEDIUM",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-spip-ignore-medium-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.126947513999994,
+      "label": "spip --ignore MEDIUM",
+      "returncode": 0,
+      "scenario": "spip-ignore-medium"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-pip-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.119887379000005,
+      "label": "pip",
+      "returncode": 0,
+      "scenario": "pip"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-spip-default-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.183991175000017,
+      "label": "spip",
+      "returncode": 0,
+      "scenario": "spip-default"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--ignore",
+        "LOW",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-spip-ignore-low-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.1786636269999917,
+      "label": "spip --ignore LOW",
+      "returncode": 0,
+      "scenario": "spip-ignore-low"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-pip-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.1095052360000182,
+      "label": "pip",
+      "returncode": 0,
+      "scenario": "pip"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-spip-default-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.1854814129999909,
+      "label": "spip",
+      "returncode": 0,
+      "scenario": "spip-default"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--ignore",
+        "LOW",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-spip-ignore-low-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.3886229870000193,
+      "label": "spip --ignore LOW",
+      "returncode": 0,
+      "scenario": "spip-ignore-low"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--ignore",
+        "MEDIUM",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-spip-ignore-medium-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.0561426539999843,
+      "label": "spip --ignore MEDIUM",
+      "returncode": 0,
+      "scenario": "spip-ignore-medium"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-spip-default-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.093775843000003,
+      "label": "spip",
+      "returncode": 0,
+      "scenario": "spip-default"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--ignore",
+        "LOW",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-spip-ignore-low-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.1168507349999857,
+      "label": "spip --ignore LOW",
+      "returncode": 0,
+      "scenario": "spip-ignore-low"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--ignore",
+        "MEDIUM",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-spip-ignore-medium-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.0967703819999883,
+      "label": "spip --ignore MEDIUM",
+      "returncode": 0,
+      "scenario": "spip-ignore-medium"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-pip-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.0536389530000179,
+      "label": "pip",
+      "returncode": 0,
+      "scenario": "pip"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--ignore",
+        "LOW",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-spip-ignore-low-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.1045301730000006,
+      "label": "spip --ignore LOW",
+      "returncode": 0,
+      "scenario": "spip-ignore-low"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--ignore",
+        "MEDIUM",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-spip-ignore-medium-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.0126816669999812,
+      "label": "spip --ignore MEDIUM",
+      "returncode": 0,
+      "scenario": "spip-ignore-medium"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-pip-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.0321201659999986,
+      "label": "pip",
+      "returncode": 0,
+      "scenario": "pip"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-spip-default-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.6569894470000008,
+      "label": "spip",
+      "returncode": 0,
+      "scenario": "spip-default"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--ignore",
+        "MEDIUM",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-spip-ignore-medium-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.58722052600001,
+      "label": "spip --ignore MEDIUM",
+      "returncode": 0,
+      "scenario": "spip-ignore-medium"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-pip-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.6207142239999826,
+      "label": "pip",
+      "returncode": 0,
+      "scenario": "pip"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-spip-default-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.6322515479999993,
+      "label": "spip",
+      "returncode": 0,
+      "scenario": "spip-default"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
+        "-m",
+        "secured_pip",
+        "install",
+        "--ignore-warning",
+        "--ignore",
+        "LOW",
+        "--disable-pip-version-check",
+        "--no-cache-dir",
+        "--no-deps",
+        "--progress-bar",
+        "off",
+        "--timeout",
+        "120",
+        "--target",
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-spip-ignore-low-target",
+        "ruff"
+      ],
+      "duration_seconds": 1.6720735160000118,
+      "label": "spip --ignore LOW",
+      "returncode": 0,
+      "scenario": "spip-ignore-low"
     }
   ],
   "requirement": "ruff",
-  "runs": 5,
+  "runs": 12,
   "scenarios": [
     {
       "key": "spip-default",
       "label": "spip",
       "overhead": {
-        "avg_percent": 5.48370365125086,
-        "avg_seconds": 0.07428535280000115,
-        "median_percent": 4.217715514882199,
-        "median_seconds": 0.05692010900000355
+        "avg_percent": 16.86925629812289,
+        "avg_seconds": 0.19369206333333477,
+        "median_percent": 23.07070756006939,
+        "median_seconds": 0.25710343199999386
       },
       "pip": {
-        "avg": 1.3546565884000004,
-        "max": 1.3767796899999993,
-        "median": 1.3495483230000005,
-        "min": 1.3413111670000006
+        "avg": 1.1481956282499997,
+        "max": 1.6207142239999826,
+        "median": 1.1144150275000086,
+        "min": 1.0321201659999986
       },
       "ratio": {
-        "avg": 1.0548370365125086,
-        "avg_label": "x1.0548",
-        "median": 1.042177155148822,
-        "median_label": "x1.0422"
+        "avg": 1.1686925629812288,
+        "avg_label": "x1.1687",
+        "median": 1.230707075600694,
+        "median_label": "x1.2307"
       },
       "spip": {
-        "avg": 1.4289419412000015,
-        "max": 1.5266143010000022,
-        "median": 1.406468432000004,
-        "min": 1.395327155000004
+        "avg": 1.3418876915833344,
+        "max": 1.6569894470000008,
+        "median": 1.3715184595000025,
+        "min": 1.093775843000003
       }
     },
     {
       "key": "spip-ignore-low",
       "label": "spip --ignore LOW",
       "overhead": {
-        "avg_percent": 5.1158598270173075,
-        "avg_seconds": 0.06930233219999882,
-        "median_percent": 5.445029403366992,
-        "median_seconds": 0.07348330299999617
+        "avg_percent": 15.028748042091285,
+        "avg_seconds": 0.17255942799999957,
+        "median_percent": 23.48324556310627,
+        "median_seconds": 0.2617008174999853
       },
       "pip": {
-        "avg": 1.3546565884000004,
-        "max": 1.3767796899999993,
-        "median": 1.3495483230000005,
-        "min": 1.3413111670000006
+        "avg": 1.1481956282499997,
+        "max": 1.6207142239999826,
+        "median": 1.1144150275000086,
+        "min": 1.0321201659999986
       },
       "ratio": {
-        "avg": 1.051158598270173,
-        "avg_label": "x1.0512",
-        "median": 1.05445029403367,
-        "median_label": "x1.0545"
+        "avg": 1.1502874804209129,
+        "avg_label": "x1.1503",
+        "median": 1.2348324556310628,
+        "median_label": "x1.2348"
       },
       "spip": {
-        "avg": 1.4239589205999992,
-        "max": 1.4412184649999986,
-        "median": 1.4230316259999967,
-        "min": 1.4029339370000002
+        "avg": 1.3207550562499992,
+        "max": 1.6720735160000118,
+        "median": 1.376115844999994,
+        "min": 1.1045301730000006
       }
     },
     {
       "key": "spip-ignore-medium",
       "label": "spip --ignore MEDIUM",
       "overhead": {
-        "avg_percent": 0.5222553125701673,
-        "avg_seconds": 0.007074766000000787,
-        "median_percent": 0.7520915573765878,
-        "median_seconds": 0.010149839000000327
+        "avg_percent": 0.15958104509801893,
+        "avg_seconds": 0.0018323025833311135,
+        "median_percent": -0.39489161501036313,
+        "median_seconds": -0.0044007315000129665
       },
       "pip": {
-        "avg": 1.3546565884000004,
-        "max": 1.3767796899999993,
-        "median": 1.3495483230000005,
-        "min": 1.3413111670000006
+        "avg": 1.1481956282499997,
+        "max": 1.6207142239999826,
+        "median": 1.1144150275000086,
+        "min": 1.0321201659999986
       },
       "ratio": {
-        "avg": 1.0052225531257017,
-        "avg_label": "x1.0052",
-        "median": 1.0075209155737659,
-        "median_label": "x1.0075"
+        "avg": 1.0015958104509801,
+        "avg_label": "x1.0016",
+        "median": 0.9960510838498964,
+        "median_label": "x0.9961"
       },
       "spip": {
-        "avg": 1.3617313544000011,
-        "max": 1.374367092,
-        "median": 1.3596981620000008,
-        "min": 1.352231863
+        "avg": 1.1500279308333308,
+        "max": 1.58722052600001,
+        "median": 1.1100142959999957,
+        "min": 1.0126816669999812
       }
     }
   ],
@@ -571,29 +1236,29 @@
     "key": "spip-default",
     "label": "spip",
     "overhead": {
-      "avg_percent": 5.48370365125086,
-      "avg_seconds": 0.07428535280000115,
-      "median_percent": 4.217715514882199,
-      "median_seconds": 0.05692010900000355
+      "avg_percent": 16.86925629812289,
+      "avg_seconds": 0.19369206333333477,
+      "median_percent": 23.07070756006939,
+      "median_seconds": 0.25710343199999386
     },
     "pip": {
-      "avg": 1.3546565884000004,
-      "max": 1.3767796899999993,
-      "median": 1.3495483230000005,
-      "min": 1.3413111670000006
+      "avg": 1.1481956282499997,
+      "max": 1.6207142239999826,
+      "median": 1.1144150275000086,
+      "min": 1.0321201659999986
     },
     "ratio": {
-      "avg": 1.0548370365125086,
-      "avg_label": "x1.0548",
-      "median": 1.042177155148822,
-      "median_label": "x1.0422"
+      "avg": 1.1686925629812288,
+      "avg_label": "x1.1687",
+      "median": 1.230707075600694,
+      "median_label": "x1.2307"
     },
     "spip": {
-      "avg": 1.4289419412000015,
-      "max": 1.5266143010000022,
-      "median": 1.406468432000004,
-      "min": 1.395327155000004
+      "avg": 1.3418876915833344,
+      "max": 1.6569894470000008,
+      "median": 1.3715184595000025,
+      "min": 1.093775843000003
     }
   },
-  "warmups": 0
+  "warmups": 1
 }
