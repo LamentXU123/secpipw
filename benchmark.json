@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-01T06:26:02.425356Z",
+  "generated_at": "2026-06-01T06:46:17.302027Z",
   "mode": "network download + install, --no-cache-dir, --no-deps, fresh --target per run",
   "primary_metric": "median",
   "records": [
@@ -17,15 +17,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-requests-pip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-six-pip-target",
+        "six"
       ],
-      "duration_seconds": 0.5988426099999984,
+      "duration_seconds": 0.518992408999992,
       "label": "pip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "pip:requests"
+      "scenario": "pip:six"
     },
     {
       "command": [
@@ -42,15 +42,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-requests-spip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-six-spip-target",
+        "six"
       ],
-      "duration_seconds": 0.6788364299999969,
+      "duration_seconds": 0.5825837769999964,
       "label": "spip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "spip:requests"
+      "scenario": "spip:six"
     },
     {
       "command": [
@@ -70,7 +70,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-ruff-spip-target",
         "ruff"
       ],
-      "duration_seconds": 1.1454716699999992,
+      "duration_seconds": 1.130597825999999,
       "label": "spip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -94,7 +94,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-ruff-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.1244738299999995,
+      "duration_seconds": 1.055263844999999,
       "label": "pip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -115,15 +115,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-secured_pip-pip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 0.5826059830000005,
+      "duration_seconds": 1.135086892000004,
       "label": "pip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:secured_pip"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -140,15 +140,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-secured_pip-spip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 0.6651688969999938,
+      "duration_seconds": 1.2093768610000097,
       "label": "spip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:secured_pip"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -168,7 +168,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-ruff-spip-target",
         "ruff"
       ],
-      "duration_seconds": 1.127438225000006,
+      "duration_seconds": 1.127683288,
       "label": "spip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -192,7 +192,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-ruff-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.0838751690000024,
+      "duration_seconds": 1.0426930880000072,
       "label": "pip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -213,15 +213,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-secured_pip-pip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 0.5829487849999992,
+      "duration_seconds": 1.9328322939999936,
       "label": "pip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:secured_pip"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -238,15 +238,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-secured_pip-spip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 0.7250331139999986,
+      "duration_seconds": 2.0111847969999985,
       "label": "spip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:secured_pip"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -263,15 +263,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-requests-spip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-six-spip-target",
+        "six"
       ],
-      "duration_seconds": 0.6747181250000054,
+      "duration_seconds": 0.7491229960000112,
       "label": "spip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "spip:requests"
+      "scenario": "spip:six"
     },
     {
       "command": [
@@ -287,15 +287,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-requests-pip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-six-pip-target",
+        "six"
       ],
-      "duration_seconds": 0.6020979699999955,
+      "duration_seconds": 0.6901276179999911,
       "label": "pip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "pip:requests"
+      "scenario": "pip:six"
     },
     {
       "command": [
@@ -311,15 +311,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-secured_pip-pip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 0.5890880080000045,
+      "duration_seconds": 1.9250218159999974,
       "label": "pip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:secured_pip"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -336,15 +336,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-secured_pip-spip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 0.6611791560000029,
+      "duration_seconds": 2.002153058999994,
       "label": "spip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:secured_pip"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -361,15 +361,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-requests-spip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-six-spip-target",
+        "six"
       ],
-      "duration_seconds": 0.6654459689999896,
+      "duration_seconds": 0.7724777780000238,
       "label": "spip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "spip:requests"
+      "scenario": "spip:six"
     },
     {
       "command": [
@@ -385,15 +385,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-requests-pip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-six-pip-target",
+        "six"
       ],
-      "duration_seconds": 0.6059675080000062,
+      "duration_seconds": 0.7139328970000065,
       "label": "pip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "pip:requests"
+      "scenario": "pip:six"
     },
     {
       "command": [
@@ -412,7 +412,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-ruff-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.0868262479999942,
+      "duration_seconds": 1.773885363000005,
       "label": "pip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -437,7 +437,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-ruff-spip-target",
         "ruff"
       ],
-      "duration_seconds": 1.142126675,
+      "duration_seconds": 1.7997819880000065,
       "label": "spip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -459,15 +459,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-requests-spip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-six-spip-target",
+        "six"
       ],
-      "duration_seconds": 0.668215988,
+      "duration_seconds": 0.7670912990000147,
       "label": "spip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "spip:requests"
+      "scenario": "spip:six"
     },
     {
       "command": [
@@ -483,15 +483,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-requests-pip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-six-pip-target",
+        "six"
       ],
-      "duration_seconds": 0.6025220390000072,
+      "duration_seconds": 0.7057621879999942,
       "label": "pip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "pip:requests"
+      "scenario": "pip:six"
     },
     {
       "command": [
@@ -510,7 +510,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-ruff-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.0816168180000005,
+      "duration_seconds": 1.7304624740000065,
       "label": "pip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -535,7 +535,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-ruff-spip-target",
         "ruff"
       ],
-      "duration_seconds": 1.1362853790000003,
+      "duration_seconds": 1.805752195999986,
       "label": "spip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -557,15 +557,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-secured_pip-spip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 0.6490735069999971,
+      "duration_seconds": 2.0007324529999835,
       "label": "spip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:secured_pip"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -581,15 +581,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-secured_pip-pip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 0.5759038479999958,
+      "duration_seconds": 1.9419247349999864,
       "label": "pip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:secured_pip"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -608,7 +608,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-ruff-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.081492346999994,
+      "duration_seconds": 1.716739371000017,
       "label": "pip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -633,7 +633,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-ruff-spip-target",
         "ruff"
       ],
-      "duration_seconds": 1.1765336109999964,
+      "duration_seconds": 1.1107817580000017,
       "label": "spip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -655,15 +655,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-secured_pip-spip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 0.6643167409999933,
+      "duration_seconds": 1.2681253009999978,
       "label": "spip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:secured_pip"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -679,15 +679,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-secured_pip-pip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 0.590260253000011,
+      "duration_seconds": 1.1638768609999772,
       "label": "pip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:secured_pip"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -703,15 +703,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-requests-pip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-six-pip-target",
+        "six"
       ],
-      "duration_seconds": 0.6021267140000077,
+      "duration_seconds": 0.5130764189999866,
       "label": "pip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "pip:requests"
+      "scenario": "pip:six"
     },
     {
       "command": [
@@ -728,15 +728,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-requests-spip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-six-spip-target",
+        "six"
       ],
-      "duration_seconds": 0.6732105969999935,
+      "duration_seconds": 0.5762731130000134,
       "label": "spip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "spip:requests"
+      "scenario": "spip:six"
     },
     {
       "command": [
@@ -753,15 +753,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-secured_pip-spip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 0.6530556629999893,
+      "duration_seconds": 1.1939937690000022,
       "label": "spip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:secured_pip"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -777,15 +777,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-secured_pip-pip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 0.5881546709999981,
+      "duration_seconds": 1.1538616640000043,
       "label": "pip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:secured_pip"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -801,15 +801,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-requests-pip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-six-pip-target",
+        "six"
       ],
-      "duration_seconds": 0.6027443350000112,
+      "duration_seconds": 0.49686489900000197,
       "label": "pip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "pip:requests"
+      "scenario": "pip:six"
     },
     {
       "command": [
@@ -826,15 +826,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-requests-spip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-six-spip-target",
+        "six"
       ],
-      "duration_seconds": 0.6720939689999881,
+      "duration_seconds": 0.5476682599999947,
       "label": "spip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "spip:requests"
+      "scenario": "spip:six"
     },
     {
       "command": [
@@ -854,7 +854,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-ruff-spip-target",
         "ruff"
       ],
-      "duration_seconds": 1.1276794740000042,
+      "duration_seconds": 1.0922479010000075,
       "label": "spip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -878,7 +878,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-ruff-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.0681829950000008,
+      "duration_seconds": 1.0836788299999967,
       "label": "pip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -899,15 +899,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-requests-pip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-six-pip-target",
+        "six"
       ],
-      "duration_seconds": 0.6206726839999988,
+      "duration_seconds": 0.5223199879999925,
       "label": "pip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "pip:requests"
+      "scenario": "pip:six"
     },
     {
       "command": [
@@ -924,15 +924,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-requests-spip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-six-spip-target",
+        "six"
       ],
-      "duration_seconds": 0.6756256829999927,
+      "duration_seconds": 0.5745295070000225,
       "label": "spip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "spip:requests"
+      "scenario": "spip:six"
     },
     {
       "command": [
@@ -952,7 +952,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-ruff-spip-target",
         "ruff"
       ],
-      "duration_seconds": 1.1324834939999988,
+      "duration_seconds": 1.1589203409999982,
       "label": "spip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -976,7 +976,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-ruff-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.1127460780000007,
+      "duration_seconds": 1.038495719999986,
       "label": "pip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -997,15 +997,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-secured_pip-pip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 0.5971339110000002,
+      "duration_seconds": 1.122345289000009,
       "label": "pip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:secured_pip"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -1022,15 +1022,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-secured_pip-spip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 0.6662556039999998,
+      "duration_seconds": 1.1667136410000012,
       "label": "spip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:secured_pip"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -1050,7 +1050,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-ruff-spip-target",
         "ruff"
       ],
-      "duration_seconds": 1.1599832449999923,
+      "duration_seconds": 1.078036850000018,
       "label": "spip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -1074,7 +1074,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-ruff-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.0848026830000066,
+      "duration_seconds": 1.8271196830000065,
       "label": "pip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -1095,15 +1095,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-secured_pip-pip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 0.5872644470000097,
+      "duration_seconds": 1.1343995390000146,
       "label": "pip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:secured_pip"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -1120,15 +1120,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-secured_pip-spip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 0.651522760000006,
+      "duration_seconds": 1.2002029289999996,
       "label": "spip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:secured_pip"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -1145,15 +1145,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-requests-spip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-six-spip-target",
+        "six"
       ],
-      "duration_seconds": 0.6690548119999988,
+      "duration_seconds": 0.5831379370000036,
       "label": "spip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "spip:requests"
+      "scenario": "spip:six"
     },
     {
       "command": [
@@ -1169,15 +1169,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-requests-pip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-six-pip-target",
+        "six"
       ],
-      "duration_seconds": 0.6341337440000103,
+      "duration_seconds": 0.5376002079999864,
       "label": "pip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "pip:requests"
+      "scenario": "pip:six"
     },
     {
       "command": [
@@ -1193,15 +1193,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-secured_pip-pip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 0.580757915999996,
+      "duration_seconds": 1.1753472309999893,
       "label": "pip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:secured_pip"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -1218,15 +1218,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-secured_pip-spip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 0.6526317390000003,
+      "duration_seconds": 1.1929291790000036,
       "label": "spip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:secured_pip"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -1243,15 +1243,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-requests-spip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-six-spip-target",
+        "six"
       ],
-      "duration_seconds": 0.6720473580000004,
+      "duration_seconds": 0.5776210409999862,
       "label": "spip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "spip:requests"
+      "scenario": "spip:six"
     },
     {
       "command": [
@@ -1267,15 +1267,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-requests-pip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-six-pip-target",
+        "six"
       ],
-      "duration_seconds": 0.5994963249999898,
+      "duration_seconds": 0.5060969959999966,
       "label": "pip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "pip:requests"
+      "scenario": "pip:six"
     },
     {
       "command": [
@@ -1294,7 +1294,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-ruff-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.082438179999997,
+      "duration_seconds": 1.058206551000012,
       "label": "pip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -1319,7 +1319,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-ruff-spip-target",
         "ruff"
       ],
-      "duration_seconds": 1.159792410999998,
+      "duration_seconds": 1.1301770260000126,
       "label": "spip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -1341,15 +1341,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-requests-spip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-six-spip-target",
+        "six"
       ],
-      "duration_seconds": 0.6773122820000026,
+      "duration_seconds": 0.5792481679999923,
       "label": "spip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "spip:requests"
+      "scenario": "spip:six"
     },
     {
       "command": [
@@ -1365,15 +1365,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-requests-pip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-six-pip-target",
+        "six"
       ],
-      "duration_seconds": 0.6033114609999899,
+      "duration_seconds": 0.5113451189999978,
       "label": "pip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "pip:requests"
+      "scenario": "pip:six"
     },
     {
       "command": [
@@ -1392,7 +1392,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-ruff-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.0815468870000018,
+      "duration_seconds": 1.4245186390000129,
       "label": "pip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -1417,7 +1417,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-ruff-spip-target",
         "ruff"
       ],
-      "duration_seconds": 1.1363737150000048,
+      "duration_seconds": 1.485022478000019,
       "label": "spip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -1439,15 +1439,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-secured_pip-spip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 0.6457672419999909,
+      "duration_seconds": 1.6252708060000032,
       "label": "spip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:secured_pip"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -1463,15 +1463,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-secured_pip-pip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 0.5903145899999913,
+      "duration_seconds": 1.5887334040000098,
       "label": "pip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:secured_pip"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -1490,7 +1490,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-ruff-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.0882366960000098,
+      "duration_seconds": 1.4450166109999998,
       "label": "pip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -1515,7 +1515,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-ruff-spip-target",
         "ruff"
       ],
-      "duration_seconds": 1.1372115320000091,
+      "duration_seconds": 3.148516104999999,
       "label": "spip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -1537,15 +1537,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-secured_pip-spip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 0.6513098890000037,
+      "duration_seconds": 1.6310517070000117,
       "label": "spip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:secured_pip"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -1561,15 +1561,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-secured_pip-pip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 0.5889631889999976,
+      "duration_seconds": 1.5513381260000187,
       "label": "pip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:secured_pip"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -1585,15 +1585,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-requests-pip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-six-pip-target",
+        "six"
       ],
-      "duration_seconds": 0.6013631019999934,
+      "duration_seconds": 0.629033321999998,
       "label": "pip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "pip:requests"
+      "scenario": "pip:six"
     },
     {
       "command": [
@@ -1610,15 +1610,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-requests-spip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-six-spip-target",
+        "six"
       ],
-      "duration_seconds": 0.6743354990000086,
+      "duration_seconds": 0.6800155699999948,
       "label": "spip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "spip:requests"
+      "scenario": "spip:six"
     },
     {
       "command": [
@@ -1635,15 +1635,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-secured_pip-spip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 0.703943799000001,
+      "duration_seconds": 1.6193417629999942,
       "label": "spip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:secured_pip"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -1659,15 +1659,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-secured_pip-pip-target",
-        "secured_pip"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 0.5902730070000075,
+      "duration_seconds": 1.558868837999995,
       "label": "pip",
-      "pair": "secured_pip",
-      "requirement": "secured_pip",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:secured_pip"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -1683,15 +1683,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-requests-pip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-six-pip-target",
+        "six"
       ],
-      "duration_seconds": 0.5943659929999967,
+      "duration_seconds": 0.6038355510000031,
       "label": "pip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "pip:requests"
+      "scenario": "pip:six"
     },
     {
       "command": [
@@ -1708,15 +1708,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-requests-spip-target",
-        "requests"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-six-spip-target",
+        "six"
       ],
-      "duration_seconds": 0.6722068629999995,
+      "duration_seconds": 0.6542951929999958,
       "label": "spip",
-      "pair": "requests",
-      "requirement": "requests",
+      "pair": "six",
+      "requirement": "six",
       "returncode": 0,
-      "scenario": "spip:requests"
+      "scenario": "spip:six"
     },
     {
       "command": [
@@ -1736,7 +1736,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-ruff-spip-target",
         "ruff"
       ],
-      "duration_seconds": 1.1560197360000046,
+      "duration_seconds": 1.4562251339999932,
       "label": "spip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -1760,7 +1760,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-ruff-pip-target",
         "ruff"
       ],
-      "duration_seconds": 1.0760902529999896,
+      "duration_seconds": 1.4201836930000127,
       "label": "pip",
       "pair": "ruff",
       "requirement": "ruff",
@@ -1768,129 +1768,129 @@
       "scenario": "pip:ruff"
     }
   ],
-  "requirement": "requests",
+  "requirement": "six",
   "requirements": [
-    "requests",
+    "six",
     "ruff",
-    "secured_pip"
+    "uv"
   ],
   "runs": 12,
   "scenarios": [
     {
-      "key": "requests",
-      "label": "requests",
+      "key": "six",
+      "label": "six",
       "overhead": {
-        "avg_percent": 11.082808077120331,
-        "avg_seconds": 0.06712159083333091,
-        "median_percent": 11.685456582212257,
-        "median_seconds": 0.07038435349998906
+        "avg_percent": 10.002565317568692,
+        "avg_seconds": 0.057923085416675235,
+        "median_percent": 9.982026797800845,
+        "median_seconds": 0.052900759000010567
       },
       "pip": {
-        "avg": 0.6056370404166671,
-        "max": 0.6341337440000103,
-        "median": 0.6023243765000075,
-        "min": 0.5943659929999967
+        "avg": 0.5790823011666623,
+        "max": 0.7139328970000065,
+        "median": 0.5299600979999894,
+        "min": 0.49686489900000197
       },
       "ratio": {
-        "avg": 1.1108280807712034,
-        "avg_label": "x1.1108",
-        "median": 1.1168545658221225,
-        "median_label": "x1.1169"
+        "avg": 1.100025653175687,
+        "avg_label": "x1.1000",
+        "median": 1.0998202679780085,
+        "median_label": "x1.0998"
       },
-      "requirement": "requests",
+      "requirement": "six",
       "spip": {
-        "avg": 0.672758631249998,
-        "max": 0.6788364299999969,
-        "median": 0.6727087299999965,
-        "min": 0.6654459689999896
+        "avg": 0.6370053865833375,
+        "max": 0.7724777780000238,
+        "median": 0.582860857,
+        "min": 0.5476682599999947
       }
     },
     {
       "key": "ruff",
       "label": "ruff",
       "overhead": {
-        "avg_percent": 5.248649691782966,
-        "avg_seconds": 0.05708924858333475,
-        "median_percent": 5.217382704685073,
-        "median_seconds": 0.05651242900000497
+        "avg_percent": 5.461390299341718,
+        "avg_seconds": 0.07562325191666486,
+        "median_percent": -19.51642387165672,
+        "median_seconds": -0.2775920825000142
       },
       "pip": {
-        "avg": 1.087694015333333,
-        "max": 1.1244738299999995,
-        "median": 1.0831566744999996,
-        "min": 1.0681829950000008
+        "avg": 1.3846886556666718,
+        "max": 1.8271196830000065,
+        "median": 1.4223511660000128,
+        "min": 1.038495719999986
       },
       "ratio": {
-        "avg": 1.0524864969178296,
-        "avg_label": "x1.0525",
-        "median": 1.0521738270468508,
-        "median_label": "x1.0522"
+        "avg": 1.0546139029934172,
+        "avg_label": "x1.0546",
+        "median": 0.8048357612834328,
+        "median_label": "x0.8048"
       },
       "requirement": "ruff",
       "spip": {
-        "avg": 1.1447832639166677,
-        "max": 1.1765336109999964,
-        "median": 1.1396691035000046,
-        "min": 1.127438225000006
+        "avg": 1.4603119075833366,
+        "max": 3.148516104999999,
+        "median": 1.1447590834999986,
+        "min": 1.078036850000018
       }
     },
     {
-      "key": "secured_pip",
-      "label": "secured_pip",
+      "key": "uv",
+      "label": "uv",
       "overhead": {
-        "avg_percent": 13.424673357375017,
-        "avg_seconds": 0.0787991252499971,
-        "median_percent": 11.648532713622837,
-        "median_seconds": 0.06855847949999827
+        "avg_percent": 4.242147884203288,
+        "avg_seconds": 0.06145329799999999,
+        "median_percent": 5.896599201929241,
+        "median_seconds": 0.08039085349999198
       },
       "pip": {
-        "avg": 0.586972384000001,
-        "max": 0.5971339110000002,
-        "median": 0.5885589299999978,
-        "min": 0.5759038479999958
+        "avg": 1.44863639075,
+        "max": 1.9419247349999864,
+        "median": 1.363342678500004,
+        "min": 1.122345289000009
       },
       "ratio": {
-        "avg": 1.1342467335737503,
-        "avg_label": "x1.1342",
-        "median": 1.1164853271362283,
-        "median_label": "x1.1165"
+        "avg": 1.042421478842033,
+        "avg_label": "x1.0424",
+        "median": 1.0589659920192924,
+        "median_label": "x1.0590"
       },
-      "requirement": "secured_pip",
+      "requirement": "uv",
       "spip": {
-        "avg": 0.6657715092499981,
-        "max": 0.7250331139999986,
-        "median": 0.6571174094999961,
-        "min": 0.6457672419999909
+        "avg": 1.51008968875,
+        "max": 2.0111847969999985,
+        "median": 1.443733531999996,
+        "min": 1.1667136410000012
       }
     }
   ],
   "summary": {
-    "key": "requests",
-    "label": "requests",
+    "key": "six",
+    "label": "six",
     "overhead": {
-      "avg_percent": 11.082808077120331,
-      "avg_seconds": 0.06712159083333091,
-      "median_percent": 11.685456582212257,
-      "median_seconds": 0.07038435349998906
+      "avg_percent": 10.002565317568692,
+      "avg_seconds": 0.057923085416675235,
+      "median_percent": 9.982026797800845,
+      "median_seconds": 0.052900759000010567
     },
     "pip": {
-      "avg": 0.6056370404166671,
-      "max": 0.6341337440000103,
-      "median": 0.6023243765000075,
-      "min": 0.5943659929999967
+      "avg": 0.5790823011666623,
+      "max": 0.7139328970000065,
+      "median": 0.5299600979999894,
+      "min": 0.49686489900000197
     },
     "ratio": {
-      "avg": 1.1108280807712034,
-      "avg_label": "x1.1108",
-      "median": 1.1168545658221225,
-      "median_label": "x1.1169"
+      "avg": 1.100025653175687,
+      "avg_label": "x1.1000",
+      "median": 1.0998202679780085,
+      "median_label": "x1.0998"
     },
-    "requirement": "requests",
+    "requirement": "six",
     "spip": {
-      "avg": 0.672758631249998,
-      "max": 0.6788364299999969,
-      "median": 0.6727087299999965,
-      "min": 0.6654459689999896
+      "avg": 0.6370053865833375,
+      "max": 0.7724777780000238,
+      "median": 0.582860857,
+      "min": 0.5476682599999947
     }
   },
   "warmups": 1
