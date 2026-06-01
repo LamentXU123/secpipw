@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-01T08:39:55.267900Z",
+  "generated_at": "2026-06-01T08:51:26.276457Z",
   "mode": "local wheelhouse install, --no-index, --no-deps, fresh --target per run",
   "primary_metric": "median",
   "records": [
@@ -19,15 +19,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-numpy-pip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-scikit-learn-pip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.373016917000001,
+      "duration_seconds": 2.502667720000005,
       "label": "pip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "pip:numpy"
+      "scenario": "pip:scikit-learn"
     },
     {
       "command": [
@@ -46,15 +46,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-numpy-spip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-scikit-learn-spip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.762771479999998,
+      "duration_seconds": 2.978526562000013,
       "label": "spip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "spip:numpy"
+      "scenario": "spip:scikit-learn"
     },
     {
       "command": [
@@ -76,7 +76,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.7103060289999945,
+      "duration_seconds": 4.637765311999999,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -102,7 +102,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.6271689250000065,
+      "duration_seconds": 4.5896674950000005,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -128,7 +128,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6517058179999822,
+      "duration_seconds": 0.6659230600000114,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -155,7 +155,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.705728688000022,
+      "duration_seconds": 0.7024209569999869,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -182,7 +182,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.684194698000027,
+      "duration_seconds": 4.642214082999999,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -208,7 +208,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.638918894,
+      "duration_seconds": 4.662293570000003,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -234,7 +234,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6502301980000027,
+      "duration_seconds": 0.6547406600000159,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -261,7 +261,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7055314429999839,
+      "duration_seconds": 0.7031387979999977,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -285,15 +285,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-numpy-spip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-scikit-learn-spip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.7546029450000162,
+      "duration_seconds": 2.9783735999999976,
       "label": "spip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "spip:numpy"
+      "scenario": "spip:scikit-learn"
     },
     {
       "command": [
@@ -311,15 +311,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-numpy-pip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-scikit-learn-pip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.3622878639999954,
+      "duration_seconds": 2.5281227880000188,
       "label": "pip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "pip:numpy"
+      "scenario": "pip:scikit-learn"
     },
     {
       "command": [
@@ -340,7 +340,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.658206521000011,
+      "duration_seconds": 0.6501876270000082,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -367,7 +367,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7074005199999931,
+      "duration_seconds": 0.7045715909999899,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -391,15 +391,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-numpy-spip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-scikit-learn-spip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.774027265000001,
+      "duration_seconds": 3.009479648999985,
       "label": "spip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "spip:numpy"
+      "scenario": "spip:scikit-learn"
     },
     {
       "command": [
@@ -417,15 +417,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-numpy-pip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-scikit-learn-pip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.45324665199999,
+      "duration_seconds": 2.500785054000005,
       "label": "pip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "pip:numpy"
+      "scenario": "pip:scikit-learn"
     },
     {
       "command": [
@@ -446,7 +446,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.641475131999982,
+      "duration_seconds": 4.550184830999996,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -473,7 +473,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.701484035999982,
+      "duration_seconds": 4.6445837369999765,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -497,15 +497,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-numpy-spip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-scikit-learn-spip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.762570573000005,
+      "duration_seconds": 3.1250787559999935,
       "label": "spip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "spip:numpy"
+      "scenario": "spip:scikit-learn"
     },
     {
       "command": [
@@ -523,15 +523,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-numpy-pip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-scikit-learn-pip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.370000896000022,
+      "duration_seconds": 2.5099309530000085,
       "label": "pip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "pip:numpy"
+      "scenario": "pip:scikit-learn"
     },
     {
       "command": [
@@ -552,7 +552,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.655393717999999,
+      "duration_seconds": 4.573532918000012,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -579,7 +579,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.688830166999992,
+      "duration_seconds": 4.631630946999991,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -606,7 +606,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.703978047999982,
+      "duration_seconds": 0.7053361799999891,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -632,7 +632,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6513854490000028,
+      "duration_seconds": 0.6542741599999999,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -658,7 +658,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.64709782700001,
+      "duration_seconds": 4.560945821000018,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -685,7 +685,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.706806290999992,
+      "duration_seconds": 4.628081473999998,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -712,7 +712,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7049463520000074,
+      "duration_seconds": 0.71020544000001,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -738,7 +738,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6523804119999852,
+      "duration_seconds": 0.6510186849999968,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -761,15 +761,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-numpy-pip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-scikit-learn-pip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.3707774650000033,
+      "duration_seconds": 2.5146312150000085,
       "label": "pip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "pip:numpy"
+      "scenario": "pip:scikit-learn"
     },
     {
       "command": [
@@ -788,15 +788,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-numpy-spip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-scikit-learn-spip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.7734227290000035,
+      "duration_seconds": 2.980910716000011,
       "label": "spip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "spip:numpy"
+      "scenario": "spip:scikit-learn"
     },
     {
       "command": [
@@ -818,7 +818,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7070410069999866,
+      "duration_seconds": 0.7040283119999913,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -844,7 +844,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6529484739999987,
+      "duration_seconds": 0.6523642379999899,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -867,15 +867,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-numpy-pip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-scikit-learn-pip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.3534906300000102,
+      "duration_seconds": 2.518911564000007,
       "label": "pip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "pip:numpy"
+      "scenario": "pip:scikit-learn"
     },
     {
       "command": [
@@ -894,15 +894,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-numpy-spip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-scikit-learn-spip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.801125936999995,
+      "duration_seconds": 2.9708642760000146,
       "label": "spip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "spip:numpy"
+      "scenario": "spip:scikit-learn"
     },
     {
       "command": [
@@ -924,7 +924,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.672764804999986,
+      "duration_seconds": 4.637169908000004,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -950,7 +950,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.650894591999986,
+      "duration_seconds": 4.530787744999998,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -973,15 +973,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-numpy-pip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-scikit-learn-pip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.387713777000016,
+      "duration_seconds": 2.510322771999995,
       "label": "pip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "pip:numpy"
+      "scenario": "pip:scikit-learn"
     },
     {
       "command": [
@@ -1000,15 +1000,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-numpy-spip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-scikit-learn-spip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.7914959750000037,
+      "duration_seconds": 2.961765345999993,
       "label": "spip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "spip:numpy"
+      "scenario": "spip:scikit-learn"
     },
     {
       "command": [
@@ -1030,7 +1030,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.670232521000003,
+      "duration_seconds": 4.622981321999987,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1056,7 +1056,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.645907765000004,
+      "duration_seconds": 4.657514007000003,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1082,7 +1082,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6498089109999796,
+      "duration_seconds": 0.6804693989999748,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1109,7 +1109,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.730420381000016,
+      "duration_seconds": 0.7342309769999815,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1136,7 +1136,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.695648772999988,
+      "duration_seconds": 4.797084714999983,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1162,7 +1162,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.608401919000016,
+      "duration_seconds": 4.782762493999996,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1188,7 +1188,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6533184660000018,
+      "duration_seconds": 0.676671462999991,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1215,7 +1215,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7074308200000132,
+      "duration_seconds": 0.7322626689999936,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1239,15 +1239,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-numpy-spip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-scikit-learn-spip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.7594042750000085,
+      "duration_seconds": 3.0230885609999802,
       "label": "spip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "spip:numpy"
+      "scenario": "spip:scikit-learn"
     },
     {
       "command": [
@@ -1265,15 +1265,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-numpy-pip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-scikit-learn-pip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.3588915670000006,
+      "duration_seconds": 2.5452234279999857,
       "label": "pip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "pip:numpy"
+      "scenario": "pip:scikit-learn"
     },
     {
       "command": [
@@ -1294,7 +1294,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6510090380000122,
+      "duration_seconds": 0.6626175959999898,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1321,7 +1321,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7050083120000181,
+      "duration_seconds": 0.7271363809999798,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1345,15 +1345,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-numpy-spip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-scikit-learn-spip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.7920253700000046,
+      "duration_seconds": 3.0228354609999997,
       "label": "spip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "spip:numpy"
+      "scenario": "spip:scikit-learn"
     },
     {
       "command": [
@@ -1371,15 +1371,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-numpy-pip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-scikit-learn-pip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.3764248139999893,
+      "duration_seconds": 2.6480191130000037,
       "label": "pip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "pip:numpy"
+      "scenario": "pip:scikit-learn"
     },
     {
       "command": [
@@ -1400,7 +1400,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.646905125999979,
+      "duration_seconds": 4.650511599999987,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1427,7 +1427,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.7006694960000175,
+      "duration_seconds": 4.6898343109999985,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1451,15 +1451,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-numpy-spip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-scikit-learn-spip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.793725077999966,
+      "duration_seconds": 2.9919883879999816,
       "label": "spip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "spip:numpy"
+      "scenario": "spip:scikit-learn"
     },
     {
       "command": [
@@ -1477,15 +1477,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-numpy-pip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-scikit-learn-pip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.3596483559999797,
+      "duration_seconds": 2.512392083000009,
       "label": "pip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "pip:numpy"
+      "scenario": "pip:scikit-learn"
     },
     {
       "command": [
@@ -1506,7 +1506,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.648572945000012,
+      "duration_seconds": 4.588621618000047,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1533,7 +1533,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.717859604000012,
+      "duration_seconds": 4.667540102000032,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1560,7 +1560,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7037750979999942,
+      "duration_seconds": 0.7074755869999763,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1586,7 +1586,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6505678359999933,
+      "duration_seconds": 0.6606656750000184,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1612,7 +1612,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.645576166000012,
+      "duration_seconds": 4.630036389999987,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1639,7 +1639,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.705050513000003,
+      "duration_seconds": 4.779303712000001,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1666,7 +1666,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7042395799999781,
+      "duration_seconds": 0.7130580499999724,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1692,7 +1692,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6500431289999824,
+      "duration_seconds": 0.6576532649999649,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1715,15 +1715,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-numpy-pip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-scikit-learn-pip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.374310469999955,
+      "duration_seconds": 2.527192881000019,
       "label": "pip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "pip:numpy"
+      "scenario": "pip:scikit-learn"
     },
     {
       "command": [
@@ -1742,15 +1742,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-numpy-spip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-scikit-learn-spip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.809653310999977,
+      "duration_seconds": 3.0091695890000096,
       "label": "spip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "spip:numpy"
+      "scenario": "spip:scikit-learn"
     },
     {
       "command": [
@@ -1772,7 +1772,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7052209279999602,
+      "duration_seconds": 0.7117629679999595,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1798,7 +1798,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6528203629999894,
+      "duration_seconds": 0.6683837180000296,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1821,15 +1821,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-numpy-pip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-scikit-learn-pip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.382237462999967,
+      "duration_seconds": 2.551069364,
       "label": "pip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "pip:numpy"
+      "scenario": "pip:scikit-learn"
     },
     {
       "command": [
@@ -1848,15 +1848,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-numpy-spip-target",
-        "numpy"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-scikit-learn-spip-target",
+        "scikit-learn"
       ],
-      "duration_seconds": 2.768922819000011,
+      "duration_seconds": 3.0855763100000217,
       "label": "spip",
-      "pair": "numpy",
-      "requirement": "numpy",
+      "pair": "scikit-learn",
+      "requirement": "scikit-learn",
       "returncode": 0,
-      "scenario": "spip:numpy"
+      "scenario": "spip:scikit-learn"
     },
     {
       "command": [
@@ -1878,7 +1878,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.708229743999993,
+      "duration_seconds": 4.692520609999974,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1904,7 +1904,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.651878054999997,
+      "duration_seconds": 4.659229336999999,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1912,129 +1912,129 @@
       "scenario": "pip:scipy"
     }
   ],
-  "requirement": "numpy",
+  "requirement": "scikit-learn",
   "requirements": [
-    "numpy",
+    "scikit-learn",
     "scipy",
     "uv"
   ],
   "runs": 12,
   "scenarios": [
     {
-      "key": "numpy",
-      "label": "numpy",
+      "key": "scikit-learn",
+      "label": "scikit-learn",
       "overhead": {
-        "avg_percent": 16.9051713146947,
-        "avg_seconds": 0.40180840716667143,
-        "median_percent": 16.941198274727398,
-        "median_seconds": 0.401827806
+        "avg_percent": 18.994162458589734,
+        "avg_seconds": 0.4806990232499948,
+        "median_percent": 19.2233430902162,
+        "median_seconds": 0.48380759899998793
       },
       "pip": {
-        "avg": 2.376837239249994,
-        "max": 2.45324665199999,
-        "median": 2.371897191000002,
-        "min": 2.3534906300000102
+        "avg": 2.5307724112500054,
+        "max": 2.6480191130000037,
+        "median": 2.5167713895000077,
+        "min": 2.500785054000005
       },
       "ratio": {
-        "avg": 1.169051713146947,
-        "avg_label": "x1.1691",
-        "median": 1.169411982747274,
-        "median_label": "x1.1694"
+        "avg": 1.1899416245858974,
+        "avg_label": "x1.1899",
+        "median": 1.192233430902162,
+        "median_label": "x1.1922"
       },
-      "requirement": "numpy",
+      "requirement": "scikit-learn",
       "spip": {
-        "avg": 2.7786456464166656,
-        "max": 2.809653310999977,
-        "median": 2.773724997000002,
-        "min": 2.7546029450000162
+        "avg": 3.0114714345,
+        "max": 3.1250787559999935,
+        "median": 3.0005789884999956,
+        "min": 2.961765345999993
       }
     },
     {
       "key": "scipy",
       "label": "scipy",
       "overhead": {
-        "avg_percent": 1.173769243824085,
-        "avg_seconds": 0.054490467749999105,
-        "median_percent": 1.176615114094384,
-        "median_seconds": 0.05467032050000853
+        "avg_percent": 1.144782093916546,
+        "avg_seconds": 0.05288520058332491,
+        "median_percent": 0.7277233177645432,
+        "median_seconds": 0.033546967499994196
       },
       "pip": {
-        "avg": 4.642349255333333,
-        "max": 4.655393717999999,
-        "median": 4.646406445499991,
-        "min": 4.608401919000016
+        "avg": 4.619673985500004,
+        "max": 4.782762493999996,
+        "median": 4.6098519424999935,
+        "min": 4.530787744999998
       },
       "ratio": {
-        "avg": 1.0117376924382409,
-        "avg_label": "x1.0117",
-        "median": 1.011766151140944,
-        "median_label": "x1.0118"
+        "avg": 1.0114478209391655,
+        "avg_label": "x1.0114",
+        "median": 1.0072772331776454,
+        "median_label": "x1.0073"
       },
       "requirement": "scipy",
       "spip": {
-        "avg": 4.6968397230833325,
-        "max": 4.717859604000012,
-        "median": 4.701076766,
-        "min": 4.670232521000003
+        "avg": 4.672559186083329,
+        "max": 4.797084714999983,
+        "median": 4.643398909999988,
+        "min": 4.622981321999987
       }
     },
     {
       "key": "uv",
       "label": "uv",
       "overhead": {
-        "avg_percent": 8.515598204150097,
-        "avg_seconds": 0.0555247135000011,
-        "median_percent": 8.261977247980463,
-        "median_seconds": 0.05383055199997955
+        "avg_percent": 7.821811544477965,
+        "avg_seconds": 0.05172153033331983,
+        "median_percent": 7.537029468756945,
+        "median_seconds": 0.049681043500001465
       },
       "pip": {
-        "avg": 0.6520353845833284,
-        "max": 0.658206521000011,
-        "median": 0.6515456334999925,
-        "min": 0.6498089109999796
+        "avg": 0.6612474621666659,
+        "max": 0.6804693989999748,
+        "median": 0.6591594699999916,
+        "min": 0.6501876270000082
       },
       "ratio": {
-        "avg": 1.0851559820415009,
-        "avg_label": "x1.0852",
-        "median": 1.0826197724798046,
-        "median_label": "x1.0826"
+        "avg": 1.0782181154447796,
+        "avg_label": "x1.0782",
+        "median": 1.0753702946875694,
+        "median_label": "x1.0754"
       },
       "requirement": "uv",
       "spip": {
-        "avg": 0.7075600980833295,
-        "max": 0.730420381000016,
-        "median": 0.705376185499972,
-        "min": 0.7037750979999942
+        "avg": 0.7129689924999857,
+        "max": 0.7342309769999815,
+        "median": 0.7088405134999931,
+        "min": 0.7024209569999869
       }
     }
   ],
   "summary": {
-    "key": "numpy",
-    "label": "numpy",
+    "key": "scikit-learn",
+    "label": "scikit-learn",
     "overhead": {
-      "avg_percent": 16.9051713146947,
-      "avg_seconds": 0.40180840716667143,
-      "median_percent": 16.941198274727398,
-      "median_seconds": 0.401827806
+      "avg_percent": 18.994162458589734,
+      "avg_seconds": 0.4806990232499948,
+      "median_percent": 19.2233430902162,
+      "median_seconds": 0.48380759899998793
     },
     "pip": {
-      "avg": 2.376837239249994,
-      "max": 2.45324665199999,
-      "median": 2.371897191000002,
-      "min": 2.3534906300000102
+      "avg": 2.5307724112500054,
+      "max": 2.6480191130000037,
+      "median": 2.5167713895000077,
+      "min": 2.500785054000005
     },
     "ratio": {
-      "avg": 1.169051713146947,
-      "avg_label": "x1.1691",
-      "median": 1.169411982747274,
-      "median_label": "x1.1694"
+      "avg": 1.1899416245858974,
+      "avg_label": "x1.1899",
+      "median": 1.192233430902162,
+      "median_label": "x1.1922"
     },
-    "requirement": "numpy",
+    "requirement": "scikit-learn",
     "spip": {
-      "avg": 2.7786456464166656,
-      "max": 2.809653310999977,
-      "median": 2.773724997000002,
-      "min": 2.7546029450000162
+      "avg": 3.0114714345,
+      "max": 3.1250787559999935,
+      "median": 3.0005789884999956,
+      "min": 2.961765345999993
     }
   },
   "warmups": 1
