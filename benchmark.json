@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-01T07:28:22.010401Z",
+  "generated_at": "2026-06-01T08:39:55.267900Z",
   "mode": "local wheelhouse install, --no-index, --no-deps, fresh --target per run",
   "primary_metric": "median",
   "records": [
@@ -22,7 +22,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-numpy-pip-target",
         "numpy"
       ],
-      "duration_seconds": 2.4425212069999986,
+      "duration_seconds": 2.373016917000001,
       "label": "pip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -49,7 +49,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-numpy-spip-target",
         "numpy"
       ],
-      "duration_seconds": 2.8165280540000026,
+      "duration_seconds": 2.762771479999998,
       "label": "spip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -76,7 +76,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.883357321999995,
+      "duration_seconds": 4.7103060289999945,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -102,7 +102,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.81732592800001,
+      "duration_seconds": 4.6271689250000065,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -125,15 +125,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-pyarrow-pip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 1.7143932080000042,
+      "duration_seconds": 0.6517058179999822,
       "label": "pip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:pyarrow"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -152,15 +152,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-pyarrow-spip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-0-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 1.9940673540000091,
+      "duration_seconds": 0.705728688000022,
       "label": "spip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:pyarrow"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -182,7 +182,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.858231752000009,
+      "duration_seconds": 4.684194698000027,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -208,7 +208,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.790668146000002,
+      "duration_seconds": 4.638918894,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -231,15 +231,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-pyarrow-pip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 1.7194985120000013,
+      "duration_seconds": 0.6502301980000027,
       "label": "pip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:pyarrow"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -258,15 +258,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-pyarrow-spip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 1.970018005,
+      "duration_seconds": 0.7055314429999839,
       "label": "spip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:pyarrow"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -288,7 +288,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-numpy-spip-target",
         "numpy"
       ],
-      "duration_seconds": 2.8301908779999962,
+      "duration_seconds": 2.7546029450000162,
       "label": "spip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -314,7 +314,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-1-numpy-pip-target",
         "numpy"
       ],
-      "duration_seconds": 2.4255636409999966,
+      "duration_seconds": 2.3622878639999954,
       "label": "pip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -337,15 +337,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-pyarrow-pip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 1.7139900640000008,
+      "duration_seconds": 0.658206521000011,
       "label": "pip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:pyarrow"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -364,15 +364,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-pyarrow-spip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 1.9678763849999967,
+      "duration_seconds": 0.7074005199999931,
       "label": "spip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:pyarrow"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -394,7 +394,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-numpy-spip-target",
         "numpy"
       ],
-      "duration_seconds": 2.8151194499999974,
+      "duration_seconds": 2.774027265000001,
       "label": "spip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -420,7 +420,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-numpy-pip-target",
         "numpy"
       ],
-      "duration_seconds": 2.4406561520000025,
+      "duration_seconds": 2.45324665199999,
       "label": "pip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -446,7 +446,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 5.145174292999997,
+      "duration_seconds": 4.641475131999982,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -473,7 +473,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-2-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.8743349579999915,
+      "duration_seconds": 4.701484035999982,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -500,7 +500,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-numpy-spip-target",
         "numpy"
       ],
-      "duration_seconds": 2.82622568699999,
+      "duration_seconds": 2.762570573000005,
       "label": "spip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -526,7 +526,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-numpy-pip-target",
         "numpy"
       ],
-      "duration_seconds": 2.427495976000003,
+      "duration_seconds": 2.370000896000022,
       "label": "pip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -552,7 +552,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.810189516999998,
+      "duration_seconds": 4.655393717999999,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -579,7 +579,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.8801237270000115,
+      "duration_seconds": 4.688830166999992,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -603,15 +603,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-pyarrow-spip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 1.9711518179999956,
+      "duration_seconds": 0.703978047999982,
       "label": "spip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:pyarrow"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -629,15 +629,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-pyarrow-pip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-3-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 1.7077676429999968,
+      "duration_seconds": 0.6513854490000028,
       "label": "pip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:pyarrow"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -658,7 +658,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.821412165999988,
+      "duration_seconds": 4.64709782700001,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -685,7 +685,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.876965740000003,
+      "duration_seconds": 4.706806290999992,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -709,15 +709,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-pyarrow-spip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 1.9767217579999965,
+      "duration_seconds": 0.7049463520000074,
       "label": "spip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:pyarrow"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -735,15 +735,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-pyarrow-pip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 1.7051751510000202,
+      "duration_seconds": 0.6523804119999852,
       "label": "pip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:pyarrow"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -764,7 +764,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-numpy-pip-target",
         "numpy"
       ],
-      "duration_seconds": 2.45048276899999,
+      "duration_seconds": 2.3707774650000033,
       "label": "pip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -791,7 +791,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-4-numpy-spip-target",
         "numpy"
       ],
-      "duration_seconds": 2.8093717289999915,
+      "duration_seconds": 2.7734227290000035,
       "label": "spip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -815,15 +815,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-pyarrow-spip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 1.9877344219999884,
+      "duration_seconds": 0.7070410069999866,
       "label": "spip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:pyarrow"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -841,15 +841,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-pyarrow-pip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 1.7144037790000084,
+      "duration_seconds": 0.6529484739999987,
       "label": "pip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:pyarrow"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -870,7 +870,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-numpy-pip-target",
         "numpy"
       ],
-      "duration_seconds": 2.449032649000003,
+      "duration_seconds": 2.3534906300000102,
       "label": "pip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -897,7 +897,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-numpy-spip-target",
         "numpy"
       ],
-      "duration_seconds": 3.103385125000017,
+      "duration_seconds": 2.801125936999995,
       "label": "spip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -924,7 +924,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.880119514,
+      "duration_seconds": 4.672764804999986,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -950,7 +950,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-5-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.812788226999999,
+      "duration_seconds": 4.650894591999986,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -976,7 +976,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-numpy-pip-target",
         "numpy"
       ],
-      "duration_seconds": 2.423721879999988,
+      "duration_seconds": 2.387713777000016,
       "label": "pip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -1003,7 +1003,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-numpy-spip-target",
         "numpy"
       ],
-      "duration_seconds": 2.8406381539999757,
+      "duration_seconds": 2.7914959750000037,
       "label": "spip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -1030,7 +1030,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.869150510999987,
+      "duration_seconds": 4.670232521000003,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1056,7 +1056,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.791019387000006,
+      "duration_seconds": 4.645907765000004,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1079,15 +1079,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-pyarrow-pip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 1.710566349000004,
+      "duration_seconds": 0.6498089109999796,
       "label": "pip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:pyarrow"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -1106,15 +1106,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-pyarrow-spip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-6-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 1.9801656499999751,
+      "duration_seconds": 0.730420381000016,
       "label": "spip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:pyarrow"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -1136,7 +1136,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.870245503999996,
+      "duration_seconds": 4.695648772999988,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1162,7 +1162,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.83228006600001,
+      "duration_seconds": 4.608401919000016,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1185,15 +1185,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-pyarrow-pip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 1.7123820280000075,
+      "duration_seconds": 0.6533184660000018,
       "label": "pip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:pyarrow"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -1212,15 +1212,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-pyarrow-spip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 1.9913438160000112,
+      "duration_seconds": 0.7074308200000132,
       "label": "spip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:pyarrow"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -1242,7 +1242,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-numpy-spip-target",
         "numpy"
       ],
-      "duration_seconds": 2.813629208000009,
+      "duration_seconds": 2.7594042750000085,
       "label": "spip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -1268,7 +1268,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-7-numpy-pip-target",
         "numpy"
       ],
-      "duration_seconds": 2.4433300180000117,
+      "duration_seconds": 2.3588915670000006,
       "label": "pip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -1291,15 +1291,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-pyarrow-pip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 1.7107557299999883,
+      "duration_seconds": 0.6510090380000122,
       "label": "pip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:pyarrow"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -1318,15 +1318,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-pyarrow-spip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 1.9710961590000124,
+      "duration_seconds": 0.7050083120000181,
       "label": "spip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:pyarrow"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -1348,7 +1348,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-numpy-spip-target",
         "numpy"
       ],
-      "duration_seconds": 2.815720712000001,
+      "duration_seconds": 2.7920253700000046,
       "label": "spip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -1374,7 +1374,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-numpy-pip-target",
         "numpy"
       ],
-      "duration_seconds": 2.7426870769999994,
+      "duration_seconds": 2.3764248139999893,
       "label": "pip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -1400,7 +1400,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.7769844860000035,
+      "duration_seconds": 4.646905125999979,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1427,7 +1427,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-8-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.854559961000007,
+      "duration_seconds": 4.7006694960000175,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1454,7 +1454,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-numpy-spip-target",
         "numpy"
       ],
-      "duration_seconds": 2.8154401580000012,
+      "duration_seconds": 2.793725077999966,
       "label": "spip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -1480,7 +1480,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-numpy-pip-target",
         "numpy"
       ],
-      "duration_seconds": 2.430065013000018,
+      "duration_seconds": 2.3596483559999797,
       "label": "pip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -1506,7 +1506,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.799089189,
+      "duration_seconds": 4.648572945000012,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1533,7 +1533,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.90455902399998,
+      "duration_seconds": 4.717859604000012,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1557,15 +1557,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-pyarrow-spip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 1.981065209999997,
+      "duration_seconds": 0.7037750979999942,
       "label": "spip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:pyarrow"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -1583,15 +1583,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-pyarrow-pip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-9-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 1.7032475099999829,
+      "duration_seconds": 0.6505678359999933,
       "label": "pip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:pyarrow"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -1612,7 +1612,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.797984126999978,
+      "duration_seconds": 4.645576166000012,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1639,7 +1639,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.874120403000006,
+      "duration_seconds": 4.705050513000003,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1663,15 +1663,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-pyarrow-spip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 1.974405877999999,
+      "duration_seconds": 0.7042395799999781,
       "label": "spip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:pyarrow"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -1689,15 +1689,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-pyarrow-pip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 1.709913035999989,
+      "duration_seconds": 0.6500431289999824,
       "label": "pip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:pyarrow"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -1718,7 +1718,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-numpy-pip-target",
         "numpy"
       ],
-      "duration_seconds": 2.436830716000003,
+      "duration_seconds": 2.374310469999955,
       "label": "pip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -1745,7 +1745,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-10-numpy-spip-target",
         "numpy"
       ],
-      "duration_seconds": 2.8070132160000014,
+      "duration_seconds": 2.809653310999977,
       "label": "spip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -1769,15 +1769,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-pyarrow-spip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-uv-spip-target",
+        "uv"
       ],
-      "duration_seconds": 1.9755604210000115,
+      "duration_seconds": 0.7052209279999602,
       "label": "spip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "spip:pyarrow"
+      "scenario": "spip:uv"
     },
     {
       "command": [
@@ -1795,15 +1795,15 @@
         "--timeout",
         "120",
         "--target",
-        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-pyarrow-pip-target",
-        "pyarrow"
+        "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-uv-pip-target",
+        "uv"
       ],
-      "duration_seconds": 1.7287740589999885,
+      "duration_seconds": 0.6528203629999894,
       "label": "pip",
-      "pair": "pyarrow",
-      "requirement": "pyarrow",
+      "pair": "uv",
+      "requirement": "uv",
       "returncode": 0,
-      "scenario": "pip:pyarrow"
+      "scenario": "pip:uv"
     },
     {
       "command": [
@@ -1824,7 +1824,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-numpy-pip-target",
         "numpy"
       ],
-      "duration_seconds": 2.4574231210000335,
+      "duration_seconds": 2.382237462999967,
       "label": "pip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -1851,7 +1851,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-numpy-spip-target",
         "numpy"
       ],
-      "duration_seconds": 2.9207061719999956,
+      "duration_seconds": 2.768922819000011,
       "label": "spip",
       "pair": "numpy",
       "requirement": "numpy",
@@ -1878,7 +1878,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.870418970999992,
+      "duration_seconds": 4.708229743999993,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1904,7 +1904,7 @@
         "/home/runner/work/secured_pip/secured_pip/.tmp-benchmark/run-11-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.788489729000048,
+      "duration_seconds": 4.651878054999997,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1916,7 +1916,7 @@
   "requirements": [
     "numpy",
     "scipy",
-    "pyarrow"
+    "uv"
   ],
   "runs": 12,
   "scenarios": [
@@ -1924,87 +1924,87 @@
       "key": "numpy",
       "label": "numpy",
       "overhead": {
-        "avg_percent": 15.70574274776993,
-        "avg_seconds": 0.387013193666661,
-        "median_percent": 15.339836174891683,
-        "median_seconds": 0.3745357035000012
+        "avg_percent": 16.9051713146947,
+        "avg_seconds": 0.40180840716667143,
+        "median_percent": 16.941198274727398,
+        "median_seconds": 0.401827806
       },
       "pip": {
-        "avg": 2.4641508515833372,
-        "max": 2.7426870769999994,
-        "median": 2.4415886795000006,
-        "min": 2.423721879999988
+        "avg": 2.376837239249994,
+        "max": 2.45324665199999,
+        "median": 2.371897191000002,
+        "min": 2.3534906300000102
       },
       "ratio": {
-        "avg": 1.1570574274776992,
-        "avg_label": "x1.1571",
-        "median": 1.1533983617489167,
-        "median_label": "x1.1534"
+        "avg": 1.169051713146947,
+        "avg_label": "x1.1691",
+        "median": 1.169411982747274,
+        "median_label": "x1.1694"
       },
       "requirement": "numpy",
       "spip": {
-        "avg": 2.8511640452499982,
-        "max": 3.103385125000017,
-        "median": 2.816124383000002,
-        "min": 2.8070132160000014
+        "avg": 2.7786456464166656,
+        "max": 2.809653310999977,
+        "median": 2.773724997000002,
+        "min": 2.7546029450000162
       }
     },
     {
       "key": "scipy",
       "label": "scipy",
       "overhead": {
-        "avg_percent": 0.8843601435475554,
-        "avg_seconds": 0.0427318438333284,
-        "median_percent": 1.4483569397680036,
-        "median_seconds": 0.06958832749999999
+        "avg_percent": 1.173769243824085,
+        "avg_seconds": 0.054490467749999105,
+        "median_percent": 1.176615114094384,
+        "median_seconds": 0.05467032050000853
       },
       "pip": {
-        "avg": 4.83195043841667,
-        "max": 5.145174292999997,
-        "median": 4.804639352999999,
-        "min": 4.7769844860000035
+        "avg": 4.642349255333333,
+        "max": 4.655393717999999,
+        "median": 4.646406445499991,
+        "min": 4.608401919000016
       },
       "ratio": {
-        "avg": 1.0088436014354756,
-        "avg_label": "x1.0088",
-        "median": 1.0144835693976801,
-        "median_label": "x1.0145"
+        "avg": 1.0117376924382409,
+        "avg_label": "x1.0117",
+        "median": 1.011766151140944,
+        "median_label": "x1.0118"
       },
       "requirement": "scipy",
       "spip": {
-        "avg": 4.874682282249998,
-        "max": 4.90455902399998,
-        "median": 4.874227680499999,
-        "min": 4.854559961000007
+        "avg": 4.6968397230833325,
+        "max": 4.717859604000012,
+        "median": 4.701076766,
+        "min": 4.670232521000003
       }
     },
     {
-      "key": "pyarrow",
-      "label": "pyarrow",
+      "key": "uv",
+      "label": "uv",
       "overhead": {
-        "avg_percent": 15.524112906226112,
-        "avg_seconds": 0.26586165058333333,
-        "median_percent": 15.45787690733108,
-        "median_seconds": 0.2645722105000061
+        "avg_percent": 8.515598204150097,
+        "avg_seconds": 0.0555247135000011,
+        "median_percent": 8.261977247980463,
+        "median_seconds": 0.05383055199997955
       },
       "pip": {
-        "avg": 1.7125722557499994,
-        "max": 1.7287740589999885,
-        "median": 1.7115688789999979,
-        "min": 1.7032475099999829
+        "avg": 0.6520353845833284,
+        "max": 0.658206521000011,
+        "median": 0.6515456334999925,
+        "min": 0.6498089109999796
       },
       "ratio": {
-        "avg": 1.155241129062261,
-        "avg_label": "x1.1552",
-        "median": 1.154578769073311,
-        "median_label": "x1.1546"
+        "avg": 1.0851559820415009,
+        "avg_label": "x1.0852",
+        "median": 1.0826197724798046,
+        "median_label": "x1.0826"
       },
-      "requirement": "pyarrow",
+      "requirement": "uv",
       "spip": {
-        "avg": 1.9784339063333327,
-        "max": 1.9940673540000091,
-        "median": 1.976141089500004,
-        "min": 1.9678763849999967
+        "avg": 0.7075600980833295,
+        "max": 0.730420381000016,
+        "median": 0.705376185499972,
+        "min": 0.7037750979999942
       }
     }
   ],
@@ -2012,29 +2012,29 @@
     "key": "numpy",
     "label": "numpy",
     "overhead": {
-      "avg_percent": 15.70574274776993,
-      "avg_seconds": 0.387013193666661,
-      "median_percent": 15.339836174891683,
-      "median_seconds": 0.3745357035000012
+      "avg_percent": 16.9051713146947,
+      "avg_seconds": 0.40180840716667143,
+      "median_percent": 16.941198274727398,
+      "median_seconds": 0.401827806
     },
     "pip": {
-      "avg": 2.4641508515833372,
-      "max": 2.7426870769999994,
-      "median": 2.4415886795000006,
-      "min": 2.423721879999988
+      "avg": 2.376837239249994,
+      "max": 2.45324665199999,
+      "median": 2.371897191000002,
+      "min": 2.3534906300000102
     },
     "ratio": {
-      "avg": 1.1570574274776992,
-      "avg_label": "x1.1571",
-      "median": 1.1533983617489167,
-      "median_label": "x1.1534"
+      "avg": 1.169051713146947,
+      "avg_label": "x1.1691",
+      "median": 1.169411982747274,
+      "median_label": "x1.1694"
     },
     "requirement": "numpy",
     "spip": {
-      "avg": 2.8511640452499982,
-      "max": 3.103385125000017,
-      "median": 2.816124383000002,
-      "min": 2.8070132160000014
+      "avg": 2.7786456464166656,
+      "max": 2.809653310999977,
+      "median": 2.773724997000002,
+      "min": 2.7546029450000162
     }
   },
   "warmups": 1
