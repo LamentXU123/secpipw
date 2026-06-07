@@ -103,7 +103,7 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
             "wheelhouse."
         )
     )
-    parser.add_argument("--runs", type=int, default=12, help="measured runs per tool")
+    parser.add_argument("--runs", type=int, default=20, help="measured runs per tool")
     parser.add_argument("--warmups", type=int, default=1, help="warmup runs per tool")
     parser.add_argument(
         "--work-dir",

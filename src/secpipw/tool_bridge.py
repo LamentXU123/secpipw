@@ -422,6 +422,88 @@ UV_TOOL_RUN_BLOCKED_VALUE_OPTIONS = frozenset(
 )
 UV_TOOL_RUN_BLOCKED_FLAGS = _UV_EMPTY_SET
 
+UV_EDITABLE_FLAGS = frozenset({"--editable", "-e"})
+UV_VALUE_OPTION_TO_PIP_OPTION = {
+    "--default-index": "--index-url",
+    "--index-url": "--index-url",
+    "--find-links": "--find-links",
+    "--constraints": "-c",
+    "--python": "--python",
+    "--target": "--target",
+    "--prefix": "--prefix",
+    "--only-binary": "--only-binary",
+    "--no-binary": "--no-binary",
+    "--config-setting": "--config-settings",
+}
+UV_VALUE_OPTION_REQUIREMENT_FILES = frozenset({"--requirements", "--with-requirements"})
+UV_VALUE_OPTION_WITH_REQUIREMENTS = frozenset({"--with", "--with-executables-from"})
+UV_VALUE_OPTION_WITH_EDITABLE_REQUIREMENTS = frozenset({"--with-editable"})
+UV_VALUE_OPTION_NOOP = frozenset(
+    {
+        "--upgrade-package",
+        "--refresh-package",
+        "--reinstall-package",
+        "--allow-insecure-host",
+        "--bounds",
+        "--cache-dir",
+        "--color",
+        "--config-file",
+        "--directory",
+        "--extra",
+        "--marker",
+        "--no-install-package",
+        "--no-sources-package",
+        "--optional",
+        "--package",
+        "--script",
+        *UV_GLOBAL_OPTIONS_WITH_VALUE,
+    }
+) - frozenset(UV_VALUE_OPTION_TO_PIP_OPTION) - UV_VALUE_OPTION_WITH_REQUIREMENTS - UV_VALUE_OPTION_WITH_EDITABLE_REQUIREMENTS
+UV_FLAG_TO_PIP_OPTION = {
+    "--no-deps": "--no-deps",
+    "--require-hashes": "--require-hashes",
+    "--no-index": "--no-index",
+    "--user": "--user",
+    "--upgrade": "--upgrade",
+    "-U": "--upgrade",
+    "--no-build-isolation": "--no-build-isolation",
+    "--no-build": "--only-binary=:all:",
+}
+UV_FLAG_NOOP = (
+    UV_COMMON_FLAGS
+    | {
+        "--active",
+        "--all-extras",
+        "--break-system-packages",
+        "--compile-bytecode",
+        "--dev",
+        "--dry-run",
+        "--exact",
+        "--force",
+        "--frozen",
+        "--isolated",
+        "--locked",
+        "--managed-python",
+        "--no-break-system-packages",
+        "--no-editable",
+        "--no-env-file",
+        "--no-install-local",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--no-managed-python",
+        "--no-python-downloads",
+        "--no-sources",
+        "--no-sync",
+        "--no-verify-hashes",
+        "--no-workspace",
+        "--raw",
+        "--reinstall",
+        "--strict",
+        "--system",
+        "--workspace",
+    }
+) - frozenset(UV_FLAG_TO_PIP_OPTION)
+
 PEP_440_OPERATORS = (">=", "<=", "==", "!=", "~=", "===", ">", "<")
 DIRECT_REFERENCE_PREFIXES = (
     "git+",
@@ -871,6 +953,7 @@ def _parse_uv_package_options(
     blocked_flags: frozenset[str],
     editable_flag: bool = False,
 ) -> ParsedUvPackageOptions | None:
+    args_len = len(args)
     positionals: list[str] = []
     editable_requirements: list[str] = []
     requirement_files: list[str] = []
@@ -880,7 +963,7 @@ def _parse_uv_package_options(
     pip_args: list[str] = []
     editable = False
     i = 0
-    while i < len(args):
+    while i < args_len:
         arg = args[i]
         if arg == "--":
             positionals.extend(args[i + 1 :])
@@ -916,7 +999,7 @@ def _parse_uv_package_options(
         if arg in flags:
             if not _append_uv_flag(arg, pip_args=pip_args, editable_flag=editable_flag):
                 return None
-            if editable_flag and arg in {"--editable", "-e"}:
+            if editable_flag and arg in UV_EDITABLE_FLAGS:
                 editable = True
             i += 1
             continue
@@ -939,6 +1022,7 @@ def _parse_uv_package_options(
 
 
 def _parse_uv_tool_run_options(args: list[str]) -> ParsedUvPackageOptions | None:
+    args_len = len(args)
     positionals: list[str] = []
     requirement_files: list[str] = []
     with_requirements: list[str] = []
@@ -948,7 +1032,7 @@ def _parse_uv_tool_run_options(args: list[str]) -> ParsedUvPackageOptions | None
     from_requirement: str | None = None
 
     i = 0
-    while i < len(args):
+    while i < args_len:
         arg = args[i]
         if arg == "--":
             break
@@ -1016,76 +1100,32 @@ def _append_uv_value_option(
     with_editable_requirements: list[str],
     with_requirement_files: list[str],
 ) -> bool:
-    if option == "--default-index":
-        pip_args.extend(["--index-url", value])
-        return True
-    if option == "--index-url":
-        pip_args.extend(["--index-url", value])
-        return True
-    if option == "--find-links":
-        pip_args.extend(["--find-links", value])
-        return True
-    if option == "--constraints":
-        pip_args.extend(["-c", value])
-        return True
-    if option == "--requirements":
-        requirement_files.append(value)
-        return True
-    if option == "--editable":
-        editable_requirements.append(value)
-        return True
-    if option == "--python":
-        pip_args.extend(["--python", value])
-        return True
-    if option == "--target":
-        pip_args.extend(["--target", value])
-        return True
-    if option == "--prefix":
-        pip_args.extend(["--prefix", value])
-        return True
-    if option == "--only-binary":
-        pip_args.extend(["--only-binary", value])
-        return True
-    if option == "--no-binary":
-        pip_args.extend(["--no-binary", value])
-        return True
-    if option == "--config-setting":
-        pip_args.extend(["--config-settings", value])
-        return True
     if option == "--prerelease":
         if value == "allow":
             pip_args.append("--pre")
         return True
-    if option in {"--upgrade-package", "--refresh-package", "--reinstall-package"}:
+    if option in UV_VALUE_OPTION_REQUIREMENT_FILES:
+        target_list = (
+            requirement_files
+            if option == "--requirements"
+            else with_requirement_files
+        )
+        target_list.append(value)
         return True
-    if option in {
-        "--allow-insecure-host",
-        "--bounds",
-        "--cache-dir",
-        "--color",
-        "--config-file",
-        "--directory",
-        "--extra",
-        "--marker",
-        "--no-install-package",
-        "--no-sources-package",
-        "--optional",
-        "--package",
-        "--script",
-        *UV_GLOBAL_OPTIONS_WITH_VALUE,
-    }:
-        return True
-    if option == "--with":
+    if option in UV_VALUE_OPTION_WITH_REQUIREMENTS:
         with_requirements.append(value)
         return True
-    if option == "--with-editable":
+    if option in UV_VALUE_OPTION_WITH_EDITABLE_REQUIREMENTS:
         with_editable_requirements.append(value)
         return True
-    if option == "--with-requirements":
-        with_requirement_files.append(value)
+    pip_option = UV_VALUE_OPTION_TO_PIP_OPTION.get(option)
+    if pip_option is not None:
+        pip_args.extend([pip_option, value])
         return True
-    if option == "--with-executables-from":
-        with_requirements.append(value)
+    if option in UV_VALUE_OPTION_NOOP:
+        return True
+    if option in {"--editable"}:
+        editable_requirements.append(value)
         return True
     return False
 
@@ -1096,54 +1136,15 @@ def _append_uv_flag(
     pip_args: list[str],
     editable_flag: bool,
 ) -> bool:
-    if editable_flag and option in {"--editable", "-e"}:
+    if editable_flag and option in UV_EDITABLE_FLAGS:
         return True
-    if option in {"--no-deps", "--require-hashes", "--no-index", "--user"}:
-        pip_args.append(option)
+    if option in UV_FLAG_NOOP:
         return True
-    if option in {"--upgrade", "-U"}:
-        pip_args.append("--upgrade")
-        return True
-    if option == "--no-build-isolation":
-        pip_args.append("--no-build-isolation")
-        return True
-    if option == "--no-build":
-        pip_args.append("--only-binary=:all:")
-        return True
-    if option in {
-        *UV_GLOBAL_FLAGS,
-        "--active",
-        "--all-extras",
-        "--break-system-packages",
-        "--compile-bytecode",
-        "--dev",
-        "--dry-run",
-        "--exact",
-        "--force",
-        "--frozen",
-        "--isolated",
-        "--locked",
-        "--managed-python",
-        "--no-break-system-packages",
-        "--no-editable",
-        "--no-env-file",
-        "--no-install-local",
-        "--no-install-project",
-        "--no-install-workspace",
-        "--no-managed-python",
-        "--no-python-downloads",
-        "--no-sources",
-        "--no-sync",
-        "--no-verify-hashes",
-        "--no-workspace",
-        "--raw",
-        "--reinstall",
-        "--strict",
-        "--system",
-        "--workspace",
-    }:
-        return True
-    return False
+    mapped = UV_FLAG_TO_PIP_OPTION.get(option)
+    if mapped is None:
+        return False
+    pip_args.append(mapped)
+    return True
 
 
 def _pip_args_from_uv_package_options(

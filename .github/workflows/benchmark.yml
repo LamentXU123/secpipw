@@ -20,7 +20,7 @@ on:
       runs:
         description: Measured runs per tool
         required: false
-        default: "12"
+        default: "20"
       warmups:
         description: Warmup runs per tool
         required: false
@@ -120,7 +120,7 @@ jobs:
 
     - name: Run install benchmark
       env:
-        BENCHMARK_RUNS: ${{ github.event.inputs.runs || '12' }}
+        BENCHMARK_RUNS: ${{ github.event.inputs.runs || '20' }}
         BENCHMARK_WARMUPS: ${{ github.event.inputs.warmups || '1' }}
         BENCHMARK_REQUIREMENTS: ${{ github.event.inputs.requirements }}
       run: |
