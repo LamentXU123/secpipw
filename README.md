@@ -178,7 +178,7 @@ Run the local VizTracer hot-path benchmark with:
 python scripts/benchmark_viztracer.py --runs 3
 ```
 
-The default benchmark compares `pip install ruff` and `spip install ruff`,
+The default benchmark compares `pip install requests` and `spip install requests`,
 timing package download and installation together. It uses `--no-cache-dir`,
 `--no-deps`, and a fresh `--target` directory for each measured run, so the
 result focuses on repeated installs of one well-known package body rather than a

@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_WORK_DIR = ROOT / ".tmp-benchmark"
-DEFAULT_REQUIREMENTS = ("opencv-python", "scipy", "uv")
+DEFAULT_REQUIREMENTS = ("opencv-python", "scipy", "requests")
 BENCHMARK_MODE = (
     "local wheelhouse install, --no-index, --no-deps, fresh --target per run"
 )

@@ -31,7 +31,7 @@ on:
         default: |
           opencv-python
           scipy
-          uv
+          requests
   schedule:
     - cron: "17 2 * * 1"
 
@@ -125,7 +125,7 @@ jobs:
         BENCHMARK_REQUIREMENTS: ${{ github.event.inputs.requirements }}
       run: |
         if [ -z "$BENCHMARK_REQUIREMENTS" ]; then
-          BENCHMARK_REQUIREMENTS="$(printf 'opencv-python\nscipy\nuv\n')"
+          BENCHMARK_REQUIREMENTS="$(printf 'opencv-python\nscipy\nrequests\n')"
         fi
         args=()
         while IFS= read -r requirement; do
