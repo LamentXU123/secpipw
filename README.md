@@ -166,6 +166,15 @@ Run the local benchmark with:
 python scripts/benchmark_install.py --runs 5 --warmups 0
 ```
 
+Add `--viztracer --viztracer-dir .tmp-perf/install-benchmark` to generate
+per-run flame graphs for the measured install commands.
+
+Run the local VizTracer hot-path benchmark with:
+
+```bash
+python scripts/benchmark_viztracer.py --runs 3
+```
+
 The default benchmark compares `pip install ruff` and `spip install ruff`,
 timing package download and installation together. It uses `--no-cache-dir`,
 `--no-deps`, and a fresh `--target` directory for each measured run, so the

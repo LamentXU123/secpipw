@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import io
+import os
+import subprocess
+import sys
 import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -276,6 +279,40 @@ class ToolBridgeTests(unittest.TestCase):
 
         self.assertEqual(rc, 5)
         tool.assert_called_once_with("pipx", ["list"])
+
+    def test_tool_entrypoint_passthrough_keeps_guard_dependencies_lazy(self) -> None:
+        script = """
+import sys
+from secpipw import cli
+
+cli.run_tool = lambda *args, **kwargs: 0
+rc = cli.pipx_main(["list"])
+blocked = [
+    "secpipw.severity",
+    "secpipw.tool_bridge",
+    "secpipw.install_plan",
+    "secpipw.install_checks",
+    "secpipw.pip_guard",
+]
+print(rc)
+print("\\n".join(name for name in blocked if name in sys.modules))
+"""
+        env = os.environ.copy()
+        env["PYTHONPATH"] = os.path.abspath("src") + os.pathsep + env.get(
+            "PYTHONPATH",
+            "",
+        )
+
+        result = subprocess.run(
+            [sys.executable, "-c", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            env=env,
+            cwd=os.getcwd(),
+        )
+
+        self.assertEqual(result.stdout.strip(), "0")
 
     def test_tool_entrypoint_install_refuses_when_plan_cannot_be_derived(self) -> None:
         stderr = io.StringIO()

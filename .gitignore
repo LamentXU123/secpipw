@@ -35,6 +35,7 @@ htmlcov/
 .spip-tmp/
 .tmp-benchmark/
 .tmp-perf/
+.tmp-viztracer-benchmark/
 .tmp-tests/
 benchmark-results*.json
 

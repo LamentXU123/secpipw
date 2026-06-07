@@ -31,6 +31,7 @@ class RunResult:
     returncode: int
     stdout: str
     stderr: str
+    trace_file: str | None = None
 
 
 @dataclass(frozen=True)
@@ -129,6 +130,23 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
         action="store_true",
         help="keep temporary target directories",
     )
+    parser.add_argument(
+        "--viztracer",
+        action="store_true",
+        help="generate VizTracer HTML reports for measured runs",
+    )
+    parser.add_argument(
+        "--viztracer-dir",
+        type=Path,
+        default=None,
+        help="directory for VizTracer reports; defaults to WORK_DIR/viztracer",
+    )
+    parser.add_argument(
+        "--viztracer-min-duration",
+        type=float,
+        default=0.02,
+        help="VizTracer --min_duration value in seconds",
+    )
     args = parser.parse_args(argv)
     if args.runs < 1:
         parser.error("--runs must be at least 1")
@@ -215,7 +233,40 @@ def _run_scenario(
             requirement,
         ]
     )
-    return _run_timed(scenario, requirement, command, env)
+    trace_file = None
+    if args.viztracer and phase == "run":
+        trace_dir = args.viztracer_dir or (work_dir / "viztracer")
+        trace_dir.mkdir(parents=True, exist_ok=True)
+        trace_file = trace_dir / f"{phase}-{index}-{case_key}-{scenario.key}.html"
+        command = _viztracer_command(
+            command,
+            trace_file=trace_file,
+            min_duration=args.viztracer_min_duration,
+        )
+    return _run_timed(scenario, requirement, command, env, trace_file=trace_file)
+
+
+def _viztracer_command(
+    command: list[str],
+    *,
+    trace_file: Path,
+    min_duration: float,
+) -> list[str]:
+    if len(command) < 4 or command[0] != sys.executable or command[1] != "-m":
+        raise ValueError("VizTracer benchmark only supports python -m commands")
+    return [
+        sys.executable,
+        "-m",
+        "viztracer",
+        "--quiet",
+        "--min_duration",
+        str(min_duration),
+        "-o",
+        str(trace_file),
+        "--module",
+        command[2],
+        *command[3:],
+    ]
 
 
 def _prepare_wheelhouse(
@@ -261,6 +312,8 @@ def _run_timed(
     requirement: str,
     command: list[str],
     env: dict[str, str],
+    *,
+    trace_file: Path | None = None,
 ) -> RunResult:
     started = time.perf_counter()
     completed = subprocess.run(
@@ -284,6 +337,7 @@ def _run_timed(
         returncode=completed.returncode,
         stdout=completed.stdout,
         stderr=completed.stderr,
+        trace_file=str(trace_file) if trace_file is not None else None,
     )
 
 
@@ -443,6 +497,7 @@ def _json_payload(records: list[RunResult], args: argparse.Namespace) -> dict:
                 "duration_seconds": record.duration_seconds,
                 "returncode": record.returncode,
                 "command": record.command,
+                "trace_file": record.trace_file,
             }
             for record in records
         ],

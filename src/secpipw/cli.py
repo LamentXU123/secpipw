@@ -1,14 +1,74 @@
 from __future__ import annotations
 
 import sys
+from typing import TYPE_CHECKING
 
 from secpipw import __version__
-from secpipw.severity import Severity, parse_severity
+
+if TYPE_CHECKING:
+    from secpipw.severity import Severity
 
 DEDICATED_TOOL_ENTRYPOINTS = {
     "pipx": "spipx",
     "poetry": "spoetry",
     "uv": "suv",
+}
+PIPX_FAST_PASSTHROUGH_COMMANDS = {
+    "completions",
+    "ensurepath",
+    "environment",
+    "help",
+    "interpreter",
+    "list",
+    "runpip",
+    "uninstall",
+    "uninstall-all",
+    "version",
+}
+PIPX_FAST_VALUE_OPTIONS = {"--default-python"}
+POETRY_FAST_PASSTHROUGH_COMMANDS = {
+    "about",
+    "build",
+    "cache",
+    "check",
+    "config",
+    "env",
+    "help",
+    "init",
+    "install",
+    "lock",
+    "new",
+    "publish",
+    "remove",
+    "run",
+    "search",
+    "show",
+    "update",
+    "version",
+}
+POETRY_FAST_VALUE_OPTIONS = {"--directory", "-C", "--project", "-P"}
+UV_FAST_TOP_LEVEL_COMMANDS = {
+    "cache",
+    "help",
+    "python",
+    "self",
+    "venv",
+    "version",
+}
+UV_FAST_NESTED_COMMANDS = {
+    ("pip", "check"),
+    ("pip", "freeze"),
+    ("pip", "list"),
+    ("pip", "show"),
+    ("pip", "tree"),
+}
+UV_FAST_VALUE_OPTIONS = {
+    "--allow-insecure-host",
+    "--cache-dir",
+    "--color",
+    "--config-file",
+    "--directory",
+    "--project",
 }
 
 
@@ -185,7 +245,7 @@ def _split_guarded_args(
     ignore_severity: Severity | None = None
     debug = False
     spip_status = False
-    sensitivity = Severity.LOW
+    sensitivity = _severity_low()
 
     i = 0
     while i < len(args):
@@ -236,6 +296,8 @@ def _split_guarded_args(
 
 
 def _parse_sensitivity(value: str) -> Severity:
+    from secpipw.severity import Severity, parse_severity
+
     try:
         sensitivity = parse_severity(value)
     except ValueError as exc:
@@ -246,6 +308,8 @@ def _parse_sensitivity(value: str) -> Severity:
 
 
 def _parse_ignore_severity(value: str) -> Severity:
+    from secpipw.severity import Severity, parse_severity
+
     try:
         severity = parse_severity(value)
     except ValueError as exc:
@@ -286,7 +350,7 @@ def _install_with_guard(
     debug: bool,
     sensitivity: Severity,
 ) -> int:
-    monitor_required = not _severity_ignored(ignore_severity, Severity.MEDIUM)
+    monitor_required = not _severity_ignored(ignore_severity, _severity_medium())
     monitor = _create_pth_monitor(pip_args, debug=debug) if monitor_required else None
     if monitor_required and monitor is None:
         sys.stderr.write(
@@ -311,7 +375,7 @@ def _install_with_guard(
         )
 
     def artifact_hook(requirements):
-        if _severity_ignored(ignore_severity, Severity.MEDIUM):
+        if _severity_ignored(ignore_severity, _severity_medium()):
             return _allow_install_decision()
         return gate_suspicious_pth_alerts(
             inspect_install_artifacts(requirements),
@@ -338,7 +402,10 @@ def _install_with_guard(
     if not decision.allow_install:
         return decision.exit_code
 
-    if resolved_plan is None or _severity_ignored(ignore_severity, Severity.MEDIUM):
+    if resolved_plan is None or _severity_ignored(
+        ignore_severity,
+        _severity_medium(),
+    ):
         return decision.exit_code
     history_alerts = inspect_package_artifact_history(
         resolved_plan.packages,
@@ -355,6 +422,9 @@ def _install_with_guard(
 
 
 def _tool_with_guard(tool: str, args: list[str]) -> int:
+    if _tool_passthrough_fast_path(tool, args):
+        return run_tool(tool, args)
+
     try:
         (
             tool_args,
@@ -437,7 +507,7 @@ def _preflight_external_install(
     if not decision.allow_install:
         return decision
 
-    if _severity_ignored(ignore_severity, Severity.MEDIUM):
+    if _severity_ignored(ignore_severity, _severity_medium()):
         return decision
 
     try:
@@ -468,3 +538,74 @@ def _severity_ignored(
     severity: Severity,
 ) -> bool:
     return ignore_severity is not None and severity <= ignore_severity
+
+
+def _severity_low() -> Severity:
+    from secpipw.severity import Severity
+
+    return Severity.LOW
+
+
+def _severity_medium() -> Severity:
+    from secpipw.severity import Severity
+
+    return Severity.MEDIUM
+
+
+def _tool_passthrough_fast_path(tool: str, args: list[str]) -> bool:
+    if _has_wrapper_options(args):
+        return False
+    if tool == "pipx":
+        command = _first_non_option(args, value_options=PIPX_FAST_VALUE_OPTIONS)
+        return command is None or command in PIPX_FAST_PASSTHROUGH_COMMANDS
+    if tool == "poetry":
+        command = _first_non_option(args, value_options=POETRY_FAST_VALUE_OPTIONS)
+        return command is None or command in POETRY_FAST_PASSTHROUGH_COMMANDS
+    if tool == "uv":
+        return _uv_fast_passthrough(args)
+    return False
+
+
+def _has_wrapper_options(args: list[str]) -> bool:
+    return any(
+        arg.startswith("--spip-")
+        or arg == "--sensitivity"
+        or arg.startswith("--sensitivity=")
+        for arg in args
+    )
+
+
+def _first_non_option(args: list[str], *, value_options: set[str]) -> str | None:
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg == "--":
+            return None
+        if arg in value_options:
+            i += 2
+            continue
+        if any(arg.startswith(f"{option}=") for option in value_options):
+            i += 1
+            continue
+        if arg.startswith("-"):
+            i += 1
+            continue
+        return arg
+    return None
+
+
+def _uv_fast_passthrough(args: list[str]) -> bool:
+    command = _first_non_option(args, value_options=UV_FAST_VALUE_OPTIONS)
+    if command is None:
+        return True
+    if command in UV_FAST_TOP_LEVEL_COMMANDS:
+        return True
+    if command not in {"pip", "tool"}:
+        return False
+
+    command_index = args.index(command)
+    nested = _first_non_option(
+        args[command_index + 1 :],
+        value_options=UV_FAST_VALUE_OPTIONS,
+    )
+    return nested is not None and (command, nested) in UV_FAST_NESTED_COMMANDS
