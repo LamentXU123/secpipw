@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+license = "MIT"
+name = "secpipw"
+version = "1.0.0"
+description = "A defensive pip wrapper with supply-chain preflight checks."
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
+authors = [
+  { name = "Weilin Du (LamentXU)" }
+]
+dependencies = [
+  "packaging>=24.0,<26",
+  "python-Levenshtein>=0.27,<0.28"
+]
+
+[project.scripts]
+spip = "secpipw.cli:main"
+spipx = "secpipw.cli:pipx_main"
+spoetry = "secpipw.cli:poetry_main"
+suv = "secpipw.cli:uv_main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+secpipw = ["data/*.json"]

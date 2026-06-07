@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>secpipw benchmark</title>
+    <meta
+      name="description"
+      content="GitHub Actions install benchmark results for secpipw."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="page-docs">
+    <div class="docs-search-modal" data-docs-search-modal hidden>
+      <div class="docs-search-shell" role="dialog" aria-modal="true" aria-labelledby="docs-search-title">
+        <div class="docs-search-head">
+          <input class="docs-search-input" data-docs-search-input type="search" placeholder="Search docs..." aria-label="Search docs" />
+        </div>
+        <div class="docs-search-results" data-docs-search-results></div>
+      </div>
+    </div>
+    <div class="site-frame docs-frame">
+      <header class="site-header docs-topbar">
+        <a class="brand brand-mark" href="/" aria-label="secpipw home">
+          <img class="brand-logo" src="/assets/logo.png" alt="secpipw" />
+          <span class="brand-version" data-project-version>v1.0.0</span>
+        </a>
+        <nav class="site-nav">
+          <a href="/docs/">Docs</a>
+          <a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://pypi.org/project/secpipw" target="_blank" rel="noreferrer">PyPI</a>
+          <select class="lang-select" data-language-switch aria-label="Language">
+            <option value="/docs/benchmark.html" selected>English</option>
+            <option value="/zh-cn/docs/benchmark.html">中文</option>
+          </select>
+        </nav>
+      </header>
+
+      <main class="docs-layout">
+        <aside class="docs-sidebar" aria-label="Documentation navigation">
+          <div class="docs-search">Search docs <span>Ctrl K</span></div>
+          <nav class="docs-nav-list">
+            <a href="/docs/">Intro</a>
+            <a href="/docs/package-managers.html">Package managers</a>
+            <a href="/docs/parameters.html">Parameters</a>
+            <a href="/docs/checks.html">Checks</a>
+            <a href="/docs/benchmark.html" aria-current="page">Benchmark</a>
+          </nav>
+        </aside>
+
+        <article class="docs-article">
+          <p class="docs-kicker">Performance</p>
+          <h1>Benchmark</h1>
+          <p class="docs-lead">
+            The latest GitHub Actions benchmark compares default <code>spip install</code> with
+            <code>pip install</code> across multiple target packages.
+          </p>
+
+          <hr />
+
+          <section id="benchmark-results">
+            <h2><span class="title-accent">Benchmark</span> results</h2>
+            <p>
+              The benchmark prepares a local wheelhouse first, then measures only
+              <code>--no-index</code>, <code>--find-links</code>, <code>--no-deps</code>,
+              and a fresh <code>--target</code> per run.
+            </p>
+            <div class="benchmark-table-wrap">
+              <table class="benchmark-table">
+                <thead>
+                  <tr>
+                    <th>Package</th>
+                    <th>pip median</th>
+                    <th>spip median</th>
+                    <th>Ratio</th>
+                    <th>Median overhead</th>
+                  </tr>
+                </thead>
+                <tbody data-benchmark-table>
+                  <tr>
+                    <td>opencv-python</td>
+                    <td><code>--</code></td>
+                    <td><code>--</code></td>
+                    <td><code>x--</code></td>
+                    <td><code>--</code></td>
+                  </tr>
+                  <tr>
+                    <td>scipy</td>
+                    <td><code>--</code></td>
+                    <td><code>--</code></td>
+                    <td><code>x--</code></td>
+                    <td><code>--</code></td>
+                  </tr>
+                  <tr>
+                    <td>uv</td>
+                    <td><code>--</code></td>
+                    <td><code>--</code></td>
+                    <td><code>x--</code></td>
+                    <td><code>--</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="benchmark-meta">
+              Runs: <code data-benchmark-runs>--</code>.
+              Updated: <code data-benchmark-generated>--</code>.
+              <a class="docs-forward-link" data-benchmark-source-link href="https://github.com/LamentXU123/secpipw/actions/runs/26761792242/job/78877084922" target="_blank" rel="noreferrer">Open GitHub Actions benchmark job</a>.
+            </p>
+          </section>
+        </article>
+
+        <aside class="docs-toc" aria-label="On this page">
+          <strong>On this page</strong>
+          <a href="#benchmark-results">Benchmark results</a>
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

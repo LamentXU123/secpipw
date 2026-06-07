@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>secpipw</title>
+    <meta
+      name="description"
+      content="更安全的 Python 包安装体验，benchmark 数据由 GitHub Actions 同步。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="page-home">
+    <div class="site-frame page-home-shell">
+      <header class="site-header">
+        <a class="brand brand-mark" href="../" aria-label="secpipw home">
+          <img class="brand-logo" src="/assets/logo.png" alt="secpipw" />
+          <span class="brand-version" data-project-version>v1.0.0</span>
+        </a>
+        <nav class="site-nav">
+          <a href="/zh-cn/docs/">文档</a>
+          <a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://pypi.org/project/secpipw" target="_blank" rel="noreferrer">PyPI</a>
+          <select class="lang-select" data-language-switch aria-label="语言">
+            <option value="../">English</option>
+            <option value="./" selected>中文</option>
+          </select>
+        </nav>
+      </header>
+
+      <main class="home-main">
+        <section
+          class="home-hero"
+          data-command-scene
+          data-command-base="pip install packages"
+          data-command-final="spip install packages"
+        >
+          <div class="hero-copy hero-copy-top" data-command-copy>
+            <h1><span class="title-accent">secpipw</span>：避免 PyPI 供应链攻击，最好用也最省事的方式。</h1>
+          </div>
+
+          <div class="terminal-window" aria-label="command demo">
+            <div class="terminal-top">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <div class="terminal-stage">
+              <div class="terminal-line">
+                <span class="prompt">$</span>
+                <span class="command-shell">
+                  <span class="command-text" data-command-text></span>
+                  <span class="command-measure" data-command-measure aria-hidden="true"></span>
+                  <span class="terminal-caret" data-command-caret></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-message" data-command-message>
+            <p>不用学习，</p>
+            <p>不用配置，</p>
+            <p>不用改变使用习惯，</p>
+            <p>不用承受明显性能损失，</p>
+            <p>装上 secpipw，添加 pip 的别名为 spip，像原来的 pip 一样用，</p>
+            <p>但会远比原版 <a class="hero-message-safe" href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">安全</a>。</p>
+            <div class="hero-message-note">
+              <p>本项目目前尚处于 pre-release 阶段，不建议在生产环境下使用。</p>
+              <p>现在，本项目积极欢迎任何可能的贡献。<a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a></p>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="compare-section" data-why-section id="why">
+          <div class="compare-copy">
+            <h2><span class="title-accent">为什么</span>选择 secpipw？</h2>
+            <div class="release-copy">
+              <article class="release-copy-block">
+                <h3>解决了什么问题</h3>
+                <p>供应链投毒一直是网络安全里永恒的话题。现在市面上对此的解决方案，有成熟却性能开销大的 GuardDog，也有完全依赖付费 socket API 的 sfw。它们的问题在于：成熟如 GuardDog 的太笨重，不适合进入 CI 反而适合安全研究员静态解析。若对每一个 pip install 的下载产物（包括各种依赖）都跑一次 GuardDog 无疑会拖慢安装进度；而 sfw 虽然轻量，却是完全依靠付费的 socket API 完成，对于日常开发者而言，无疑又是一次经济负担。</p>
+                <p>secpipw 解决了这个问题。它通过给 pip 的安装器上钩子，将安全检查融合到了 pip install 的下载和安装流程中去。最新 GitHub Actions benchmark 会比较默认 <code>spip install</code> 和 <code>pip install</code> 在多个目标包上的完整下载和安装流程。主要中位数是 <code data-benchmark-ratio>x--</code> 的 pip 时间。secpipw 完全免费提供给所有人。</p>
+                <p>当代，很多独立开发者的 CI 服务器被攻击导致 secret key 泄露，造成严重后果。如果安装了 secpipw，这样的风险会大大降低，同时<strong>不需要付费，不需要额外的性能开支，也不需要学习和配置</strong>。只有一次的 <code>pip install secpipw</code> 再设置一次别名，你就可以接着用 pip，却在无形中获得一层至关重要的保护网。</p>
+              </article>
+
+              <article class="release-copy-block">
+                <h3>secpipw 的优势</h3>
+                <ul>
+                  <li><strong>轻量。</strong>你感受不到它的存在。</li>
+                  <li><strong>0 迁移或学习成本。</strong>你不需要任何配置，开箱即用。</li>
+                  <li><strong>免费。</strong>secpipw 在 MIT 协议下开源。任何人都可以使用，修改或再分发。</li>
+                  <li><strong>强大。</strong>经过测试可以完美防御如 LiteLLM，colorama 等知名攻击事件。</li>
+                  <li><strong>多样化包管理器支持。</strong>保护 pip 以及常见的 pipx、poetry、uv 加包工作流。</li>
+                </ul>
+              </article>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="manager-support-section" id="package-managers">
+          <div class="manager-support-copy">
+            <h2><span class="title-accent">多样化</span>包管理器支持。</h2>
+            <p>
+              secpipw 不再只覆盖直接使用 pip 的场景。它可以先保护开发者常用的
+              加包流程，再把实际环境更新交还给原始工具完成。
+            </p>
+            <p><a class="manager-support-link" href="/zh-cn/docs/package-managers.html">阅读包管理器说明</a></p>
+          </div>
+
+          <div class="manager-support-grid" aria-label="包管理器支持矩阵">
+            <article class="manager-support-item">
+              <div class="manager-support-head">
+                <label><input class="support-checkbox" type="checkbox" checked disabled /> pip</label>
+              </div>
+              <p><code>spip install requests</code></p>
+              <p>使用 pip 自身解析器和安装器的受保护安装流程。</p>
+            </article>
+
+            <article class="manager-support-item">
+              <div class="manager-support-head">
+                <label><input class="support-checkbox" type="checkbox" checked disabled /> pipx</label>
+              </div>
+              <p><code>spipx install black</code></p>
+              <p>保护 <code>install</code>、<code>inject</code> 和 <code>run</code> 的预检查流程。</p>
+            </article>
+
+            <article class="manager-support-item">
+              <div class="manager-support-head">
+                <label><input class="support-checkbox" type="checkbox" checked disabled /> poetry</label>
+              </div>
+              <p><code>spoetry add requests</code></p>
+              <p>保护 <code>add</code> 和 <code>self add</code> 的预检查流程。</p>
+            </article>
+
+            <article class="manager-support-item">
+              <div class="manager-support-head">
+                <label><input class="support-checkbox" type="checkbox" checked disabled /> uv</label>
+              </div>
+              <p><code>suv pip install requests</code></p>
+              <p>保护 <code>pip install</code>、<code>add</code> 和 <code>tool</code> 的预检查流程。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="benchmark-section" id="benchmark">
+          <div class="benchmark-copy">
+            <h2><span class="title-accent">基准</span>测试结果。</h2>
+            <p>
+              最新 GitHub Actions benchmark 会用本地 wheelhouse 比较默认 <code>spip install</code>
+              和 <code>pip install</code> 在 opencv-python、scipy、uv 三个目标包上的安装流程。
+            </p>
+            <div class="benchmark-table-wrap">
+              <table class="benchmark-table">
+                <thead>
+                  <tr>
+                    <th>目标包</th>
+                    <th>pip 中位数</th>
+                    <th>spip 中位数</th>
+                    <th>倍率</th>
+                    <th>中位数开销</th>
+                  </tr>
+                </thead>
+                <tbody data-benchmark-table>
+                  <tr>
+                    <td>opencv-python</td>
+                    <td><code>--</code></td>
+                    <td><code>--</code></td>
+                    <td><code>x--</code></td>
+                    <td><code>--</code></td>
+                  </tr>
+                  <tr>
+                    <td>scipy</td>
+                    <td><code>--</code></td>
+                    <td><code>--</code></td>
+                    <td><code>x--</code></td>
+                    <td><code>--</code></td>
+                  </tr>
+                  <tr>
+                    <td>uv</td>
+                    <td><code>--</code></td>
+                    <td><code>--</code></td>
+                    <td><code>x--</code></td>
+                    <td><code>--</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="benchmark-meta">
+              Runs: <code data-benchmark-runs>--</code>。
+              更新时间：<code data-benchmark-generated>--</code>。
+              <a class="hero-message-safe" data-benchmark-source-link href="https://github.com/LamentXU123/secpipw/actions/runs/26761792242/job/78877084922" target="_blank" rel="noreferrer">打开 GitHub Actions benchmark job</a>。
+            </p>
+          </div>
+        </section>
+
+        <section class="download-section" data-download-section id="download">
+          <div class="download-copy">
+            <h2>开始<span class="title-accent">安装</span>。</h2>
+            <p>先安装 <code>secpipw</code>，再用 <code>spip</code> 命令。最好把 <code>pip</code> 变成 <code>spip</code> 的别名，这样你原来的工作流完全不用变。</p>
+          </div>
+
+          <div class="install-guides" data-command-guides>
+            <article class="install-guide">
+              <div class="install-guide-head">
+                <h2>cmd（Windows）</h2>
+                <button class="copy-button" type="button" data-copy-target="copy-powershell-zh">复制</button>
+              </div>
+              <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secpipw</span>
+<span class="code-command">doskey</span> pip=<span class="code-package">spip</span> $*</code></pre>
+              <textarea class="copy-buffer" id="copy-powershell-zh" readonly>pip install secpipw
+doskey pip=spip $*</textarea>
+            </article>
+
+            <article class="install-guide">
+              <div class="install-guide-head">
+                <h2>Bash（Linux）</h2>
+                <button class="copy-button" type="button" data-copy-target="copy-bash-zh">复制</button>
+              </div>
+              <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secpipw</span>
+<span class="code-command">echo</span> <span class="code-string">"alias pip='spip'"</span> <span class="code-operator">&gt;&gt;</span> <span class="code-path">~/.bashrc</span>
+<span class="code-command">source</span> <span class="code-path">~/.bashrc</span></code></pre>
+              <textarea class="copy-buffer" id="copy-bash-zh" readonly>pip install secpipw
+echo "alias pip='spip'" >> ~/.bashrc
+source ~/.bashrc</textarea>
+            </article>
+
+            <article class="install-guide">
+              <div class="install-guide-head">
+                <h2>Zsh（macOS）</h2>
+                <button class="copy-button" type="button" data-copy-target="copy-zsh-zh">复制</button>
+              </div>
+              <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secpipw</span>
+<span class="code-command">echo</span> <span class="code-string">"alias pip='spip'"</span> <span class="code-operator">&gt;&gt;</span> <span class="code-path">~/.zshrc</span>
+<span class="code-command">source</span> <span class="code-path">~/.zshrc</span></code></pre>
+              <textarea class="copy-buffer" id="copy-zsh-zh" readonly>pip install secpipw
+echo "alias pip='spip'" >> ~/.zshrc
+source ~/.zshrc</textarea>
+            </article>
+          </div>
+
+        </section>
+
+        <section class="closing-section">
+          <div class="closing-copy">
+            <h2>你的 PyPI 供应链安全就这样<span class="title-accent">搞定</span>。</h2>
+            <p>现在当你输入 <code>pip install</code> 的时候，会安全很多 :)</p>
+            <p><a class="hero-message-safe" href="/zh-cn/docs/" rel="noreferrer">阅读我们的文档</a></p>
+            <p><a class="hero-message-safe" href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a></p>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div>
+          Made with passion ❤ by Weilin Du (LamentXU) |
+          <a
+            href="https://github.com/LamentXU123/spip"
+            target="_blank"
+            rel="noreferrer"
+            >Read our source code</a
+          >
+        </div>
+      </footer>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

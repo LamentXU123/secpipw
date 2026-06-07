@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "build": "npm run docs:sync-version && vite build",
+    "docs:dev": "npm run docs:sync-version && vite",
+    "docs:build": "npm run docs:sync-version && vite build",
+    "docs:sync-version": "python scripts/sync_doc_version.py",
+    "docs:preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^8.0.16"
+  }
+}

@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>secpipw 包管理器</title>
+    <meta
+      name="description"
+      content="如何通过 secpipw 启动 pip、pipx、poetry 和 uv。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="page-docs">
+    <div class="docs-search-modal" data-docs-search-modal hidden>
+      <div class="docs-search-shell" role="dialog" aria-modal="true" aria-labelledby="docs-search-title">
+        <div class="docs-search-head">
+          <input class="docs-search-input" data-docs-search-input type="search" placeholder="搜索文档..." aria-label="搜索文档" />
+        </div>
+        <div class="docs-search-results" data-docs-search-results></div>
+      </div>
+    </div>
+    <div class="site-frame docs-frame">
+      <header class="site-header docs-topbar">
+        <a class="brand brand-mark" href="/zh-cn/" aria-label="secpipw home">
+          <img class="brand-logo" src="/assets/logo.png" alt="secpipw" />
+          <span class="brand-version" data-project-version>v1.0.0</span>
+        </a>
+        <nav class="site-nav">
+          <a href="/zh-cn/docs/">文档</a>
+          <a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://pypi.org/project/secpipw" target="_blank" rel="noreferrer">PyPI</a>
+          <select class="lang-select" data-language-switch aria-label="语言">
+            <option value="/docs/package-managers.html">English</option>
+            <option value="/zh-cn/docs/package-managers.html" selected>中文</option>
+          </select>
+        </nav>
+      </header>
+
+      <main class="docs-layout">
+        <aside class="docs-sidebar" aria-label="文档导航">
+          <div class="docs-search">搜索文档 <span>Ctrl K</span></div>
+          <nav class="docs-nav-list">
+            <a href="/zh-cn/docs/">介绍</a>
+            <a href="/zh-cn/docs/package-managers.html" aria-current="page">包管理器</a>
+            <a href="/zh-cn/docs/parameters.html">参数</a>
+            <a href="/zh-cn/docs/checks.html">检查项</a>
+            <a href="/zh-cn/docs/benchmark.html">基准测试</a>
+          </nav>
+        </aside>
+
+        <article class="docs-article">
+          <p class="docs-kicker">包管理器</p>
+          <h1>包管理器</h1>
+          <p class="docs-lead">
+            secpipw 可以保护直接 pip 安装，也可以保护 pipx、poetry 和 uv 中选定的加包流程。它会先推导出
+            pip install 计划并运行同一套供应链检查，然后再把真正的环境更新交给原始包管理器完成。
+          </p>
+
+          <hr />
+
+          <section id="support">
+            <h2>已支持的管理器</h2>
+            <div class="policy-table-wrap docs-table-wrap">
+              <table class="policy-table">
+                <thead>
+                  <tr>
+                    <th>管理器</th>
+                    <th>受保护入口</th>
+                    <th>受保护命令</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>pip</code></td>
+                    <td><code>spip install requests</code></td>
+                    <td><code>install</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>pipx</code></td>
+                    <td><code>spipx install black</code></td>
+                    <td><code>install</code>、<code>inject</code>、<code>run</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>poetry</code></td>
+                    <td><code>spoetry add requests</code></td>
+                    <td><code>add</code>、<code>self add</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>uv</code></td>
+                    <td><code>suv pip install requests</code></td>
+                    <td><code>pip install</code>、<code>add</code>、<code>tool install</code>、<code>tool run</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="start">
+            <h2>如何启动</h2>
+            <div class="docs-terminal">
+              <span>Terminal window</span>
+              <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span>
+<span class="code-command">spipx</span> <span class="code-arg">install</span> <span class="code-package">black</span>
+<span class="code-command">spoetry</span> <span class="code-arg">add</span> <span class="code-package">requests</span>
+<span class="code-command">suv</span> <span class="code-arg">pip</span> <span class="code-arg">install</span> <span class="code-package">requests</span></code></pre>
+            </div>
+            <p>
+              外部包管理器使用专用受保护入口，不再使用 <code>spip pipx</code>、
+              <code>spip poetry</code> 或 <code>spip uv</code> 子命令。
+            </p>
+          </section>
+
+          <section id="wrapper-options">
+            <h2>secpipw 参数位置</h2>
+            <p>
+              对外部包管理器来说，secpipw 参数必须放在管理器命令之前。遇到第一个非 secpipw 参数后，
+              剩余内容都会交给原始包管理器。
+            </p>
+            <div class="docs-terminal">
+              <span>Terminal window</span>
+              <pre><code><span class="code-command">spipx</span> <span class="code-arg">--spip-ignore-warning</span> <span class="code-arg">install</span> <span class="code-package">black</span>
+<span class="code-command">suv</span> <span class="code-arg">--spip-ignore</span> <span class="code-string">medium</span> <span class="code-arg">pip</span> <span class="code-arg">install</span> <span class="code-package">requests</span>
+<span class="code-command">suv</span> <span class="code-arg">--sensitivity</span> <span class="code-string">high</span> <span class="code-arg">tool</span> <span class="code-arg">install</span> <span class="code-package">ruff</span></code></pre>
+            </div>
+            <p>
+              例如 <code>suv pip install requests --spip-ignore medium</code> 会把
+              <code>--spip-ignore</code> 交给 uv，而不是 secpipw。完整参数见
+              <a class="docs-forward-link" href="/zh-cn/docs/parameters.html">参数说明</a>。
+            </p>
+          </section>
+
+          <section id="refusals">
+            <h2>拒绝执行的情况</h2>
+            <p>
+              非安装类命令会直接透传给原始管理器。对于会改变安装内容、但 secpipw 暂时无法可靠翻译成 pip install
+              计划的命令，它会拒绝执行，而不是绕过检查继续运行。
+            </p>
+            <div class="policy-table-wrap docs-table-wrap">
+              <table class="policy-table">
+                <thead>
+                  <tr>
+                    <th>管理器</th>
+                    <th>当前会拒绝的安装相关命令</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>pipx</code></td>
+                    <td><code>upgrade</code>、<code>upgrade-all</code>、<code>reinstall</code>、<code>reinstall-all</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>poetry</code></td>
+                    <td>当自定义来源无法翻译为 pip index 时，拒绝 <code>add --source ...</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>uv</code></td>
+                    <td><code>run</code>、<code>sync</code>、<code>pip sync</code>、<code>tool upgrade</code>、<code>tool upgrade-all</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="next">
+            <h2>下一步</h2>
+            <p>继续阅读参数说明，查看完整 secpipw 参数列表。</p>
+            <p><a class="docs-forward-link" href="/zh-cn/docs/parameters.html">阅读参数说明</a></p>
+          </section>
+        </article>
+
+        <aside class="docs-toc" aria-label="本页目录">
+          <strong>本页目录</strong>
+          <a href="#support">已支持的管理器</a>
+          <a href="#start">如何启动</a>
+          <a href="#wrapper-options">参数位置</a>
+          <a href="#refusals">拒绝执行</a>
+          <a href="#next">下一步</a>
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

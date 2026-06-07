@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>secpipw 基准测试</title>
+    <meta
+      name="description"
+      content="secpipw 的 GitHub Actions 安装 benchmark 结果。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="page-docs">
+    <div class="docs-search-modal" data-docs-search-modal hidden>
+      <div class="docs-search-shell" role="dialog" aria-modal="true" aria-labelledby="docs-search-title">
+        <div class="docs-search-head">
+          <input class="docs-search-input" data-docs-search-input type="search" placeholder="搜索文档..." aria-label="搜索文档" />
+        </div>
+        <div class="docs-search-results" data-docs-search-results></div>
+      </div>
+    </div>
+    <div class="site-frame docs-frame">
+      <header class="site-header docs-topbar">
+        <a class="brand brand-mark" href="/zh-cn/" aria-label="secpipw home">
+          <img class="brand-logo" src="/assets/logo.png" alt="secpipw" />
+          <span class="brand-version" data-project-version>v1.0.0</span>
+        </a>
+        <nav class="site-nav">
+          <a href="/zh-cn/docs/">文档</a>
+          <a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://pypi.org/project/secpipw" target="_blank" rel="noreferrer">PyPI</a>
+          <select class="lang-select" data-language-switch aria-label="语言">
+            <option value="/docs/benchmark.html">English</option>
+            <option value="/zh-cn/docs/benchmark.html" selected>中文</option>
+          </select>
+        </nav>
+      </header>
+
+      <main class="docs-layout">
+        <aside class="docs-sidebar" aria-label="文档导航">
+          <div class="docs-search">搜索文档 <span>Ctrl K</span></div>
+          <nav class="docs-nav-list">
+            <a href="/zh-cn/docs/">介绍</a>
+            <a href="/zh-cn/docs/package-managers.html">包管理器</a>
+            <a href="/zh-cn/docs/parameters.html">参数</a>
+            <a href="/zh-cn/docs/checks.html">检查项</a>
+            <a href="/zh-cn/docs/benchmark.html" aria-current="page">基准测试</a>
+          </nav>
+        </aside>
+
+        <article class="docs-article">
+          <p class="docs-kicker">性能</p>
+          <h1>Benchmark</h1>
+          <p class="docs-lead">
+            最新 GitHub Actions benchmark 会比较默认 <code>spip install</code> 和 <code>pip install</code>
+            在多个目标包上的表现。
+          </p>
+
+          <hr />
+
+          <section id="benchmark-results">
+            <h2><span class="title-accent">基准</span>测试结果</h2>
+            <p>
+              benchmark 会先准备本地 wheelhouse，然后只计时 <code>--no-index</code>、
+              <code>--find-links</code>、<code>--no-deps</code> 和每次 run 使用全新
+              <code>--target</code> 的本地 wheel 安装。
+            </p>
+            <div class="benchmark-table-wrap">
+              <table class="benchmark-table">
+                <thead>
+                  <tr>
+                    <th>目标包</th>
+                    <th>pip 中位数</th>
+                    <th>spip 中位数</th>
+                    <th>倍率</th>
+                    <th>中位数开销</th>
+                  </tr>
+                </thead>
+                <tbody data-benchmark-table>
+                  <tr>
+                    <td>opencv-python</td>
+                    <td><code>--</code></td>
+                    <td><code>--</code></td>
+                    <td><code>x--</code></td>
+                    <td><code>--</code></td>
+                  </tr>
+                  <tr>
+                    <td>scipy</td>
+                    <td><code>--</code></td>
+                    <td><code>--</code></td>
+                    <td><code>x--</code></td>
+                    <td><code>--</code></td>
+                  </tr>
+                  <tr>
+                    <td>uv</td>
+                    <td><code>--</code></td>
+                    <td><code>--</code></td>
+                    <td><code>x--</code></td>
+                    <td><code>--</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="benchmark-meta">
+              Runs: <code data-benchmark-runs>--</code>。
+              更新时间：<code data-benchmark-generated>--</code>。
+              <a class="docs-forward-link" data-benchmark-source-link href="https://github.com/LamentXU123/secpipw/actions/runs/26761792242/job/78877084922" target="_blank" rel="noreferrer">打开 GitHub Actions benchmark job</a>。
+            </p>
+          </section>
+        </article>
+
+        <aside class="docs-toc" aria-label="本页目录">
+          <strong>本页目录</strong>
+          <a href="#benchmark-results">Benchmark results</a>
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>secpipw docs</title>
+    <meta
+      name="description"
+      content="Documentation for secpipw, the lightweight pip wrapper for supply-chain protection."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="page-docs">
+    <div class="docs-search-modal" data-docs-search-modal hidden>
+      <div class="docs-search-shell" role="dialog" aria-modal="true" aria-labelledby="docs-search-title">
+        <div class="docs-search-head">
+          <input class="docs-search-input" data-docs-search-input type="search" placeholder="Search docs..." aria-label="Search docs" />
+        </div>
+        <div class="docs-search-results" data-docs-search-results></div>
+      </div>
+    </div>
+    <div class="site-frame docs-frame">
+      <header class="site-header docs-topbar">
+        <a class="brand brand-mark" href="/" aria-label="secpipw home">
+          <img class="brand-logo" src="/assets/logo.png" alt="secpipw" />
+          <span class="brand-version" data-project-version>v1.0.0</span>
+        </a>
+        <nav class="site-nav">
+          <a href="/docs/">Docs</a>
+          <a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://pypi.org/project/secpipw" target="_blank" rel="noreferrer">PyPI</a>
+          <select class="lang-select" data-language-switch aria-label="Language">
+            <option value="/docs/" selected>English</option>
+            <option value="/zh-cn/docs/">中文</option>
+          </select>
+        </nav>
+      </header>
+
+      <main class="docs-layout">
+        <aside class="docs-sidebar" aria-label="Documentation navigation">
+          <div class="docs-search">Search docs <span>Ctrl K</span></div>
+          <nav class="docs-nav-list">
+            <a href="/docs/" aria-current="page">Intro</a>
+            <a href="/docs/package-managers.html">Package managers</a>
+            <a href="/docs/parameters.html">Parameters</a>
+            <a href="/docs/checks.html">Checks</a>
+            <a href="/docs/benchmark.html">Benchmark</a>
+          </nav>
+        </aside>
+
+        <article class="docs-article">
+          <p class="docs-kicker">Documentation</p>
+          <h1>Intro</h1>
+          <p class="docs-lead">
+            secpipw is a lightweight wrapper around pip. It keeps normal pip behavior, but adds
+            supply-chain checks around <code>pip install</code>.
+          </p>
+
+          <hr />
+
+          <section id="overview">
+            <h2>Overview</h2>
+            <p>
+              secpipw is designed for the everyday Python install path. Commands other than
+              <code>install</code> are forwarded to <code>python -m pip</code>. For the
+              <code>spip install</code> entrypoint, pip still resolves, downloads, builds, and installs
+              packages; secpipw inserts lightweight checks at key points in that flow.
+            </p>
+          </section>
+
+          <section id="install">
+            <h2>Install</h2>
+            <p>Install <code>secpipw</code>, then alias <code>pip</code> to <code>spip</code> to keep your normal workflow.</p>
+            <div class="docs-install-tabs" data-doc-tabs>
+              <div class="docs-install-tablist" role="tablist" aria-label="Install options">
+                <button class="docs-install-tab is-active" type="button" role="tab" aria-selected="true" data-doc-tab="windows">windows</button>
+                <button class="docs-install-tab" type="button" role="tab" aria-selected="false" data-doc-tab="bash">bash</button>
+                <button class="docs-install-tab" type="button" role="tab" aria-selected="false" data-doc-tab="zsh">zsh</button>
+              </div>
+
+              <article class="docs-install-panel is-active" role="tabpanel" data-doc-panel="windows">
+                <div class="docs-install-panel-head">
+                  <h3>Command Prompt (Windows)</h3>
+                  <button class="copy-button" type="button" data-copy-target="docs-copy-windows">Copy</button>
+                </div>
+                <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secpipw</span>
+<span class="code-command">doskey</span> pip=<span class="code-package">spip</span> $*</code></pre>
+                <textarea class="copy-buffer" id="docs-copy-windows" readonly>pip install secpipw
+doskey pip=spip $*</textarea>
+              </article>
+
+              <article class="docs-install-panel" role="tabpanel" hidden data-doc-panel="bash">
+                <div class="docs-install-panel-head">
+                  <h3>Bash (Linux)</h3>
+                  <button class="copy-button" type="button" data-copy-target="docs-copy-bash">Copy</button>
+                </div>
+                <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secpipw</span>
+<span class="code-command">echo</span> <span class="code-string">"alias pip='spip'"</span> <span class="code-operator">&gt;&gt;</span> <span class="code-path">~/.bashrc</span>
+<span class="code-command">source</span> <span class="code-path">~/.bashrc</span></code></pre>
+                <textarea class="copy-buffer" id="docs-copy-bash" readonly>pip install secpipw
+echo "alias pip='spip'" >> ~/.bashrc
+source ~/.bashrc</textarea>
+              </article>
+
+              <article class="docs-install-panel" role="tabpanel" hidden data-doc-panel="zsh">
+                <div class="docs-install-panel-head">
+                  <h3>Zsh (macOS)</h3>
+                  <button class="copy-button" type="button" data-copy-target="docs-copy-zsh">Copy</button>
+                </div>
+                <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secpipw</span>
+<span class="code-command">echo</span> <span class="code-string">"alias pip='spip'"</span> <span class="code-operator">&gt;&gt;</span> <span class="code-path">~/.zshrc</span>
+<span class="code-command">source</span> <span class="code-path">~/.zshrc</span></code></pre>
+                <textarea class="copy-buffer" id="docs-copy-zsh" readonly>pip install secpipw
+echo "alias pip='spip'" >> ~/.zshrc
+source ~/.zshrc</textarea>
+              </article>
+            </div>
+          <p>After installment by the aforementioned command, you can run <code>pip install --spip-status</code> to see the current status of the installed packages. If your installment is successful, you will see a message <code>spip {VERSION} guard enabled.</code>.</p>
+          </section>
+
+          <section id="warnings">
+            <h2>Warning mechanism</h2>
+            <p>
+              Every risk found by secpipw is assigned one of three severities. Under the default
+              <code>low</code> sensitivity, <strong>HIGH</strong> warnings pause installation,
+              <strong>MEDIUM</strong> warnings ask for interactive confirmation, and
+              <strong>LOW</strong> warnings are printed while installation continues.
+            </p>
+            <div class="warning-level-grid">
+              <article>
+                <span class="warning-pill warning-high">HIGH</span>
+                <p>Installation pauses. Rerun with <code>--spip-ignore-warning</code> only after review.</p>
+              </article>
+              <article>
+                <span class="warning-pill warning-medium">MEDIUM</span>
+                <p>Interactive terminals ask for y/n confirmation. Non-interactive runs pause.</p>
+              </article>
+              <article>
+                <span class="warning-pill warning-low">LOW</span>
+                <p>The warning is shown and installation continues at the default sensitivity.</p>
+              </article>
+            </div>
+            <p>
+              You can make the gate stricter with the
+              <a class="docs-forward-link" href="/docs/parameters.html#sensitivity"><code>--sensitivity</code></a>
+              parameter.
+              You can also completely suppress a severity and below with
+              <a class="docs-forward-link" href="/docs/parameters.html#ignore"><code>--spip-ignore &lt;level&gt;</code></a>.
+            </p>
+          </section>
+
+          <section id="workflow">
+            <h2>Workflow</h2>
+            <p>
+              The recommended workflow is simple: keep typing the same package install commands, but
+              route them through secpipw so the guarded install path can inspect the resolved plan and
+              prepared artifacts.
+            </p>
+            <p>
+              See the dedicated <a class="docs-forward-link" href="/docs/checks.html">Checks reference</a>
+              for the full list of warning rules and severity levels.
+            </p>
+            <p>
+              For local install paths such as <code>pip install .</code>, file-based installs, or
+              offline installs using <code>--no-index</code> or <code>--find-links</code>,
+              secpipw disables registry metadata requests. In those cases it stays focused on local
+              checks such as direct-install detection and <code>.pth</code> inspection rather than trying
+              to query package metadata from a registry.
+            </p>
+            <p>
+              This only disables remote metadata lookups. The local install path is still checked for
+              direct references, prepared artifact content, and post-install <code>.pth</code> changes.
+            </p>
+          </section>
+
+          <section id="next">
+            <h2>Next</h2>
+            <p>
+              Continue with the package manager guide to see how pipx, poetry, and uv routes start and
+              where secpipw consumes its own options.
+            </p>
+            <p><a class="docs-forward-link" href="/docs/package-managers.html">Read package managers</a></p>
+          </section>
+        </article>
+
+        <aside class="docs-toc" aria-label="On this page">
+          <strong>On this page</strong>
+          <a href="#overview">Overview</a>
+          <a href="#install">Install</a>
+          <a href="#warnings">Warning mechanism</a>
+          <a href="#workflow">Workflow</a>
+          <a href="#next">Next</a>
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

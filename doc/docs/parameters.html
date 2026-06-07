@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>secpipw parameters</title>
+    <meta
+      name="description"
+      content="All secpipw command-line parameters and passthrough behavior."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="page-docs">
+    <div class="docs-search-modal" data-docs-search-modal hidden>
+      <div class="docs-search-shell" role="dialog" aria-modal="true" aria-labelledby="docs-search-title">
+        <div class="docs-search-head">
+          <input class="docs-search-input" data-docs-search-input type="search" placeholder="Search docs..." aria-label="Search docs" />
+        </div>
+        <div class="docs-search-results" data-docs-search-results></div>
+      </div>
+    </div>
+    <div class="site-frame docs-frame">
+      <header class="site-header docs-topbar">
+        <a class="brand brand-mark" href="/" aria-label="secpipw home">
+          <img class="brand-logo" src="/assets/logo.png" alt="secpipw" />
+          <span class="brand-version" data-project-version>v1.0.0</span>
+        </a>
+        <nav class="site-nav">
+          <a href="/docs/">Docs</a>
+          <a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://pypi.org/project/secpipw" target="_blank" rel="noreferrer">PyPI</a>
+          <select class="lang-select" data-language-switch aria-label="Language">
+            <option value="/docs/parameters.html" selected>English</option>
+            <option value="/zh-cn/docs/parameters.html">中文</option>
+          </select>
+        </nav>
+      </header>
+
+      <main class="docs-layout">
+        <aside class="docs-sidebar" aria-label="Documentation navigation">
+          <div class="docs-search">Search docs <span>Ctrl K</span></div>
+          <nav class="docs-nav-list">
+            <a href="/docs/">Intro</a>
+            <a href="/docs/package-managers.html">Package managers</a>
+            <a href="/docs/parameters.html" aria-current="page">Parameters</a>
+            <a href="/docs/checks.html">Checks</a>
+            <a href="/docs/benchmark.html">Benchmark</a>
+          </nav>
+        </aside>
+
+        <article class="docs-article">
+          <p class="docs-kicker">CLI reference</p>
+          <h1>Parameters</h1>
+          <p class="docs-lead">
+            secpipw behaves like <code>python -m pip</code> for almost everything. The only command
+            with secpipw-specific options is <code>spip install</code>; every option not listed here
+            is passed through to pip.
+          </p>
+
+          <hr />
+
+          <section id="command-shape">
+            <h2>Command shape</h2>
+            <div class="docs-terminal">
+              <span>Terminal window</span>
+              <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-var">[spip options]</span> <span class="code-var">[pip install options]</span> <span class="code-var">[requirements]</span>
+<span class="code-command">spip</span> <span class="code-var">[any other pip command]</span></code></pre>
+            </div>
+          </section>
+
+          <section id="install-options">
+            <h2>secpipw install options</h2>
+            <p>These options are consumed by secpipw and are not forwarded to pip.</p>
+
+            <div class="docs-param-list">
+              <section id="ignore-warning" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>--spip-ignore-warning</code>
+                  <span>boolean</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Continue despite warnings that would normally pause, prompt, or block the install.
+                  </p>
+                  <dl>
+                    <dt>Accepted values</dt>
+                    <dd>No value. Presence enables the option.</dd>
+                    <dt>Default</dt>
+                    <dd>Disabled.</dd>
+                  </dl>
+                  <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--spip-ignore-warning</span></code></pre>
+                </div>
+              </section>
+
+              <section id="ignore" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>--spip-ignore &lt;level&gt;</code>
+                  <span>low | medium | high</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Completely ignore warnings at the selected severity and below. Ignored warnings are
+                    not printed, do not prompt, and do not block installation. Checks that can only
+                    produce ignored severities are skipped.
+                  </p>
+                  <dl>
+                    <dt>Accepted values</dt>
+                    <dd><code>low</code>, <code>medium</code>, or <code>high</code>. Values are case-insensitive.</dd>
+                    <dt>Default</dt>
+                    <dd>Disabled.</dd>
+                  </dl>
+                  <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--spip-ignore</span> <span class="code-string">LOW</span>
+<span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--spip-ignore=MEDIUM</span></code></pre>
+                </div>
+              </section>
+
+              <section id="debug" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>--spip-debug</code>
+                  <span>boolean</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Print additional diagnostic output from secpipw, including resolved packages and
+                    internal monitor errors. pip still receives the remaining install arguments.
+                  </p>
+                  <dl>
+                    <dt>Accepted values</dt>
+                    <dd>No value. Presence enables the option.</dd>
+                    <dt>Default</dt>
+                    <dd>Disabled.</dd>
+                  </dl>
+                  <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--spip-debug</span></code></pre>
+                </div>
+              </section>
+
+              <section id="spip-status" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>--spip-status</code>
+                  <span>boolean</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Print a short status line confirming that the secpipw guard is enabled for this
+                    install command.
+                  </p>
+                  <dl>
+                    <dt>Accepted values</dt>
+                    <dd>No value. Presence enables the option.</dd>
+                    <dt>Default</dt>
+                    <dd>Disabled.</dd>
+                  </dl>
+                  <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--spip-status</span></code></pre>
+                </div>
+              </section>
+
+              <section id="sensitivity" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>--sensitivity &lt;level&gt;</code>
+                  <span>low | medium | high</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    Adjust how strict the warning gate is. Both <code>--sensitivity medium</code> and
+                    <code>--sensitivity=medium</code> are supported.
+                  </p>
+                  <dl>
+                    <dt>Accepted values</dt>
+                    <dd><code>low</code>, <code>medium</code>, or <code>high</code>.</dd>
+                    <dt>Default</dt>
+                    <dd><code>low</code>.</dd>
+                  </dl>
+                  <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--sensitivity</span> <span class="code-string">medium</span>
+<span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--sensitivity=high</span></code></pre>
+
+                  <div class="policy-table-wrap docs-table-wrap">
+                    <table class="policy-table">
+                      <thead>
+                        <tr>
+                          <th>Mode</th>
+                          <th>HIGH warning</th>
+                          <th>MEDIUM warning</th>
+                          <th>LOW warning</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><code>low</code> default</td>
+                          <td>Pause</td>
+                          <td>Ask for y/n confirmation</td>
+                          <td>Warn and continue</td>
+                        </tr>
+                        <tr>
+                          <td><code>medium</code></td>
+                          <td>Pause</td>
+                          <td>Pause</td>
+                          <td>Ask for y/n confirmation</td>
+                        </tr>
+                        <tr>
+                          <td><code>high</code></td>
+                          <td>Pause</td>
+                          <td>Pause</td>
+                          <td>Pause</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p>
+                    In non-interactive environments, prompts cannot be answered. secpipw pauses instead
+                    and exits with a non-zero code. Use <code>--spip-ignore-warning</code> only when you
+                    have reviewed the warning source and accept the risk.
+                  </p>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section id="passthrough">
+            <h2>Pip passthrough</h2>
+            <p>
+              For commands other than <code>install</code>, secpipw directly runs
+              <code>python -m pip</code> with the same arguments. For <code>spip install</code>, only
+              the secpipw options listed above are removed; everything else is kept as pip install
+              input.
+            </p>
+            <p>
+              secpipw reads some pip install options such as <code>--target</code>, <code>--user</code>,
+              <code>--prefix</code>, <code>--root</code>, and <code>--python</code> to locate the
+              directories that need <code>.pth</code> monitoring. They are still pip options and are
+              forwarded into the guarded pip install path.
+            </p>
+            <p>
+              When the install target is local, or when pip is explicitly running offline with
+              <code>--no-index</code> or <code>--find-links</code>, secpipw disables registry metadata
+              requests. That means commands such as <code>pip install .</code> or local wheel installs do
+              not trigger extra metadata lookups against PyPI or another package index.
+            </p>
+            <p>
+              This behavior does not disable local safety checks. It only skips remote metadata queries
+              that are not meaningful for local or offline install sources.
+            </p>
+          </section>
+        </article>
+
+        <aside class="docs-toc" aria-label="On this page">
+          <strong>On this page</strong>
+          <a href="#command-shape">Command shape</a>
+          <a href="#install-options">Install options</a>
+          <a href="#ignore">Ignore</a>
+          <a href="#sensitivity">Sensitivity</a>
+          <a href="#passthrough">Pip passthrough</a>
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

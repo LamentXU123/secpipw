@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>secpipw checks</title>
+    <meta
+      name="description"
+      content="Reference for secpipw install checks and warning severities."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="page-docs">
+    <div class="docs-search-modal" data-docs-search-modal hidden>
+      <div class="docs-search-shell" role="dialog" aria-modal="true" aria-labelledby="docs-search-title">
+        <div class="docs-search-head">
+          <input class="docs-search-input" data-docs-search-input type="search" placeholder="Search docs..." aria-label="Search docs" />
+        </div>
+        <div class="docs-search-results" data-docs-search-results></div>
+      </div>
+    </div>
+    <div class="site-frame docs-frame">
+      <header class="site-header docs-topbar">
+        <a class="brand brand-mark" href="/" aria-label="secpipw home">
+          <img class="brand-logo" src="/assets/logo.png" alt="secpipw" />
+          <span class="brand-version" data-project-version>v1.0.0</span>
+        </a>
+        <nav class="site-nav">
+          <a href="/docs/">Docs</a>
+          <a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://pypi.org/project/secpipw" target="_blank" rel="noreferrer">PyPI</a>
+          <select class="lang-select" data-language-switch aria-label="Language">
+            <option value="/docs/checks.html" selected>English</option>
+            <option value="/zh-cn/docs/checks.html">中文</option>
+          </select>
+        </nav>
+      </header>
+
+      <main class="docs-layout">
+        <aside class="docs-sidebar" aria-label="Documentation navigation">
+          <div class="docs-search">Search docs <span>Ctrl K</span></div>
+          <nav class="docs-nav-list">
+            <a href="/docs/">Intro</a>
+            <a href="/docs/package-managers.html">Package managers</a>
+            <a href="/docs/parameters.html">Parameters</a>
+            <a href="/docs/checks.html" aria-current="page">Checks</a>
+            <a href="/docs/benchmark.html">Benchmark</a>
+          </nav>
+        </aside>
+
+        <article class="docs-article">
+          <p class="docs-kicker">Check reference</p>
+          <h1>Checks</h1>
+          <p class="docs-lead">
+            secpipw runs these checks around the resolved install plan and installed artifacts when
+            you use <code>spip install</code>.
+          </p>
+
+          <hr />
+
+          <div class="docs-param-list">
+            <section id="check-typo" class="cli-option">
+              <div class="cli-option-signature">
+                <code>typo-suspect</code>
+                <span>MEDIUM / LOW</span>
+              </div>
+              <div class="cli-option-body">
+                <p>
+                  Detects packages whose names look like fake typos of popular packages after pip has
+                  resolved the install plan. Non-popular resolved package names are compared with the
+                  local hot-package list.
+                </p>
+                <p>
+                  Examples include <code>requsets</code> versus <code>requests</code>,
+                  <code>panda</code> versus <code>pandas</code>, and <code>sixth</code> versus
+                  <code>six</code>.
+                </p>
+              </div>
+            </section>
+
+            <section id="check-direct-url" class="cli-option">
+              <div class="cli-option-signature">
+                <code>direct-url</code>
+                <span>MEDIUM</span>
+              </div>
+              <div class="cli-option-body">
+                <p>
+                  Warns when the install target or a resolved dependency uses a direct URL, VCS URL, or
+                  PEP 508 direct reference instead of a normal registry package reference.
+                </p>
+              </div>
+            </section>
+
+            <section id="check-recent-release" class="cli-option">
+              <div class="cli-option-signature">
+                <code>recent-release</code>
+                <span>MEDIUM / LOW</span>
+              </div>
+              <div class="cli-option-body">
+                <p>
+                  Warns when the selected PyPI release is very fresh. Releases published less than 8
+                  hours ago are <strong>MEDIUM</strong>; releases published less than 48 hours ago
+                  are <strong>LOW</strong>.
+                </p>
+              </div>
+            </section>
+
+            <section id="check-empty-description" class="cli-option">
+              <div class="cli-option-signature">
+                <code>empty-description</code>
+                <span>LOW</span>
+              </div>
+              <div class="cli-option-body">
+                <p>
+                  Warns when the selected PyPI release metadata has neither a summary nor a long
+                  description.
+                </p>
+              </div>
+            </section>
+
+            <section id="check-yanked-release" class="cli-option">
+              <div class="cli-option-signature">
+                <code>yanked-release</code>
+                <span>MEDIUM</span>
+              </div>
+              <div class="cli-option-body">
+                <p>
+                  Warns when pip resolves a release that is marked as yanked. This uses pip's
+                  resolved install report and does not add an extra registry metadata request.
+                </p>
+              </div>
+            </section>
+
+            <section id="check-archive-hash" class="cli-option">
+              <div class="cli-option-signature">
+                <code>archive-hash</code>
+                <span>HIGH</span>
+              </div>
+              <div class="cli-option-body">
+                <p>
+                  Compares the resolved wheel or sdist hash with PyPI release metadata when that
+                  metadata is already available. A mismatch raises a <strong>HIGH</strong> warning.
+                </p>
+              </div>
+            </section>
+
+            <section id="check-suspicious-url" class="cli-option">
+              <div class="cli-option-signature">
+                <code>suspicious-url</code>
+                <span>LOW</span>
+              </div>
+              <div class="cli-option-body">
+                <p>
+                  Warns when PyPI metadata links to a shortener, raw IP address, suspicious top-level
+                  domain, embedded credentials, or a similar suspicious URL pattern.
+                </p>
+              </div>
+            </section>
+
+            <section id="check-repository-mismatch" class="cli-option">
+              <div class="cli-option-signature">
+                <code>repository-mismatch</code>
+                <span>LOW</span>
+              </div>
+              <div class="cli-option-body">
+                <p>
+                  Warns when PyPI metadata points to a GitHub or GitLab repository whose repository name
+                  appears unrelated to the package name.
+                </p>
+              </div>
+            </section>
+
+            <section id="check-email-domain-drift" class="cli-option">
+              <div class="cli-option-signature">
+                <code>email-domain-drift</code>
+                <span>LOW</span>
+              </div>
+              <div class="cli-option-body">
+                <p>
+                  Warns when a package maintainer email domain changes compared with the local
+                  secpipw history cache.
+                </p>
+              </div>
+            </section>
+
+            <section id="check-zero-version" class="cli-option">
+              <div class="cli-option-signature">
+                <code>zero-version</code>
+                <span>LOW</span>
+              </div>
+              <div class="cli-option-body">
+                <p>
+                  Warns when the selected package version is <code>0.0</code> or <code>0.0.0</code>.
+                </p>
+              </div>
+            </section>
+
+            <section id="check-suspicious-pth" class="cli-option">
+              <div class="cli-option-signature">
+                <code>suspicious-pth</code>
+                <span>MEDIUM</span>
+              </div>
+              <div class="cli-option-body">
+                <p>
+                  Detects newly installed or changed <code>.pth</code> files that start executable
+                  lines with <code>import</code>. The warning asks whether the suspicious installed
+                  <code>.pth</code> file should be deleted.
+                </p>
+              </div>
+            </section>
+
+            <section id="check-artifact-history" class="cli-option">
+              <div class="cli-option-signature">
+                <code>artifact-history</code>
+                <span>MEDIUM / LOW</span>
+              </div>
+              <div class="cli-option-body">
+                <p>
+                  Records a local baseline of installed package artifacts after a successful
+                  <code>spip install</code>. A later install of the same package warns when installed
+                  <code>.pth</code> files are added, removed, or changed.
+                </p>
+                <p>
+                  Changes to <code>.pth</code> files are <strong>MEDIUM</strong>. Added or removed
+                  entry-point metadata and generated script file names are <strong>LOW</strong>.
+                  Script file contents are not compared because generated wrappers can vary across
+                  environments.
+                </p>
+              </div>
+            </section>
+          </div>
+        </article>
+
+        <aside class="docs-toc" aria-label="On this page">
+          <strong>On this page</strong>
+          <a href="#check-typo">typo-suspect</a>
+          <a href="#check-direct-url">direct-url</a>
+          <a href="#check-recent-release">recent-release</a>
+          <a href="#check-empty-description">empty-description</a>
+          <a href="#check-yanked-release">yanked-release</a>
+          <a href="#check-archive-hash">archive-hash</a>
+          <a href="#check-suspicious-url">suspicious-url</a>
+          <a href="#check-repository-mismatch">repository-mismatch</a>
+          <a href="#check-email-domain-drift">email-domain-drift</a>
+          <a href="#check-zero-version">zero-version</a>
+          <a href="#check-suspicious-pth">suspicious-pth</a>
+          <a href="#check-artifact-history">artifact-history</a>
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

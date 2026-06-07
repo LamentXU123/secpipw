@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>secpipw 参数说明</title>
+    <meta
+      name="description"
+      content="secpipw 支持的所有命令行参数和 pip 透传行为。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="page-docs">
+    <div class="docs-search-modal" data-docs-search-modal hidden>
+      <div class="docs-search-shell" role="dialog" aria-modal="true" aria-labelledby="docs-search-title">
+        <div class="docs-search-head">
+          <input class="docs-search-input" data-docs-search-input type="search" placeholder="搜索文档..." aria-label="搜索文档" />
+        </div>
+        <div class="docs-search-results" data-docs-search-results></div>
+      </div>
+    </div>
+    <div class="site-frame docs-frame">
+      <header class="site-header docs-topbar">
+        <a class="brand brand-mark" href="/zh-cn/" aria-label="secpipw home">
+          <img class="brand-logo" src="/assets/logo.png" alt="secpipw" />
+          <span class="brand-version" data-project-version>v1.0.0</span>
+        </a>
+        <nav class="site-nav">
+          <a href="/zh-cn/docs/">文档</a>
+          <a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://pypi.org/project/secpipw" target="_blank" rel="noreferrer">PyPI</a>
+          <select class="lang-select" data-language-switch aria-label="语言">
+            <option value="/docs/parameters.html">English</option>
+            <option value="/zh-cn/docs/parameters.html" selected>中文</option>
+          </select>
+        </nav>
+      </header>
+
+      <main class="docs-layout">
+        <aside class="docs-sidebar" aria-label="文档导航">
+          <div class="docs-search">搜索文档 <span>Ctrl K</span></div>
+          <nav class="docs-nav-list">
+            <a href="/zh-cn/docs/">介绍</a>
+            <a href="/zh-cn/docs/package-managers.html">包管理器</a>
+            <a href="/zh-cn/docs/parameters.html" aria-current="page">参数</a>
+            <a href="/zh-cn/docs/checks.html">检查项</a>
+            <a href="/zh-cn/docs/benchmark.html">基准测试</a>
+          </nav>
+        </aside>
+
+        <article class="docs-article">
+          <p class="docs-kicker">CLI reference</p>
+          <h1>参数说明</h1>
+          <p class="docs-lead">
+            secpipw 在绝大多数情况下都像 <code>python -m pip</code> 一样工作。只有
+            <code>spip install</code> 这个 CLI 入口会消费 secpipw 自己的参数；没有列在这里的选项都会原样传给 pip。
+          </p>
+
+          <hr />
+
+          <section id="command-shape">
+            <h2>命令结构</h2>
+            <div class="docs-terminal">
+              <span>Terminal window</span>
+              <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-var">[spip 参数]</span> <span class="code-var">[pip install 参数]</span> <span class="code-var">[requirements]</span>
+<span class="code-command">spip</span> <span class="code-var">[任意其它 pip 命令]</span></code></pre>
+            </div>
+          </section>
+
+          <section id="install-options">
+            <h2>secpipw install 参数</h2>
+            <p>这些参数由 secpipw 自己消费，不会继续传给 pip。</p>
+
+            <div class="docs-param-list">
+              <section id="ignore-warning" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>--spip-ignore-warning</code>
+                  <span>boolean</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    即使出现通常会暂停、询问或阻断安装的 warning，也继续安装。
+                  </p>
+                  <dl>
+                    <dt>可选值</dt>
+                    <dd>不接收值。出现即启用。</dd>
+                    <dt>默认值</dt>
+                    <dd>关闭。</dd>
+                  </dl>
+                  <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--spip-ignore-warning</span></code></pre>
+                </div>
+              </section>
+
+              <section id="ignore" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>--spip-ignore &lt;level&gt;</code>
+                  <span>low | medium | high</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    完全忽略指定严重程度及以下的 warning。被忽略的 warning 不会输出，不会询问，也不会阻断安装。
+                    只可能产生被忽略级别 warning 的检查项会被跳过。
+                  </p>
+                  <dl>
+                    <dt>可选值</dt>
+                    <dd><code>low</code>、<code>medium</code> 或 <code>high</code>，大小写不敏感。</dd>
+                    <dt>默认值</dt>
+                    <dd>关闭。</dd>
+                  </dl>
+                  <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--spip-ignore</span> <span class="code-string">LOW</span>
+<span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--spip-ignore=MEDIUM</span></code></pre>
+                </div>
+              </section>
+
+              <section id="debug" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>--spip-debug</code>
+                  <span>boolean</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    输出 secpipw 的额外诊断信息，包括解析后的包列表，以及内部监控器遇到的错误。剩余安装参数仍会传入 pip。
+                  </p>
+                  <dl>
+                    <dt>可选值</dt>
+                    <dd>不接收值。出现即启用。</dd>
+                    <dt>默认值</dt>
+                    <dd>关闭。</dd>
+                  </dl>
+                  <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--spip-debug</span></code></pre>
+                </div>
+              </section>
+
+              <section id="spip-status" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>--spip-status</code>
+                  <span>boolean</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    输出一行简短状态，确认本次 <code>install</code> 已经进入 secpipw 的 guarded install 路径。
+                  </p>
+                  <dl>
+                    <dt>可选值</dt>
+                    <dd>不接收值。出现即启用。</dd>
+                    <dt>默认值</dt>
+                    <dd>关闭。</dd>
+                  </dl>
+                  <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--spip-status</span></code></pre>
+                </div>
+              </section>
+
+              <section id="sensitivity" class="cli-option">
+                <div class="cli-option-signature">
+                  <code>--sensitivity &lt;level&gt;</code>
+                  <span>low | medium | high</span>
+                </div>
+                <div class="cli-option-body">
+                  <p>
+                    调整 warning gate 的严格程度。同时支持 <code>--sensitivity medium</code> 和
+                    <code>--sensitivity=medium</code> 两种写法。
+                  </p>
+                  <dl>
+                    <dt>可选值</dt>
+                    <dd><code>low</code>、<code>medium</code> 或 <code>high</code>。</dd>
+                    <dt>默认值</dt>
+                    <dd><code>low</code>。</dd>
+                  </dl>
+                  <pre><code><span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--sensitivity</span> <span class="code-string">medium</span>
+<span class="code-command">spip</span> <span class="code-arg">install</span> <span class="code-package">requests</span> <span class="code-arg">--sensitivity=high</span></code></pre>
+
+                  <div class="policy-table-wrap docs-table-wrap">
+                    <table class="policy-table">
+                      <thead>
+                        <tr>
+                          <th>模式</th>
+                          <th>HIGH warning</th>
+                          <th>MEDIUM warning</th>
+                          <th>LOW warning</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><code>low</code> 默认</td>
+                          <td>暂停安装</td>
+                          <td>询问 y/n 确认</td>
+                          <td>提示后继续</td>
+                        </tr>
+                        <tr>
+                          <td><code>medium</code></td>
+                          <td>暂停安装</td>
+                          <td>暂停安装</td>
+                          <td>询问 y/n 确认</td>
+                        </tr>
+                        <tr>
+                          <td><code>high</code></td>
+                          <td>暂停安装</td>
+                          <td>暂停安装</td>
+                          <td>暂停安装</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p>
+                    在非交互环境里，secpipw 无法读取 y/n 确认，因此会直接暂停并返回非零退出码。只有在你已经确认风险来源并愿意承担后果时，才应该使用
+                    <code>--spip-ignore-warning</code>。
+                  </p>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section id="passthrough">
+            <h2>pip 参数透传</h2>
+            <p>
+              对于 <code>install</code> 之外的命令，secpipw 会直接用相同参数运行
+              <code>python -m pip</code>。对于 <code>spip install</code>，只有上面列出的 secpipw 参数会被移除；其它内容都会作为
+              pip install 输入保留下来。
+            </p>
+            <p>
+              secpipw 会读取部分 pip install 参数，例如 <code>--target</code>、<code>--user</code>、
+              <code>--prefix</code>、<code>--root</code> 和 <code>--python</code>，用来定位需要监控
+              <code>.pth</code> 的目录。但它们仍然是 pip 参数，并会继续传入 guarded pip install 路径。
+            </p>
+            <p>
+              当安装目标是本地路径，或者 pip 显式使用 <code>--no-index</code>、<code>--find-links</code>
+              进入离线安装模式时，secpipw 会禁用 registry 元数据请求。因此像 <code>pip install .</code>
+              或本地 wheel 安装这类命令，不会再额外触发对 PyPI 或其它包索引的元数据查询。
+            </p>
+            <p>
+              这不会关闭本地安全检查。它只会跳过对本地或离线安装源没有意义的远端元数据查询。
+            </p>
+          </section>
+        </article>
+
+        <aside class="docs-toc" aria-label="本页目录">
+          <strong>On this page</strong>
+          <a href="#command-shape">命令结构</a>
+          <a href="#install-options">install 参数</a>
+          <a href="#ignore">Ignore</a>
+          <a href="#sensitivity">敏感度</a>
+          <a href="#passthrough">pip 参数透传</a>
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

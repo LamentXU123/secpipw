@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>secpipw</title>
+    <meta
+      name="description"
+      content="Secure Python Package Manager with benchmark data synced from GitHub Actions."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="page-home">
+    <div class="site-frame page-home-shell">
+      <header class="site-header">
+        <a class="brand brand-mark" href="./" aria-label="secpipw home">
+          <img class="brand-logo" src="/assets/logo.png" alt="secpipw" />
+          <span class="brand-version" data-project-version>v1.0.0</span>
+        </a>
+        <nav class="site-nav">
+          <a href="/docs/">Docs</a>
+          <a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://pypi.org/project/secpipw" target="_blank" rel="noreferrer">PyPI</a>
+          <select class="lang-select" data-language-switch aria-label="Language">
+            <option value="./" selected>English</option>
+            <option value="./zh-cn/">中文</option>
+          </select>
+        </nav>
+      </header>
+
+      <main class="home-main">
+        <section
+          class="home-hero"
+          data-command-scene
+          data-command-base="pip install packages"
+          data-command-final="spip install packages"
+        >
+          <div class="hero-copy hero-copy-top" data-command-copy>
+            <h1><span class="title-accent">secpipw</span>: the Best and Easiest Way to Avoid PyPI Supply-Chain Attacks.</h1>
+          </div>
+
+          <div class="terminal-window" aria-label="command demo">
+            <div class="terminal-top">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <div class="terminal-stage">
+              <div class="terminal-line">
+                <span class="prompt">$</span>
+                <span class="command-shell">
+                  <span class="command-text" data-command-text></span>
+                  <span class="command-measure" data-command-measure aria-hidden="true"></span>
+                  <span class="terminal-caret" data-command-caret></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-message" data-command-message>
+            <p>No learning,</p>
+            <p>No configurating,</p>
+            <p>No behaviour changes,</p>
+            <p>Imperceptible performance cost,</p>
+            <p>Install secpipw, add pip alias to spip, then enjoy it as the original pip,</p>
+            <p>but much more <a class="hero-message-safe" href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">safer</a>.</p>
+            <div class="hero-message-note">
+              <p>This project is currently in pre-release and should not be used in production.</p>
+              <p>
+                Contributions are very welcome.
+                <a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a>
+              </p>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="compare-section" data-why-section id="why">
+          <div class="compare-copy">
+            <h2><span class="title-accent">Why</span> secpipw?</h2>
+            <div class="release-copy">
+              <article class="release-copy-block">
+                <h3>What problem does it solve?</h3>
+                <p>Supply-chain poisoning has always been a persistent security problem. Existing solutions include mature but expensive-to-run tools like GuardDog, and lightweight tools like sfw that rely entirely on a paid Socket API. GuardDog is too heavy for everyday CI usage and is better suited to static analysis by security researchers. Running GuardDog against every artifact downloaded by <code>pip install</code>, including all dependencies, would slow installs down. sfw is lighter, but its dependence on a paid API creates another cost for everyday developers.</p>
+                <p>secpipw solves this by hooking into pip's installer and merging security checks directly into the <code>pip install</code> download and installation flow. The latest GitHub Actions benchmark compares the full download and install flow for default <code>spip install</code> against <code>pip install</code> across multiple target packages. The primary median is <code data-benchmark-ratio>x--</code> of pip time. secpipw is completely free for everyone.</p>
+                <p>Today, many independent developers have suffered CI server compromises that leak secret keys and cause serious damage. With secpipw installed, that risk is greatly reduced, while requiring <strong>no payment, no extra performance budget, and no learning or configuration</strong>. Install it once with <code>pip install secpipw</code>, set an alias once, and keep using pip while gaining an important protection layer in the background.</p>
+              </article>
+
+              <article class="release-copy-block">
+                <h3>secpipw advantages</h3>
+                <ul>
+                  <li><strong>Lightweight.</strong> You should not feel it running.</li>
+                  <li><strong>Zero migration or learning cost.</strong> No configuration is required; it works out of the box.</li>
+                  <li><strong>Free.</strong> secpipw is open source under the MIT license. Anyone can use, modify, and redistribute it.</li>
+                  <li><strong>Powerful.</strong> Tests show that it can defend against well-known attack cases such as LiteLLM and colorama.</li>
+                  <li><strong>Diverse package manager support.</strong> Guard pip plus common pipx, poetry, and uv package-add workflows.</li>
+                </ul>
+              </article>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="manager-support-section" id="package-managers">
+          <div class="manager-support-copy">
+            <h2><span class="title-accent">diverse</span> package manager support.</h2>
+            <p>
+              secpipw is no longer limited to direct pip usage. It can guard
+              the common package-add flows developers already use, then hand the
+              actual environment update back to the original tool.
+            </p>
+            <p><a class="manager-support-link" href="/docs/package-managers.html">Read the package manager guide</a></p>
+          </div>
+
+          <div class="manager-support-grid" aria-label="package manager support matrix">
+            <article class="manager-support-item">
+              <div class="manager-support-head">
+                <label><input class="support-checkbox" type="checkbox" checked disabled /> pip</label>
+              </div>
+              <p><code>spip install requests</code></p>
+              <p>Guarded install flow using pip's own resolver and installer.</p>
+            </article>
+
+            <article class="manager-support-item">
+              <div class="manager-support-head">
+                <label><input class="support-checkbox" type="checkbox" checked disabled /> pipx</label>
+              </div>
+              <p><code>spipx install black</code></p>
+              <p>Guarded <code>install</code>, <code>inject</code>, and <code>run</code> preflights.</p>
+            </article>
+
+            <article class="manager-support-item">
+              <div class="manager-support-head">
+                <label><input class="support-checkbox" type="checkbox" checked disabled /> poetry</label>
+              </div>
+              <p><code>spoetry add requests</code></p>
+              <p>Guarded <code>add</code> and <code>self add</code> preflights.</p>
+            </article>
+
+            <article class="manager-support-item">
+              <div class="manager-support-head">
+                <label><input class="support-checkbox" type="checkbox" checked disabled /> uv</label>
+              </div>
+              <p><code>suv pip install requests</code></p>
+              <p>Guarded <code>pip install</code>, <code>add</code>, and <code>tool</code> preflights.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="benchmark-section" id="benchmark">
+          <div class="benchmark-copy">
+            <h2><span class="title-accent">benchmark</span> results.</h2>
+            <p>
+              The latest GitHub Actions benchmark compares default <code>spip install</code> with
+              <code>pip install</code> for opencv-python, scipy, and uv using a local wheelhouse.
+            </p>
+            <div class="benchmark-table-wrap">
+              <table class="benchmark-table">
+                <thead>
+                  <tr>
+                    <th>Package</th>
+                    <th>pip median</th>
+                    <th>spip median</th>
+                    <th>Ratio</th>
+                    <th>Median overhead</th>
+                  </tr>
+                </thead>
+                <tbody data-benchmark-table>
+                  <tr>
+                    <td>opencv-python</td>
+                    <td><code>--</code></td>
+                    <td><code>--</code></td>
+                    <td><code>x--</code></td>
+                    <td><code>--</code></td>
+                  </tr>
+                  <tr>
+                    <td>scipy</td>
+                    <td><code>--</code></td>
+                    <td><code>--</code></td>
+                    <td><code>x--</code></td>
+                    <td><code>--</code></td>
+                  </tr>
+                  <tr>
+                    <td>uv</td>
+                    <td><code>--</code></td>
+                    <td><code>--</code></td>
+                    <td><code>x--</code></td>
+                    <td><code>--</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="benchmark-meta">
+              Runs: <code data-benchmark-runs>--</code>.
+              Updated: <code data-benchmark-generated>--</code>.
+              <a class="hero-message-safe" data-benchmark-source-link href="https://github.com/LamentXU123/secpipw/actions/runs/26761792242/job/78877084922" target="_blank" rel="noreferrer">Open GitHub Actions benchmark job</a>.
+            </p>
+          </div>
+        </section>
+
+        <section class="download-section" data-download-section id="download">
+          <div class="download-copy">
+            <h2>Let's <span class="title-accent">install</span>.</h2>
+            <p>Install <code>secpipw</code>, then use the <code>spip</code> command. Best to alias <code>pip</code> to <code>spip</code> to keep your usual workflow.</p>
+          </div>
+
+          <div class="install-guides" data-command-guides>
+            <article class="install-guide">
+              <div class="install-guide-head">
+                <h2>Command Prompt (Windows)</h2>
+                <button class="copy-button" type="button" data-copy-target="copy-powershell">Copy</button>
+              </div>
+              <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secpipw</span>
+<span class="code-command">doskey</span> pip=<span class="code-package">spip</span> $*</code></pre>
+              <textarea class="copy-buffer" id="copy-powershell" readonly>pip install secpipw
+doskey pip=spip $*</textarea>
+            </article>
+
+            <article class="install-guide">
+              <div class="install-guide-head">
+                <h2>Bash (Linux)</h2>
+                <button class="copy-button" type="button" data-copy-target="copy-bash">Copy</button>
+              </div>
+              <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secpipw</span>
+<span class="code-command">echo</span> <span class="code-string">"alias pip='spip'"</span> <span class="code-operator">&gt;&gt;</span> <span class="code-path">~/.bashrc</span>
+<span class="code-command">source</span> <span class="code-path">~/.bashrc</span></code></pre>
+              <textarea class="copy-buffer" id="copy-bash" readonly>pip install secpipw
+echo "alias pip='spip'" >> ~/.bashrc
+source ~/.bashrc</textarea>
+            </article>
+
+            <article class="install-guide">
+              <div class="install-guide-head">
+                <h2>Zsh (macOS)</h2>
+                <button class="copy-button" type="button" data-copy-target="copy-zsh">Copy</button>
+              </div>
+              <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secpipw</span>
+<span class="code-command">echo</span> <span class="code-string">"alias pip='spip'"</span> <span class="code-operator">&gt;&gt;</span> <span class="code-path">~/.zshrc</span>
+<span class="code-command">source</span> <span class="code-path">~/.zshrc</span></code></pre>
+              <textarea class="copy-buffer" id="copy-zsh" readonly>pip install secpipw
+echo "alias pip='spip'" >> ~/.zshrc
+source ~/.zshrc</textarea>
+            </article>
+          </div>
+
+        </section>
+
+        <section class="closing-section">
+          <div class="closing-copy">
+            <h2>That's <span class="title-accent">it</span>.</h2>
+            <p>Now you are much more safer when you type <code>pip install</code> :)</p>
+            <p><a class="hero-message-safe" href="/docs/" rel="noreferrer">Read our docs</a></p>
+            <p><a class="hero-message-safe" href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a></p>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div>
+          Made with passion ❤ by Weilin Du (LamentXU) |
+          <a
+            href="https://github.com/LamentXU123/spip"
+            target="_blank"
+            rel="noreferrer"
+            >Read our source code</a
+          >
+        </div>
+      </footer>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

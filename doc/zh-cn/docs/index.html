@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>secpipw 文档</title>
+    <meta
+      name="description"
+      content="secpipw 文档，一个用于供应链防护的轻量 pip wrapper。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="page-docs">
+    <div class="docs-search-modal" data-docs-search-modal hidden>
+      <div class="docs-search-shell" role="dialog" aria-modal="true" aria-labelledby="docs-search-title">
+        <div class="docs-search-head">
+          <input class="docs-search-input" data-docs-search-input type="search" placeholder="搜索文档..." aria-label="搜索文档" />
+        </div>
+        <div class="docs-search-results" data-docs-search-results></div>
+      </div>
+    </div>
+    <div class="site-frame docs-frame">
+      <header class="site-header docs-topbar">
+        <a class="brand brand-mark" href="/zh-cn/" aria-label="secpipw home">
+          <img class="brand-logo" src="/assets/logo.png" alt="secpipw" />
+          <span class="brand-version" data-project-version>v1.0.0</span>
+        </a>
+        <nav class="site-nav">
+          <a href="/zh-cn/docs/">文档</a>
+          <a href="https://github.com/LamentXU123/spip" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://pypi.org/project/secpipw" target="_blank" rel="noreferrer">PyPI</a>
+          <select class="lang-select" data-language-switch aria-label="语言">
+            <option value="/docs/">English</option>
+            <option value="/zh-cn/docs/" selected>中文</option>
+          </select>
+        </nav>
+      </header>
+
+      <main class="docs-layout">
+        <aside class="docs-sidebar" aria-label="文档导航">
+          <div class="docs-search">搜索文档 <span>Ctrl K</span></div>
+          <nav class="docs-nav-list">
+            <a href="/zh-cn/docs/" aria-current="page">介绍</a>
+            <a href="/zh-cn/docs/package-managers.html">包管理器</a>
+            <a href="/zh-cn/docs/parameters.html">参数</a>
+            <a href="/zh-cn/docs/checks.html">检查项</a>
+            <a href="/zh-cn/docs/benchmark.html">基准测试</a>
+          </nav>
+        </aside>
+
+        <article class="docs-article">
+          <p class="docs-kicker">文档</p>
+          <h1>介绍</h1>
+          <p class="docs-lead">
+            secpipw 是一个轻量的 pip wrapper。它保持普通 pip 的行为，只在
+            <code>pip install</code> 周围加入供应链安全检查。
+          </p>
+
+          <hr />
+
+          <section id="overview">
+            <h2>概览</h2>
+            <p>
+              secpipw 面向日常 Python 安装路径设计。除 <code>install</code> 之外的命令都会转发给
+              <code>python -m pip</code>。对于 <code>spip install</code> 这个 CLI 入口，解析、下载、构建和安装仍然走
+              pip；secpipw 只在关键节点插入轻量检查。
+            </p>
+          </section>
+
+          <section id="install">
+            <h2>安装</h2>
+            <p>先安装 <code>secpipw</code>，再把 <code>pip</code> alias 到 <code>spip</code>，这样原来的工作流不用改变。</p>
+            <div class="docs-install-tabs" data-doc-tabs>
+              <div class="docs-install-tablist" role="tablist" aria-label="安装方式">
+                <button class="docs-install-tab is-active" type="button" role="tab" aria-selected="true" data-doc-tab="windows">windows</button>
+                <button class="docs-install-tab" type="button" role="tab" aria-selected="false" data-doc-tab="bash">bash</button>
+                <button class="docs-install-tab" type="button" role="tab" aria-selected="false" data-doc-tab="zsh">zsh</button>
+              </div>
+
+              <article class="docs-install-panel is-active" role="tabpanel" data-doc-panel="windows">
+                <div class="docs-install-panel-head">
+                  <h3>cmd（Windows）</h3>
+                  <button class="copy-button" type="button" data-copy-target="docs-copy-windows-zh">复制</button>
+                </div>
+                <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secpipw</span>
+<span class="code-command">doskey</span> pip=<span class="code-package">spip</span> $*</code></pre>
+                <textarea class="copy-buffer" id="docs-copy-windows-zh" readonly>pip install secpipw
+doskey pip=spip $*</textarea>
+              </article>
+
+              <article class="docs-install-panel" role="tabpanel" hidden data-doc-panel="bash">
+                <div class="docs-install-panel-head">
+                  <h3>Bash（Linux）</h3>
+                  <button class="copy-button" type="button" data-copy-target="docs-copy-bash-zh">复制</button>
+                </div>
+                <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secpipw</span>
+<span class="code-command">echo</span> <span class="code-string">"alias pip='spip'"</span> <span class="code-operator">&gt;&gt;</span> <span class="code-path">~/.bashrc</span>
+<span class="code-command">source</span> <span class="code-path">~/.bashrc</span></code></pre>
+                <textarea class="copy-buffer" id="docs-copy-bash-zh" readonly>pip install secpipw
+echo "alias pip='spip'" >> ~/.bashrc
+source ~/.bashrc</textarea>
+              </article>
+
+              <article class="docs-install-panel" role="tabpanel" hidden data-doc-panel="zsh">
+                <div class="docs-install-panel-head">
+                  <h3>Zsh（macOS）</h3>
+                  <button class="copy-button" type="button" data-copy-target="docs-copy-zsh-zh">复制</button>
+                </div>
+                <pre><code><span class="code-command">pip</span> <span class="code-arg">install</span> <span class="code-package">secpipw</span>
+<span class="code-command">echo</span> <span class="code-string">"alias pip='spip'"</span> <span class="code-operator">&gt;&gt;</span> <span class="code-path">~/.zshrc</span>
+<span class="code-command">source</span> <span class="code-path">~/.zshrc</span></code></pre>
+                <textarea class="copy-buffer" id="docs-copy-zsh-zh" readonly>pip install secpipw
+echo "alias pip='spip'" >> ~/.zshrc
+source ~/.zshrc</textarea>
+              </article>
+            </div>
+          <p>按照上述命令安装完成后，你可以通过运行 <code>pip install --spip-status</code> 去检查 spip 是否被成功安装。如果安装成功，你将会看到 <code>spip {VERSION} guard enabled.</code> 这条信息</p>
+          </section>
+
+          <section id="warnings">
+            <h2>报警机制</h2>
+            <p>
+              secpipw 发现的每个风险都会被归入三个等级之一。在默认 <code>low</code> 敏感度下，
+              <strong>HIGH</strong> warning 会暂停安装，<strong>MEDIUM</strong> warning 会要求交互确认，
+              <strong>LOW</strong> warning 会提示后继续安装。
+            </p>
+            <div class="warning-level-grid">
+              <article>
+                <span class="warning-pill warning-high">HIGH</span>
+                <p>暂停安装。只有在确认风险来源之后，才应该用 <code>--spip-ignore-warning</code> 继续。</p>
+              </article>
+              <article>
+                <span class="warning-pill warning-medium">MEDIUM</span>
+                <p>交互终端会询问 y/n；非交互环境无法确认，因此会暂停。</p>
+              </article>
+              <article>
+                <span class="warning-pill warning-low">LOW</span>
+                <p>默认敏感度下只提示 warning，然后继续安装。</p>
+              </article>
+            </div>
+            <p>
+              可以通过
+              <a class="docs-forward-link" href="/zh-cn/docs/parameters.html#sensitivity"><code>--sensitivity</code></a>
+              参数提高拦截强度。
+              也可以用
+              <a class="docs-forward-link" href="/zh-cn/docs/parameters.html#ignore"><code>--spip-ignore &lt;level&gt;</code></a>
+              完全忽略某个严重程度及以下的 warning。
+            </p>
+          </section>
+          <section id="workflow">
+            <h2>工作流</h2>
+            <p>
+              推荐工作流很简单：继续输入你熟悉的包安装命令，但让它们经过 secpipw，这样 guarded install
+              路径就能检查解析后的安装计划和准备好的本地安装产物。
+            </p>
+            <p>
+              完整规则和 warning 级别见单独的
+              <a class="docs-forward-link" href="/zh-cn/docs/checks.html">检查项参考</a>。
+            </p>
+            <p>
+              对于 <code>pip install .</code> 这类本地安装路径、基于本地文件的安装，或者显式使用
+              <code>--no-index</code>、<code>--find-links</code> 的离线安装，secpipw 会禁用 registry
+              元数据请求。此时它会专注于 direct install 检测和 <code>.pth</code> 检查，而不是去查询远端包索引的元数据。
+            </p>
+            <p>
+              这里禁用的只是远端元数据查询，不会关闭本地安全检查。本地路径、安装产物内容，以及安装后的
+              <code>.pth</code> 变化仍然会继续检查。
+            </p>
+          </section>
+
+          <section id="next">
+            <h2>下一步</h2>
+            <p>继续阅读包管理器说明，查看 pipx、poetry 和 uv 如何启动，以及 secpipw 参数应该放在哪里。</p>
+            <p><a class="docs-forward-link" href="/zh-cn/docs/package-managers.html">阅读包管理器说明</a></p>
+          </section>
+        </article>
+
+        <aside class="docs-toc" aria-label="本页目录">
+          <strong>本页目录</strong>
+          <a href="#overview">概览</a>
+          <a href="#install">安装</a>
+          <a href="#warnings">报警机制</a>
+          <a href="#workflow">工作流</a>
+          <a href="#next">下一步</a>
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
