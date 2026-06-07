@@ -5,10 +5,10 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
+from typing import TYPE_CHECKING, Iterable
 
-from secpipw.install_plan import InstallPlan
-from packaging.version import Version
+if TYPE_CHECKING:
+    from secpipw.install_plan import InstallPlan
 
 
 @dataclass(frozen=True)
@@ -1173,6 +1173,8 @@ def _tilde_constraint_to_pep440(version_text: str) -> str:
 
 
 def _release_parts(version_text: str) -> list[int] | None:
+    from packaging.version import Version
+
     try:
         release = list(Version(version_text).release)
     except Exception:

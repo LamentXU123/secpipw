@@ -451,6 +451,53 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertEqual(len(alerts), 3)
         self.assertGreater(client.max_active, 1)
 
+    def test_recent_release_avoids_thread_pool_when_network_is_disabled(
+        self,
+    ) -> None:
+        now = datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc)
+        packages = [
+            FakePackage(
+                name=f"demo-{index}",
+                version="1.0.0",
+                download_url=(
+                    f"https://files.pythonhosted.org/packages/demo-{index}-1.0.0.whl"
+                ),
+                artifact_name=f"demo-{index}-1.0.0.whl",
+            )
+            for index in range(3)
+        ]
+
+        class NoNetworkClient:
+            network_enabled = False
+
+            def __init__(self) -> None:
+                self.fetch_calls = 0
+
+            @property
+            def base_url(self) -> str:
+                return "https://pypi.org"
+
+            def load_cached_release_upload_time(self, *args, **kwargs):
+                return False, None
+
+            def store_cached_release_upload_time(self, *args, **kwargs):
+                return None
+
+            def fetch_release_upload_time(self, *args, **kwargs):
+                self.fetch_calls += 1
+                raise RuntimeError("registry metadata requests are disabled")
+
+        client = NoNetworkClient()
+
+        with patch(
+            "secpipw.release_checks.ThreadPoolExecutor",
+            side_effect=AssertionError("thread pool should not be used"),
+        ):
+            alerts = detect_recent_release_alerts(packages, client=client, now=now)
+
+        self.assertEqual(alerts, [])
+        self.assertEqual(client.fetch_calls, 3)
+
     def test_recent_release_ignores_client_errors(self) -> None:
         now = datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc)
         package = FakePackage(

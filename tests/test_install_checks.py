@@ -105,6 +105,63 @@ class InstallCheckIgnoreTests(unittest.TestCase):
 
         self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
 
+    def test_tool_bridge_imports_guard_dependencies_lazily(self) -> None:
+        code = (
+            "import secpipw.tool_bridge, sys; "
+            "loaded = ["
+            "name for name in ("
+            "'secpipw.install_plan', "
+            "'secpipw.pth_monitor', "
+            "'secpipw.package_install', "
+            "'packaging.version'"
+            ") if name in sys.modules"
+            "]; "
+            "print('\\n'.join(loaded)); "
+            "raise SystemExit(1 if loaded else 0)"
+        )
+
+        completed = subprocess.run(
+            [sys.executable, "-c", code],
+            capture_output=True,
+            env=_src_env(),
+            text=True,
+        )
+
+        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+
+    def test_tool_passthrough_does_not_load_guard_modules(self) -> None:
+        code = (
+            "import secpipw.cli, sys; "
+            "secpipw.cli.run_tool = lambda tool, args: 0; "
+            "results = ["
+            "secpipw.cli.pipx_main(['list']), "
+            "secpipw.cli.poetry_main(['show']), "
+            "secpipw.cli.uv_main(['--version'])"
+            "]; "
+            "loaded = ["
+            "name for name in ("
+            "'secpipw.pip_guard', "
+            "'secpipw.install_checks', "
+            "'secpipw.install_plan', "
+            "'secpipw.pth_monitor', "
+            "'secpipw.pypi_api', "
+            "'secpipw.release_checks', "
+            "'packaging.version'"
+            ") if name in sys.modules"
+            "]; "
+            "print('\\n'.join(loaded)); "
+            "raise SystemExit(1 if loaded or results != [0, 0, 0] else 0)"
+        )
+
+        completed = subprocess.run(
+            [sys.executable, "-c", code],
+            capture_output=True,
+            env=_src_env(),
+            text=True,
+        )
+
+        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+
     def test_guarded_install_command_keeps_public_class_identity(self) -> None:
         code = (
             "from secpipw.pip_guard import GuardedInstallCommand; "

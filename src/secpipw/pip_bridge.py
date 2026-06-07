@@ -3,14 +3,15 @@ from __future__ import annotations
 import subprocess
 import sys
 from dataclasses import dataclass
-from typing import Iterable, TextIO
+from typing import TYPE_CHECKING, Iterable, TextIO
 
-from secpipw.severity import Severity
+if TYPE_CHECKING:
+    from secpipw.severity import Severity
 
 
 @dataclass(frozen=True)
 class OutputEvent:
-    severity: Severity
+    severity: "Severity"
     stream: str
     text: str
 
@@ -54,6 +55,8 @@ def replay_events(
 
 
 def _events_from_text(stream: str, text: str) -> list[OutputEvent]:
+    from secpipw.severity import Severity
+
     if not text:
         return []
     return [

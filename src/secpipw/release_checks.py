@@ -242,18 +242,11 @@ def detect_recent_release_alerts(
     if not candidates:
         return alerts
 
-    max_workers = min(RECENT_RELEASE_MAX_WORKERS, len(candidates))
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        lookups = list(
-            executor.map(
-                lambda package: _fetch_release_lookup_result(
-                    package,
-                    client,
-                    registry_metadata=registry_metadata,
-                ),
-                candidates,
-            )
-        )
+    lookups = _fetch_release_lookup_results(
+        candidates,
+        client,
+        registry_metadata=registry_metadata,
+    )
 
     for package, lookup in zip(candidates, lookups):
         if lookup.timed_out:
@@ -295,6 +288,36 @@ def detect_recent_release_alerts(
             )
         )
     return alerts
+
+
+def _fetch_release_lookup_results(
+    candidates: list[PackageLike],
+    client: OfficialPyPIClient,
+    *,
+    registry_metadata: RegistryMetadataLookup | None,
+) -> list[_ReleaseLookupResult]:
+    if len(candidates) < 2 or not getattr(client, "network_enabled", True):
+        return [
+            _fetch_release_lookup_result(
+                package,
+                client,
+                registry_metadata=registry_metadata,
+            )
+            for package in candidates
+        ]
+
+    max_workers = min(RECENT_RELEASE_MAX_WORKERS, len(candidates))
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        return list(
+            executor.map(
+                lambda package: _fetch_release_lookup_result(
+                    package,
+                    client,
+                    registry_metadata=registry_metadata,
+                ),
+                candidates,
+            )
+        )
 
 
 def detect_zero_version_alerts(
