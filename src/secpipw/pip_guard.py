@@ -15,6 +15,8 @@ if TYPE_CHECKING:
 PlanHook = Callable[["InstallPlan"], "GateDecision"]
 ArtifactHook = Callable[[list[object]], "GateDecision"]
 
+_REAL_GUARDED_INSTALL_COMMAND: type | None = None
+
 _PIP_IMPORTS_LOADED = False
 _PIP_IMPORT_GROUPS_LOADED: set[str] = set()
 _PIP_IMPORT_NAMES = {
@@ -321,8 +323,6 @@ def _ensure_pip_symbol(name: str) -> None:
 
 
 def __getattr__(name: str):
-    if name == "GuardedInstallCommand":
-        return _guarded_install_command_class()
     if name in _PIP_IMPORT_NAMES:
         _ensure_pip_symbol(name)
         return globals()[name]
@@ -334,14 +334,19 @@ def run_guarded_pip_install(
     plan_hook: PlanHook,
     artifact_hook: ArtifactHook | None = None,
 ) -> int:
-    command_class = _guarded_install_command_class()
-    command = command_class(
+    command = GuardedInstallCommand(
         "install",
         "Install packages.",
         plan_hook=plan_hook,
         artifact_hook=artifact_hook,
     )
     return int(command.main(pip_args))
+
+
+def _guarded_install_command_class():
+    if _REAL_GUARDED_INSTALL_COMMAND is None:
+        return _build_guarded_install_command_class()
+    return _REAL_GUARDED_INSTALL_COMMAND
 
 
 def check_legacy_setup_py_options(options: Values, reqs: List[object]) -> None:
@@ -476,8 +481,9 @@ def _should_build_for_install_command_checker():
     )
 
 
-def _guarded_install_command_class():
-    cached = globals().get("GuardedInstallCommand")
+def _build_guarded_install_command_class():
+    global _REAL_GUARDED_INSTALL_COMMAND
+    cached = _REAL_GUARDED_INSTALL_COMMAND
     if cached is not None:
         return cached
 
@@ -783,8 +789,15 @@ def _guarded_install_command_class():
 
     GuardedInstallCommand.__module__ = __name__
     GuardedInstallCommand.__qualname__ = "GuardedInstallCommand"
-    globals()["GuardedInstallCommand"] = GuardedInstallCommand
+    _REAL_GUARDED_INSTALL_COMMAND = GuardedInstallCommand
     return GuardedInstallCommand
+
+
+class GuardedInstallCommand:
+    """Lazy public class that delegates construction to the real command class."""
+
+    def __new__(cls, *args, **kwargs) -> object:
+        return _guarded_install_command_class()(*args, **kwargs)
 
 
 def _allow_install_artifact_hook(requirements: list[object]) -> GateDecision:

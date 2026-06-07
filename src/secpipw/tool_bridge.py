@@ -259,6 +259,167 @@ UV_UNSUPPORTED_VALUE_OPTIONS = {
     "--torch-backend",
     "--upgrade-group",
 }
+_UV_EMPTY_SET: frozenset[str] = frozenset()
+
+UV_PIP_PACKAGE_VALUE_OPTIONS = frozenset(
+    {
+        *UV_INDEX_OPTIONS_WITH_VALUE,
+        *UV_RESOLVER_OPTIONS_WITH_VALUE,
+        *UV_BUILD_OPTIONS_WITH_VALUE,
+        *UV_PYTHON_OPTIONS_WITH_VALUE,
+        "--constraints",
+        "-c",
+        "--requirements",
+        "-r",
+        "--target",
+        "-t",
+        "--prefix",
+    }
+)
+UV_PIP_PACKAGE_VALUE_ALIASES = {
+    **UV_INDEX_VALUE_ALIASES,
+    **UV_RESOLVER_VALUE_ALIASES,
+    **UV_BUILD_VALUE_ALIASES,
+    **UV_PYTHON_VALUE_ALIASES,
+    "-c": "--constraints",
+    "-r": "--requirements",
+    "-t": "--target",
+}
+UV_PIP_PACKAGE_ALLOWED_FLAGS = frozenset(
+    UV_COMMON_FLAGS
+    | {
+        "--all-extras",
+        "--exact",
+        "--managed-python",
+        "--no-break-system-packages",
+        "--no-editable",
+        "--no-managed-python",
+        "--no-python-downloads",
+        "--no-sources",
+        "--no-verify-hashes",
+    }
+)
+
+UV_PIP_INSTALL_VALUE_OPTIONS = frozenset(
+    {
+        "--editable",
+        "-e",
+        *UV_PIP_PACKAGE_VALUE_OPTIONS,
+        "--extra",
+        "--group",
+        "--no-binary",
+        "--no-sources-package",
+        "--only-binary",
+    }
+)
+UV_PIP_INSTALL_VALUE_ALIASES = {
+    **UV_PIP_PACKAGE_VALUE_ALIASES,
+    "-c": "--constraints",
+    "-e": "--editable",
+    "-r": "--requirements",
+    "-t": "--target",
+}
+UV_PIP_INSTALL_ALLOWED_FLAGS = frozenset(
+    UV_PIP_PACKAGE_ALLOWED_FLAGS
+)
+UV_PIP_INSTALL_BLOCKED_VALUE_OPTIONS = frozenset(
+    (*UV_UNSUPPORTED_VALUE_OPTIONS, "--group")
+)
+UV_PIP_INSTALL_BLOCKED_FLAGS = _UV_EMPTY_SET
+
+UV_ADD_VALUE_OPTIONS = frozenset(
+    {
+        *UV_PIP_PACKAGE_VALUE_OPTIONS,
+        "--bounds",
+        "--marker",
+        "-m",
+        "--extra",
+        "--group",
+        "--no-install-package",
+        "--optional",
+        "--package",
+        "--script",
+    }
+)
+UV_ADD_VALUE_ALIASES = {
+    **UV_PIP_PACKAGE_VALUE_ALIASES,
+    "-m": "--marker",
+}
+UV_ADD_ALLOWED_FLAGS = frozenset(
+    UV_PIP_PACKAGE_ALLOWED_FLAGS
+    | {
+        "--active",
+        "--dev",
+        "--editable",
+        "--frozen",
+        "--locked",
+        "--no-install-local",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--no-sync",
+        "--no-workspace",
+        "--raw",
+        "--workspace",
+    }
+)
+UV_ADD_BLOCKED_VALUE_OPTIONS = frozenset(
+    (*UV_UNSUPPORTED_VALUE_OPTIONS, "--branch", "--rev", "--tag")
+)
+UV_ADD_BLOCKED_FLAGS = frozenset({"--lfs"})
+
+UV_TOOL_INSTALL_VALUE_OPTIONS = frozenset(
+    {
+        *UV_PIP_PACKAGE_VALUE_OPTIONS,
+        "--with",
+        "-w",
+        "--with-editable",
+        "--with-executables-from",
+        "--with-requirements",
+    }
+)
+UV_TOOL_INSTALL_VALUE_ALIASES = {
+    **UV_PIP_PACKAGE_VALUE_ALIASES,
+    "-w": "--with",
+}
+UV_TOOL_INSTALL_ALLOWED_FLAGS = frozenset(
+    UV_PIP_PACKAGE_ALLOWED_FLAGS | {"--editable", "--force"}
+)
+UV_TOOL_INSTALL_BLOCKED_VALUE_OPTIONS = frozenset(UV_UNSUPPORTED_VALUE_OPTIONS)
+UV_TOOL_INSTALL_BLOCKED_FLAGS = _UV_EMPTY_SET
+
+UV_TOOL_RUN_VALUE_OPTIONS = frozenset(
+    {
+        *UV_PIP_PACKAGE_VALUE_OPTIONS,
+        *UV_GLOBAL_OPTIONS_WITH_VALUE,
+        "--env-file",
+        "--from",
+        "--with",
+        "-w",
+        "--with-editable",
+        "--with-requirements",
+    }
+)
+UV_TOOL_RUN_ALIASES = {
+    **UV_PIP_PACKAGE_VALUE_ALIASES,
+    "-c": "--constraints",
+    "-w": "--with",
+}
+UV_TOOL_RUN_ALLOWED_FLAGS = frozenset(
+    UV_COMMON_FLAGS
+    | {
+        "--isolated",
+        "--managed-python",
+        "--no-env-file",
+        "--no-managed-python",
+        "--no-python-downloads",
+        "--no-sources",
+    }
+)
+UV_TOOL_RUN_BLOCKED_VALUE_OPTIONS = frozenset(
+    (*UV_UNSUPPORTED_VALUE_OPTIONS, "--build-constraints", "--env-file")
+)
+UV_TOOL_RUN_BLOCKED_FLAGS = _UV_EMPTY_SET
+
 PEP_440_OPERATORS = (">=", "<=", "==", "!=", "~=", "===", ">", "<")
 DIRECT_REFERENCE_PREFIXES = (
     "git+",
@@ -630,15 +791,11 @@ def _poetry_add_pip_args(args: list[str]) -> list[str] | None:
 def _uv_pip_install_pip_args(args: list[str]) -> list[str] | None:
     parsed = _parse_uv_package_options(
         args,
-        value_options={
-            "--extra",
-            "--group",
-            "--no-binary",
-            "--no-sources-package",
-            "--only-binary",
-        },
-        unsupported_value_options={"--group"},
-        flags={"--all-extras"},
+        value_options=UV_PIP_INSTALL_VALUE_OPTIONS,
+        value_aliases=UV_PIP_INSTALL_VALUE_ALIASES,
+        flags=UV_PIP_INSTALL_ALLOWED_FLAGS,
+        blocked_value_options=UV_PIP_INSTALL_BLOCKED_VALUE_OPTIONS,
+        blocked_flags=UV_PIP_INSTALL_BLOCKED_FLAGS,
     )
     if parsed is None:
         return None
@@ -648,35 +805,11 @@ def _uv_pip_install_pip_args(args: list[str]) -> list[str] | None:
 def _uv_add_pip_args(args: list[str]) -> list[str] | None:
     parsed = _parse_uv_package_options(
         args,
-        value_options={
-            "--bounds",
-            "--extra",
-            "--group",
-            "--marker",
-            "-m",
-            "--no-install-package",
-            "--no-sources-package",
-            "--optional",
-            "--package",
-            "--script",
-        },
-        value_aliases={"-m": "--marker"},
-        flags={
-            "--active",
-            "--dev",
-            "--editable",
-            "--frozen",
-            "--locked",
-            "--no-install-local",
-            "--no-install-project",
-            "--no-install-workspace",
-            "--no-sync",
-            "--no-workspace",
-            "--raw",
-            "--workspace",
-        },
-        unsupported_value_options={"--branch", "--rev", "--tag"},
-        unsupported_flags={"--lfs"},
+        value_options=UV_ADD_VALUE_OPTIONS,
+        value_aliases=UV_ADD_VALUE_ALIASES,
+        flags=UV_ADD_ALLOWED_FLAGS,
+        blocked_value_options=UV_ADD_BLOCKED_VALUE_OPTIONS,
+        blocked_flags=UV_ADD_BLOCKED_FLAGS,
         editable_flag=True,
     )
     if parsed is None:
@@ -687,15 +820,11 @@ def _uv_add_pip_args(args: list[str]) -> list[str] | None:
 def _uv_tool_install_pip_args(args: list[str]) -> list[str] | None:
     parsed = _parse_uv_package_options(
         args,
-        value_options={
-            "--with",
-            "-w",
-            "--with-editable",
-            "--with-executables-from",
-            "--with-requirements",
-        },
-        value_aliases={"-w": "--with"},
-        flags={"--editable", "-e", "--force"},
+        value_options=UV_TOOL_INSTALL_VALUE_OPTIONS,
+        value_aliases=UV_TOOL_INSTALL_VALUE_ALIASES,
+        flags=UV_TOOL_INSTALL_ALLOWED_FLAGS,
+        blocked_value_options=UV_TOOL_INSTALL_BLOCKED_VALUE_OPTIONS,
+        blocked_flags=UV_TOOL_INSTALL_BLOCKED_FLAGS,
         editable_flag=True,
     )
     if parsed is None:
@@ -728,11 +857,11 @@ class ParsedUvPackageOptions:
 def _parse_uv_package_options(
     args: list[str],
     *,
-    value_options: set[str] | None = None,
-    value_aliases: dict[str, str] | None = None,
-    flags: set[str] | None = None,
-    unsupported_value_options: set[str] | None = None,
-    unsupported_flags: set[str] | None = None,
+    value_options: frozenset[str],
+    value_aliases: dict[str, str],
+    flags: frozenset[str],
+    blocked_value_options: frozenset[str],
+    blocked_flags: frozenset[str],
     editable_flag: bool = False,
 ) -> ParsedUvPackageOptions | None:
     positionals: list[str] = []
@@ -743,54 +872,9 @@ def _parse_uv_package_options(
     with_requirement_files: list[str] = []
     pip_args: list[str] = []
     editable = False
-    editable_value_options = set() if editable_flag else {"--editable", "-e"}
-
-    allowed_value_options = {
-        *UV_INDEX_OPTIONS_WITH_VALUE,
-        *UV_RESOLVER_OPTIONS_WITH_VALUE,
-        *UV_BUILD_OPTIONS_WITH_VALUE,
-        *UV_PYTHON_OPTIONS_WITH_VALUE,
-        "--constraints",
-        "-c",
-        *editable_value_options,
-        "--requirements",
-        "-r",
-        "--target",
-        "-t",
-        "--prefix",
-        *(value_options or set()),
-    }
-    aliases = {
-        **UV_INDEX_VALUE_ALIASES,
-        **UV_RESOLVER_VALUE_ALIASES,
-        **UV_BUILD_VALUE_ALIASES,
-        **UV_PYTHON_VALUE_ALIASES,
-        "-c": "--constraints",
-        "-e": "--editable",
-        "-r": "--requirements",
-        "-t": "--target",
-        **(value_aliases or {}),
-    }
-    allowed_flags = {
-        *UV_COMMON_FLAGS,
-        "--all-extras",
-        "--exact",
-        "--managed-python",
-        "--no-break-system-packages",
-        "--no-editable",
-        "--no-managed-python",
-        "--no-python-downloads",
-        "--no-sources",
-        "--no-verify-hashes",
-        *(flags or set()),
-    }
-    blocked_value_options = {
-        *UV_UNSUPPORTED_VALUE_OPTIONS,
-        *(unsupported_value_options or set()),
-    }
-    blocked_flags = {
-        *(unsupported_flags or set()),
-    }
+    allowed_value_options = value_options
+    aliases = value_aliases
+    allowed_flags = flags
 
     i = 0
     while i < len(args):
@@ -860,35 +944,6 @@ def _parse_uv_tool_run_options(args: list[str]) -> ParsedUvPackageOptions | None
     pip_args: list[str] = []
     from_requirement: str | None = None
 
-    value_options = {
-        *UV_INDEX_OPTIONS_WITH_VALUE,
-        *UV_RESOLVER_OPTIONS_WITH_VALUE,
-        *UV_BUILD_OPTIONS_WITH_VALUE,
-        *UV_PYTHON_OPTIONS_WITH_VALUE,
-        "--constraints",
-        "-c",
-        "--env-file",
-        "--from",
-        "--with",
-        "-w",
-        "--with-editable",
-        "--with-requirements",
-        *UV_GLOBAL_OPTIONS_WITH_VALUE,
-    }
-    aliases = {
-        **UV_INDEX_VALUE_ALIASES,
-        **UV_RESOLVER_VALUE_ALIASES,
-        **UV_BUILD_VALUE_ALIASES,
-        **UV_PYTHON_VALUE_ALIASES,
-        "-c": "--constraints",
-        "-w": "--with",
-    }
-    unsupported_value_options = {
-        *UV_UNSUPPORTED_VALUE_OPTIONS,
-        "--build-constraints",
-        "--env-file",
-    }
-
     i = 0
     while i < len(args):
         arg = args[i]
@@ -898,12 +953,12 @@ def _parse_uv_tool_run_options(args: list[str]) -> ParsedUvPackageOptions | None
         consumed = _consume_option_value(
             args,
             i,
-            options_with_value=value_options,
-            aliases=aliases,
+            options_with_value=UV_TOOL_RUN_VALUE_OPTIONS,
+            aliases=UV_TOOL_RUN_ALIASES,
         )
         if consumed is not None:
             option, value, i = consumed
-            if option in unsupported_value_options or not value:
+            if option in UV_TOOL_RUN_BLOCKED_VALUE_OPTIONS or not value:
                 return None
             if option == "--from":
                 from_requirement = value
@@ -921,15 +976,7 @@ def _parse_uv_tool_run_options(args: list[str]) -> ParsedUvPackageOptions | None
                 return None
             continue
 
-        if arg in {
-            *UV_COMMON_FLAGS,
-            "--isolated",
-            "--managed-python",
-            "--no-env-file",
-            "--no-managed-python",
-            "--no-python-downloads",
-            "--no-sources",
-        }:
+        if arg in UV_TOOL_RUN_ALLOWED_FLAGS:
             if not _append_uv_flag(arg, pip_args=pip_args, editable_flag=False):
                 return None
             i += 1
