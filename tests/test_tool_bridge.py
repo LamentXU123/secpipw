@@ -286,7 +286,11 @@ import sys
 from secpipw import cli
 
 cli.run_tool = lambda *args, **kwargs: 0
-rc = cli.pipx_main(["list"])
+results = [
+    cli.pipx_main(["list"]),
+    cli.poetry_main(["show"]),
+    cli.uv_main(["pip", "list"]),
+]
 blocked = [
     "secpipw.severity",
     "secpipw.tool_bridge",
@@ -294,7 +298,7 @@ blocked = [
     "secpipw.install_checks",
     "secpipw.pip_guard",
 ]
-print(rc)
+print(",".join(str(rc) for rc in results))
 print("\\n".join(name for name in blocked if name in sys.modules))
 """
         env = os.environ.copy()
@@ -312,7 +316,14 @@ print("\\n".join(name for name in blocked if name in sys.modules))
             cwd=os.getcwd(),
         )
 
-        self.assertEqual(result.stdout.strip(), "0")
+        self.assertEqual(result.stdout.strip(), "0,0,0")
+
+    def test_uv_passthrough_fast_path_uses_command_position(self) -> None:
+        with patch("secpipw.cli.run_tool", return_value=5) as tool:
+            rc = cli.uv_main(["--project", "pip", "pip", "list"])
+
+        self.assertEqual(rc, 5)
+        tool.assert_called_once_with("uv", ["--project", "pip", "pip", "list"])
 
     def test_tool_entrypoint_install_refuses_when_plan_cannot_be_derived(self) -> None:
         stderr = io.StringIO()

@@ -576,6 +576,17 @@ def _has_wrapper_options(args: list[str]) -> bool:
 
 
 def _first_non_option(args: list[str], *, value_options: set[str]) -> str | None:
+    found = _first_non_option_with_index(args, value_options=value_options)
+    if found is None:
+        return None
+    return found[0]
+
+
+def _first_non_option_with_index(
+    args: list[str],
+    *,
+    value_options: set[str],
+) -> tuple[str, int] | None:
     i = 0
     while i < len(args):
         arg = args[i]
@@ -590,20 +601,20 @@ def _first_non_option(args: list[str], *, value_options: set[str]) -> str | None
         if arg.startswith("-"):
             i += 1
             continue
-        return arg
+        return arg, i
     return None
 
 
 def _uv_fast_passthrough(args: list[str]) -> bool:
-    command = _first_non_option(args, value_options=UV_FAST_VALUE_OPTIONS)
-    if command is None:
+    found = _first_non_option_with_index(args, value_options=UV_FAST_VALUE_OPTIONS)
+    if found is None:
         return True
+    command, command_index = found
     if command in UV_FAST_TOP_LEVEL_COMMANDS:
         return True
     if command not in {"pip", "tool"}:
         return False
 
-    command_index = args.index(command)
     nested = _first_non_option(
         args[command_index + 1 :],
         value_options=UV_FAST_VALUE_OPTIONS,

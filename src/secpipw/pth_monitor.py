@@ -1,29 +1,15 @@
 from __future__ import annotations
 
-import hashlib
-import configparser
-import csv
 import json
 import re
-import site
-import subprocess
 import sys
-import sysconfig
-import tarfile
-import zipfile
 from dataclasses import dataclass
-from io import StringIO
 from pathlib import Path
-from pathlib import PurePosixPath
-from typing import Callable, Iterable, Iterator, TextIO
+from typing import TYPE_CHECKING, Callable, Iterable, Iterator, TextIO
 
-from packaging.utils import canonicalize_name
-
-from secpipw.severity import Severity
-from secpipw.terminal import colorize
-from secpipw.warning_gate import GateDecision
-from secpipw.warning_gate import enforce_warning_policy
-from secpipw.warning_gate import filter_ignored_warnings
+if TYPE_CHECKING:
+    from secpipw.severity import Severity
+    from secpipw.warning_gate import GateDecision
 
 IMPORT_LINE_RE = re.compile(r"^\s*import\b")
 PYTHON_DIRECTORY_QUERY_TIMEOUT_SECONDS = 10
@@ -84,7 +70,7 @@ class PthMonitor:
                 continue
             alerts.append(
                 SuspiciousPthAlert(
-                    severity=Severity.MEDIUM,
+                    severity=_severity_medium(),
                     path=path,
                     import_lines=import_lines,
                     message=f"'{path}' contains executable import statements in a .pth file",
@@ -128,6 +114,12 @@ def gate_suspicious_pth_alerts(
     stderr: TextIO | None = None,
     is_tty: Callable[[], bool] | None = None,
 ) -> GateDecision:
+    from secpipw.warning_gate import (
+        GateDecision,
+        enforce_warning_policy,
+        filter_ignored_warnings,
+    )
+
     alert_list = filter_ignored_warnings(alerts, ignore_severity)
     stderr = sys.stderr if stderr is None else stderr
     if not alert_list:
@@ -146,6 +138,8 @@ def gate_suspicious_pth_alerts(
 
 
 def inspect_wheel_for_suspicious_pth(path: Path) -> list[SuspiciousPthAlert]:
+    import zipfile
+
     with zipfile.ZipFile(path) as archive:
         return _inspect_zip_archive_for_suspicious_pth(
             archive,
@@ -164,6 +158,8 @@ def inspect_source_artifact_for_suspicious_pth(path: Path) -> list[SuspiciousPth
 
 
 def inspect_sdist_for_suspicious_pth(path: Path) -> list[SuspiciousPthAlert]:
+    import tarfile
+
     alerts: list[SuspiciousPthAlert] = []
     with tarfile.open(path) as archive:
         for member_name, content in _iter_sdist_pth_files(archive):
@@ -173,7 +169,7 @@ def inspect_sdist_for_suspicious_pth(path: Path) -> list[SuspiciousPthAlert]:
             alert_path = path / member_name
             alerts.append(
                 SuspiciousPthAlert(
-                    severity=Severity.MEDIUM,
+                    severity=_severity_medium(),
                     path=alert_path,
                     import_lines=import_lines,
                     message=(
@@ -190,6 +186,8 @@ def inspect_sdist_for_suspicious_pth(path: Path) -> list[SuspiciousPthAlert]:
 
 
 def inspect_zip_sdist_for_suspicious_pth(path: Path) -> list[SuspiciousPthAlert]:
+    import zipfile
+
     with zipfile.ZipFile(path) as archive:
         return _inspect_zip_archive_for_suspicious_pth(
             archive,
@@ -210,6 +208,9 @@ def handle_suspicious_pth_alerts(
     stderr: TextIO | None = None,
     is_tty: Callable[[], bool] | None = None,
 ) -> GateDecision:
+    from secpipw.terminal import colorize
+    from secpipw.warning_gate import GateDecision, filter_ignored_warnings
+
     alert_list = filter_ignored_warnings(alerts, ignore_severity)
     stdin = sys.stdin if stdin is None else stdin
     stderr = sys.stderr if stderr is None else stderr
@@ -226,14 +227,14 @@ def handle_suspicious_pth_alerts(
         stderr.write(
             colorize(
                 "installation completed, but suspicious .pth files were found.\n",
-                Severity.MEDIUM,
+                _severity_medium(),
             )
         )
         stderr.write(
             colorize(
                 "run interactively to choose deletion, or rerun with --spip-ignore-warning "
                 "to ignore this warning.\n",
-                Severity.MEDIUM,
+                _severity_medium(),
             )
         )
         return GateDecision(allow_install=False, exit_code=2)
@@ -242,7 +243,7 @@ def handle_suspicious_pth_alerts(
         colorize(
             "delete suspicious .pth file(s)? enter y/n [y/N] "
             "(rerun with --spip-ignore-warning to ignore this warning): ",
-            Severity.MEDIUM,
+            _severity_medium(),
         )
     )
     stderr.flush()
@@ -253,16 +254,18 @@ def handle_suspicious_pth_alerts(
             stderr.write(
                 colorize(
                     f"deleted {deleted} suspicious .pth file(s).\n",
-                    Severity.MEDIUM,
+                    _severity_medium(),
                 )
             )
         return GateDecision(allow_install=True, exit_code=0)
 
-    stderr.write(colorize("keeping suspicious .pth file(s).\n", Severity.MEDIUM))
+    stderr.write(colorize("keeping suspicious .pth file(s).\n", _severity_medium()))
     return GateDecision(allow_install=True, exit_code=0)
 
 
 def render_suspicious_pth_alerts(alerts: Iterable[SuspiciousPthAlert]) -> str:
+    from secpipw.terminal import colorize
+
     lines = []
     for alert in alerts:
         lines.append(
@@ -342,6 +345,12 @@ def handle_package_artifact_history_alerts(
     stderr: TextIO | None = None,
     is_tty: Callable[[], bool] | None = None,
 ) -> GateDecision:
+    from secpipw.warning_gate import (
+        GateDecision,
+        enforce_warning_policy,
+        filter_ignored_warnings,
+    )
+
     alert_list = filter_ignored_warnings(alerts, ignore_severity)
     stderr = sys.stderr if stderr is None else stderr
     if not alert_list:
@@ -362,6 +371,8 @@ def handle_package_artifact_history_alerts(
 def render_package_artifact_history_alerts(
     alerts: Iterable[PackageArtifactHistoryAlert],
 ) -> str:
+    from secpipw.terminal import colorize
+
     lines = []
     for alert in alerts:
         lines.append(
@@ -379,6 +390,8 @@ def collect_package_artifact_records(
     *,
     script_directories: Iterable[Path] = (),
 ) -> dict[str, dict]:
+    from packaging.utils import canonicalize_name
+
     requested = {
         canonicalize_name(str(package.name)): str(package.version)
         for package in packages
@@ -393,6 +406,8 @@ def collect_package_artifact_records(
     for site_dir in install_directories:
         if not site_dir.exists() or not site_dir.is_dir():
             continue
+        site_has_pth = any(site_dir.glob("*.pth"))
+        script_roots_exist = any(root.exists() for root in script_roots)
         found: set[str] = set()
         visited: set[Path] = set()
         for dist_info in _candidate_dist_info_dirs(site_dir, requested):
@@ -405,6 +420,8 @@ def collect_package_artifact_records(
                 requested,
                 site_dir=site_dir,
                 script_roots=script_roots,
+                site_has_pth=site_has_pth,
+                script_roots_exist=script_roots_exist,
             )
             if collected is None:
                 continue
@@ -424,6 +441,8 @@ def collect_package_artifact_records(
                 requested=requested,
                 site_dir=site_dir,
                 script_roots=script_roots,
+                site_has_pth=site_has_pth,
+                script_roots_exist=script_roots_exist,
             )
             if collected is None:
                 continue
@@ -453,7 +472,7 @@ def compare_package_artifact_record(
     if pth_changes:
         alerts.append(
             PackageArtifactHistoryAlert(
-                severity=Severity.MEDIUM,
+                severity=_severity_medium(),
                 package_name=package_name,
                 previous_version=previous_version,
                 current_version=current_version,
@@ -480,7 +499,7 @@ def compare_package_artifact_record(
     if combined_entry_changes:
         alerts.append(
             PackageArtifactHistoryAlert(
-                severity=Severity.LOW,
+                severity=_severity_low(),
                 package_name=package_name,
                 previous_version=previous_version,
                 current_version=current_version,
@@ -535,7 +554,11 @@ def _collect_package_artifact_record_from_dist_info(
     *,
     site_dir: Path,
     script_roots: list[Path],
+    site_has_pth: bool,
+    script_roots_exist: bool,
 ) -> tuple[str, dict] | None:
+    from packaging.utils import canonicalize_name
+
     metadata = _read_distribution_metadata(dist_info)
     name = metadata.get("name") or _name_from_dist_info_dir(dist_info)
     if not name:
@@ -550,6 +573,8 @@ def _collect_package_artifact_record_from_dist_info(
         dist_info=dist_info,
         site_dir=site_dir,
         script_roots=script_roots,
+        site_has_pth=site_has_pth,
+        script_roots_exist=script_roots_exist,
     )
 
 
@@ -689,6 +714,9 @@ def query_script_directories(
 
 
 def _local_install_directories(*, user: bool, prefix: str | None) -> list[Path]:
+    import site
+    import sysconfig
+
     if user:
         return _dedupe_paths([Path(site.getusersitepackages())])
 
@@ -706,6 +734,9 @@ def _local_install_directories(*, user: bool, prefix: str | None) -> list[Path]:
 
 
 def _local_script_directories(*, user: bool, prefix: str | None) -> list[Path]:
+    import site
+    import sysconfig
+
     if user:
         return _dedupe_paths(
             [Path(site.getuserbase()) / "Scripts", Path(site.getuserbase()) / "bin"]
@@ -724,6 +755,8 @@ def _remote_install_directories(
     user: bool,
     prefix: str | None,
 ) -> list[Path]:
+    import subprocess
+
     script = (
         "import json, site, sysconfig; "
         f"user={json.dumps(user)}; "
@@ -758,6 +791,8 @@ def _remote_script_directories(
     user: bool,
     prefix: str | None,
 ) -> list[Path]:
+    import subprocess
+
     script = (
         "import json, site, sysconfig; "
         f"user={json.dumps(user)}; "
@@ -805,6 +840,8 @@ def _apply_root(root: Path, path: Path) -> Path:
 
 
 def _file_digest(path: Path) -> str:
+    import hashlib
+
     digest = hashlib.sha256()
     with path.open("rb") as handle:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
@@ -819,7 +856,22 @@ def _package_artifact_record(
     dist_info: Path,
     site_dir: Path,
     script_roots: list[Path],
+    site_has_pth: bool,
+    script_roots_exist: bool,
 ) -> dict:
+    if _artifact_record_is_empty(
+        dist_info,
+        site_has_pth=site_has_pth,
+        script_roots_exist=script_roots_exist,
+    ):
+        return {
+            "name": name,
+            "version": version,
+            "pth_files": {},
+            "entry_points": [],
+            "script_files": [],
+        }
+
     pth_files: dict[str, dict] = {}
     script_files: list[str] = []
 
@@ -844,7 +896,23 @@ def _package_artifact_record(
     }
 
 
+def _artifact_record_is_empty(
+    dist_info: Path,
+    *,
+    site_has_pth: bool,
+    script_roots_exist: bool,
+) -> bool:
+    if (dist_info / "entry_points.txt").exists():
+        return False
+    if site_has_pth:
+        return False
+    return not script_roots_exist
+
+
 def _record_paths(dist_info: Path) -> Iterator[Path]:
+    import csv
+    from io import StringIO
+
     record_path = dist_info / "RECORD"
     try:
         text = record_path.read_text(encoding="utf-8", errors="ignore")
@@ -860,6 +928,8 @@ def _record_paths(dist_info: Path) -> Iterator[Path]:
 
 
 def _installed_path_from_record(dist_info: Path, value: str) -> Path | None:
+    from pathlib import PurePosixPath
+
     if not value:
         return None
     path = Path(value)
@@ -870,6 +940,8 @@ def _installed_path_from_record(dist_info: Path, value: str) -> Path | None:
 
 
 def _entry_points_from_dist_info(dist_info: Path) -> list[str]:
+    import configparser
+
     entry_points_path = dist_info / "entry_points.txt"
     try:
         text = entry_points_path.read_text(encoding="utf-8")
@@ -1016,6 +1088,18 @@ def _optional_str(value: object) -> str | None:
     return str(value)
 
 
+def _severity_low() -> Severity:
+    from secpipw.severity import Severity
+
+    return Severity.LOW
+
+
+def _severity_medium() -> Severity:
+    from secpipw.severity import Severity
+
+    return Severity.MEDIUM
+
+
 def _dedupe_paths(paths: Iterable[Path]) -> list[Path]:
     result: list[Path] = []
     seen: set[Path] = set()
@@ -1071,7 +1155,7 @@ def _inspect_zip_archive_for_suspicious_pth(
         alert_path = archive_path / member_name
         alerts.append(
             SuspiciousPthAlert(
-                severity=Severity.MEDIUM,
+                severity=_severity_medium(),
                 path=alert_path,
                 import_lines=import_lines,
                 message=(

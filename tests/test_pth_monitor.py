@@ -344,6 +344,48 @@ class PthMonitorTests(unittest.TestCase):
         )
         self.assertEqual(record["script_files"], ["scripts/demo-cli"])
 
+    def test_collect_package_artifact_records_skips_record_for_empty_artifacts(
+        self,
+    ) -> None:
+        with temporary_workspace_dir() as tmp:
+            site_packages = tmp / "site-packages"
+            dist_info = site_packages / "demo-1.0.0.dist-info"
+            dist_info.mkdir(parents=True)
+            (dist_info / "METADATA").write_text(
+                "Name: demo\nVersion: 1.0.0\n",
+                encoding="utf-8",
+            )
+            (dist_info / "RECORD").write_text(
+                "demo-1.0.0.dist-info/METADATA,,\n",
+                encoding="utf-8",
+            )
+
+            from secpipw import pth_monitor
+
+            with patch.object(
+                pth_monitor,
+                "_record_paths",
+                side_effect=AssertionError(
+                    "empty artifact record should not read RECORD"
+                ),
+            ):
+                records = collect_package_artifact_records(
+                    [FakePackage("demo", "1.0.0")],
+                    [site_packages],
+                    script_directories=[],
+                )
+
+        self.assertEqual(
+            records["demo"],
+            {
+                "name": "demo",
+                "version": "1.0.0",
+                "pth_files": {},
+                "entry_points": [],
+                "script_files": [],
+            },
+        )
+
     def test_collect_package_artifact_records_skips_unrelated_dist_info(self) -> None:
         with temporary_workspace_dir() as tmp:
             site_packages = tmp / "site-packages"

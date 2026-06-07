@@ -1,10 +1,6 @@
 from __future__ import annotations
 
-import shlex
-import subprocess
-import sys
 from dataclasses import dataclass
-from pathlib import Path
 from typing import TYPE_CHECKING, Iterable
 
 if TYPE_CHECKING:
@@ -284,6 +280,9 @@ SOURCE_ARCHIVE_SUFFIXES = (
 
 
 def run_tool(tool: str, argv: list[str] | None = None) -> int:
+    import subprocess
+    import sys
+
     try:
         completed = subprocess.run([tool, *(argv or [])], check=False)
     except FileNotFoundError:
@@ -350,6 +349,8 @@ def tool_command_requires_preflight(tool: str, argv: list[str]) -> bool:
 
 
 def inspect_install_plan_artifacts(plan: InstallPlan) -> list[object]:
+    from pathlib import Path
+
     from secpipw.package_install import download_artifact, temporary_artifact_directory
     from secpipw.pth_monitor import (
         inspect_source_artifact_for_suspicious_pth,
@@ -1316,6 +1317,8 @@ def _consume_option_value(
 
 
 def _split_pip_args(value: str) -> list[str]:
+    import shlex
+
     try:
         return shlex.split(value)
     except ValueError:

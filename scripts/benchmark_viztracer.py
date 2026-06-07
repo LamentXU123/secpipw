@@ -42,10 +42,71 @@ SCENARIOS = {
             "raise SystemExit(c.pipx_main(['list']))"
         ),
     ),
+    "tool-passthrough-poetry-show": Scenario(
+        key="tool-passthrough-poetry-show",
+        label="poetry show wrapper passthrough",
+        code=(
+            "import secpipw.cli as c; "
+            "c.run_tool=lambda *args, **kwargs: 0; "
+            "raise SystemExit(c.poetry_main(['show']))"
+        ),
+    ),
+    "tool-passthrough-uv-pip-list": Scenario(
+        key="tool-passthrough-uv-pip-list",
+        label="uv pip list wrapper passthrough",
+        code=(
+            "import secpipw.cli as c; "
+            "c.run_tool=lambda *args, **kwargs: 0; "
+            "raise SystemExit(c.uv_main(['pip', 'list']))"
+        ),
+    ),
+    "tool-bridge-import": Scenario(
+        key="tool-bridge-import",
+        label="import secpipw.tool_bridge",
+        code="import secpipw.tool_bridge",
+    ),
+    "tool-preflight-pipx-install": Scenario(
+        key="tool-preflight-pipx-install",
+        label="pipx install preflight parse",
+        code=(
+            "from secpipw.tool_bridge import preflight_pip_args_for_tool; "
+            "preflight_pip_args_for_tool('pipx', ['install', 'black'])"
+        ),
+    ),
+    "tool-preflight-poetry-add": Scenario(
+        key="tool-preflight-poetry-add",
+        label="poetry add preflight parse",
+        code=(
+            "from secpipw.tool_bridge import preflight_pip_args_for_tool; "
+            "preflight_pip_args_for_tool('poetry', ['add', 'requests'])"
+        ),
+    ),
+    "tool-preflight-uv-pip-install": Scenario(
+        key="tool-preflight-uv-pip-install",
+        label="uv pip install preflight parse",
+        code=(
+            "from secpipw.tool_bridge import preflight_pip_args_for_tool; "
+            "preflight_pip_args_for_tool('uv', ['pip', 'install', 'requests'])"
+        ),
+    ),
     "pip-guard-import": Scenario(
         key="pip-guard-import",
         label="import secpipw.pip_guard",
         code="import secpipw.pip_guard",
+    ),
+    "pth-monitor-import": Scenario(
+        key="pth-monitor-import",
+        label="import secpipw.pth_monitor",
+        code="import secpipw.pth_monitor",
+    ),
+    "pth-monitor-target-init": Scenario(
+        key="pth-monitor-target-init",
+        label="PthMonitor.from_install_args --target",
+        code=(
+            "import tempfile; "
+            "from secpipw.pth_monitor import PthMonitor; "
+            "PthMonitor.from_install_args(['--target', tempfile.mkdtemp()])"
+        ),
     ),
     "pip-guard-class": Scenario(
         key="pip-guard-class",
