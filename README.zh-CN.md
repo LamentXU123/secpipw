@@ -162,7 +162,7 @@ warning 的检查项也会被跳过。
 python scripts/benchmark_install.py --runs 5 --warmups 0
 ```
 
-默认 benchmark 会比较 `pip install requests` 和 `spip install requests`，下载和安装
+默认 benchmark 会比较 `pip install ruff` 和 `spip install ruff`，下载和安装
 全过程都会计时。它会使用 `--no-cache-dir`、`--no-deps`，以及每次测量新建的
 `--target` 目录，因此结果聚焦在对同一个有名包本体的多次安装，而不是依赖树。
 Benchmark GitHub Actions workflow 会在 `main` 的相关变更、每周定时任务或手动
