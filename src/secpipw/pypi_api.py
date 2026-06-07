@@ -191,7 +191,8 @@ class OfficialPyPIClient:
             if not _is_timeout_error(exc):
                 raise
             cached_names = self.load_cached_project_names()
-            return name.lower() in {project.lower() for project in cached_names}
+            requested = name.lower()
+            return any(project.lower() == requested for project in cached_names)
 
     def fetch_release_metadata(self, name: str, version: str) -> dict:
         if not self.network_enabled:
@@ -394,13 +395,13 @@ def _path_signature(path: Path) -> tuple[int, int] | None:
 
 def _load_cached_project_names_for_path(path: Path) -> tuple[str, ...] | None:
     signature = _path_signature(path)
+    if signature is None:
+        return None
     key = (str(path.resolve()), signature)
     with _PROJECT_NAME_CACHE_LOCK:
         cached = _PROJECT_NAME_CACHE.get(key)
     if cached is not None:
         return cached
-    if signature is None:
-        return None
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
@@ -418,13 +419,13 @@ def _load_email_domain_history_for_path(
     path: Path,
 ) -> dict[str, tuple[str, ...]] | None:
     signature = _path_signature(path)
+    if signature is None:
+        return None
     key = (str(path.resolve()), signature)
     with _EMAIL_DOMAIN_HISTORY_LOCK:
         cached = _EMAIL_DOMAIN_HISTORY_CACHE.get(key)
     if cached is not None:
         return cached
-    if signature is None:
-        return None
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
@@ -456,13 +457,13 @@ def _load_release_cache_payload_for_path(
     path: Path,
 ) -> dict[str, str | None] | None:
     signature = _path_signature(path)
+    if signature is None:
+        return None
     key = (str(path.resolve()), signature)
     with _RELEASE_CACHE_LOCK:
         cached = _RELEASE_CACHE_PAYLOAD_CACHE.get(key)
     if cached is not None:
         return cached
-    if signature is None:
-        return None
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except Exception:

@@ -206,6 +206,7 @@ class _InstallCheck:
     field: str
     max_severity: Severity
     needs_registry_metadata: bool
+    prefetch_registry_metadata: bool
     detect: Callable[[InstallPlan, list[str], "_ReleaseCheckContext"], tuple[Any, ...]]
 
 
@@ -298,9 +299,12 @@ def _release_check_context(
     release_client = client_from_pip_args(pip_args)
     registry_packages = _packages_with_registry_metadata(plan.packages)
     report_metadata_available = _all_packages_have_report_metadata(registry_packages)
+    should_prefetch_metadata = any(
+        check.prefetch_registry_metadata for check in checks
+    )
     prefetched_metadata = (
         {}
-        if report_metadata_available
+        if report_metadata_available or not should_prefetch_metadata
         else prefetch_release_metadata(
             registry_packages,
             client=release_client,
@@ -437,11 +441,13 @@ _INSTALL_CHECKS: tuple[_InstallCheck, ...] = (
         "typo_alerts",
         MAX_TYPO_SEVERITY,
         False,
+        False,
         _detect_typo_alerts,
     ),
     _InstallCheck(
         "direct_url_alerts",
         MAX_DIRECT_URL_SEVERITY,
+        False,
         False,
         _detect_direct_url_install_alerts,
     ),
@@ -449,11 +455,13 @@ _INSTALL_CHECKS: tuple[_InstallCheck, ...] = (
         "recent_release_alerts",
         MAX_RECENT_RELEASE_SEVERITY,
         True,
+        False,
         _detect_recent_release_install_alerts,
     ),
     _InstallCheck(
         "empty_description_alerts",
         MAX_EMPTY_DESCRIPTION_SEVERITY,
+        True,
         True,
         _detect_empty_description_install_alerts,
     ),
@@ -461,11 +469,13 @@ _INSTALL_CHECKS: tuple[_InstallCheck, ...] = (
         "suspicious_metadata_url_alerts",
         MAX_SUSPICIOUS_METADATA_URL_SEVERITY,
         True,
+        True,
         _detect_suspicious_metadata_url_install_alerts,
     ),
     _InstallCheck(
         "repository_mismatch_alerts",
         MAX_REPOSITORY_MISMATCH_SEVERITY,
+        True,
         True,
         _detect_repository_mismatch_install_alerts,
     ),
@@ -473,11 +483,13 @@ _INSTALL_CHECKS: tuple[_InstallCheck, ...] = (
         "email_domain_drift_alerts",
         MAX_EMAIL_DOMAIN_DRIFT_SEVERITY,
         True,
+        True,
         _detect_email_domain_drift_install_alerts,
     ),
     _InstallCheck(
         "zero_version_alerts",
         MAX_ZERO_VERSION_SEVERITY,
+        False,
         False,
         _detect_zero_version_install_alerts,
     ),
@@ -485,11 +497,13 @@ _INSTALL_CHECKS: tuple[_InstallCheck, ...] = (
         "yanked_release_alerts",
         MAX_YANKED_RELEASE_SEVERITY,
         False,
+        False,
         _detect_yanked_release_install_alerts,
     ),
     _InstallCheck(
         "archive_hash_mismatch_alerts",
         MAX_ARCHIVE_HASH_MISMATCH_SEVERITY,
+        False,
         False,
         _detect_archive_hash_mismatch_install_alerts,
     ),

@@ -177,6 +177,35 @@ class InstallCheckIgnoreTests(unittest.TestCase):
         self.assertEqual(alerts.email_domain_drift_alerts, ())
         self.assertEqual(alerts.zero_version_alerts, ())
 
+    def test_recent_release_only_context_does_not_prefetch_registry_metadata(
+        self,
+    ) -> None:
+        plan = _plan(FakePackage(name="demo", version="1.0.0"))
+
+        with (
+            patch("secpipw.install_checks.client_from_pip_args", return_value=object()),
+            patch(
+                "secpipw.install_checks.prefetch_release_metadata",
+                side_effect=AssertionError("registry metadata should not be prefetched"),
+            ),
+            patch(
+                "secpipw.install_checks.detect_typos_in_resolved_packages",
+                return_value=[],
+            ),
+            patch(
+                "secpipw.install_checks.detect_recent_release_alerts",
+                return_value=[],
+            ) as recent_release,
+        ):
+            alerts = detect_install_alerts(
+                plan,
+                ["demo"],
+                ignore_severity=Severity.LOW,
+            )
+
+        recent_release.assert_called_once()
+        self.assertEqual(alerts.all_alerts, ())
+
     def test_ignore_medium_skips_ignored_checks_without_loading_hash_check(
         self,
     ) -> None:

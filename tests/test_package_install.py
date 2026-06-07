@@ -49,6 +49,17 @@ class PackageInstallTests(unittest.TestCase):
             ["urllib3", "charset-normalizer", "requests"],
         )
 
+    def test_topological_install_order_preserves_input_order_for_ready_packages(
+        self,
+    ) -> None:
+        packages = tuple(
+            FakePackage(f"package-{index}", "1.0.0") for index in range(50)
+        )
+
+        ordered = topological_install_order(packages)
+
+        self.assertEqual(ordered, packages)
+
     def test_forwarded_install_args_strips_resolution_inputs(self) -> None:
         forwarded = forwarded_install_args(
             [

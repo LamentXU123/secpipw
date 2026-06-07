@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import heapq
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
@@ -92,45 +93,45 @@ def topological_install_order(
     if len(package_list) < 2:
         return tuple(package_list)
 
-    by_name = {canonicalize_name(package.name): package for package in package_list}
+    canonical_names = [canonicalize_name(package.name) for package in package_list]
+    by_name = dict(zip(canonical_names, package_list))
+    order_index = dict(zip(canonical_names, range(len(canonical_names))))
     dependency_names: dict[str, set[str]] = {
-        canonicalize_name(package.name): _internal_dependencies(package, by_name)
-        for package in package_list
+        canonical_name: _internal_dependencies(package, by_name)
+        for canonical_name, package in zip(canonical_names, package_list)
     }
     incoming = {name: len(deps) for name, deps in dependency_names.items()}
     reverse_edges: dict[str, list[str]] = {name: [] for name in by_name}
-    order_index = {
-        canonicalize_name(package.name): index
-        for index, package in enumerate(package_list)
-    }
 
     for package_name, deps in dependency_names.items():
         for dep_name in deps:
             reverse_edges[dep_name].append(package_name)
 
-    ready = sorted(
-        [name for name, count in incoming.items() if count == 0],
-        key=order_index.get,
-    )
+    ready = [
+        (order_index[name], name)
+        for name, count in incoming.items()
+        if count == 0
+    ]
+    heapq.heapify(ready)
     ordered: list[ResolvedPackage] = []
+    ordered_names: set[str] = set()
 
     while ready:
-        current = ready.pop(0)
+        _, current = heapq.heappop(ready)
         ordered.append(by_name[current])
-        for dependent in sorted(reverse_edges[current], key=order_index.get):
+        ordered_names.add(current)
+        for dependent in reverse_edges[current]:
             incoming[dependent] -= 1
             if incoming[dependent] == 0:
-                ready.append(dependent)
-        ready.sort(key=order_index.get)
+                heapq.heappush(ready, (order_index[dependent], dependent))
 
     if len(ordered) == len(package_list):
         return tuple(ordered)
 
     remaining = [
         package
-        for package in package_list
-        if canonicalize_name(package.name)
-        not in {canonicalize_name(item.name) for item in ordered}
+        for canonical_name, package in zip(canonical_names, package_list)
+        if canonical_name not in ordered_names
     ]
     return tuple([*ordered, *remaining])
 
