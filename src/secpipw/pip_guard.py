@@ -6,15 +6,17 @@ import os
 import inspect
 from functools import lru_cache
 from optparse import Values
-from typing import Callable, Iterable, List, Optional
+from typing import TYPE_CHECKING, Callable, Iterable, List, Optional
 
-from secpipw.install_plan import InstallPlan, install_plan_from_report
-from secpipw.warning_gate import GateDecision
+if TYPE_CHECKING:
+    from secpipw.install_plan import InstallPlan
+    from secpipw.warning_gate import GateDecision
 
-PlanHook = Callable[[InstallPlan], GateDecision]
-ArtifactHook = Callable[[list[object]], GateDecision]
+PlanHook = Callable[["InstallPlan"], "GateDecision"]
+ArtifactHook = Callable[[list[object]], "GateDecision"]
 
 _PIP_IMPORTS_LOADED = False
+_PIP_IMPORT_GROUPS_LOADED: set[str] = set()
 _PIP_IMPORT_NAMES = {
     "WheelCache",
     "cmdoptions",
@@ -44,88 +46,285 @@ _PIP_IMPORT_NAMES = {
 }
 
 
+def _bind_pip_symbol(name: str, value: object) -> None:
+    globals().setdefault(name, value)
+
+
+def _has_pip_symbols(*names: str) -> bool:
+    return all(name in globals() for name in names)
+
+
 def _ensure_pip_imports() -> None:
     global _PIP_IMPORTS_LOADED
-    if _PIP_IMPORTS_LOADED:
+    if _PIP_IMPORTS_LOADED and _has_pip_symbols(*_PIP_IMPORT_NAMES):
         return
 
+    _ensure_guard_command_imports()
+    _ensure_run_setup_imports()
+    _ensure_status_imports()
+    _ensure_report_imports()
+    _ensure_print_json_imports()
+    _ensure_protect_pip_imports()
+    _ensure_installation_error_imports()
+    _ensure_install_function_imports()
+    _ensure_summary_imports()
+    _ensure_os_error_imports()
+    _ensure_root_warning_imports()
+    _PIP_IMPORTS_LOADED = True
+
+
+def _ensure_guard_command_imports() -> None:
+    if "guard-command" in _PIP_IMPORT_GROUPS_LOADED and _has_pip_symbols(
+        "with_cleanup",
+        "InstallCommand",
+    ):
+        return
+    from pip._internal.cli.req_command import with_cleanup as imported_with_cleanup
+    from pip._internal.commands.install import (
+        InstallCommand as imported_install_command,
+    )
+
+    _bind_pip_symbol("with_cleanup", imported_with_cleanup)
+    _bind_pip_symbol("InstallCommand", imported_install_command)
+    _PIP_IMPORT_GROUPS_LOADED.add("guard-command")
+
+
+def _ensure_run_setup_imports() -> None:
+    if "run-setup" in _PIP_IMPORT_GROUPS_LOADED and _has_pip_symbols(
+        "WheelCache",
+        "cmdoptions",
+        "make_target_python",
+        "decide_user_install",
+        "CommandError",
+        "get_build_tracker",
+        "check_externally_managed",
+        "get_pip_version",
+        "TempDirectory",
+        "logger",
+    ):
+        return
     from pip._internal.cache import WheelCache as imported_wheel_cache
     from pip._internal.cli import cmdoptions as imported_cmdoptions
     from pip._internal.cli.cmdoptions import (
         make_target_python as imported_make_target_python,
     )
-    from pip._internal.cli.req_command import with_cleanup as imported_with_cleanup
-    from pip._internal.cli.status_codes import ERROR as imported_error
-    from pip._internal.cli.status_codes import SUCCESS as imported_success
     from pip._internal.commands.install import (
-        InstallCommand as imported_install_command,
-        create_os_error_message as imported_create_os_error_message,
         decide_user_install as imported_decide_user_install,
-        get_lib_location_guesses as imported_get_lib_location_guesses,
     )
-    from pip._internal.exceptions import (
-        CommandError as imported_command_error,
-        InstallationError as imported_installation_error,
-    )
-    from pip._internal.metadata import get_environment as imported_get_environment
-    from pip._internal.models.installation_report import (
-        InstallationReport as imported_installation_report,
-    )
+    from pip._internal.exceptions import CommandError as imported_command_error
     from pip._internal.operations.build.build_tracker import (
         get_build_tracker as imported_get_build_tracker,
     )
-    from pip._internal.req import install_given_reqs as imported_install_given_reqs
     from pip._internal.utils.logging import getLogger
     from pip._internal.utils.misc import (
         check_externally_managed as imported_check_externally_managed,
         get_pip_version as imported_get_pip_version,
-        protect_pip_from_modification_on_windows as imported_protect_pip,
-        warn_if_run_as_root as imported_warn_if_run_as_root,
-        write_output as imported_write_output,
     )
     from pip._internal.utils.temp_dir import TempDirectory as imported_temp_directory
+
+    _bind_pip_symbol("WheelCache", imported_wheel_cache)
+    _bind_pip_symbol("cmdoptions", imported_cmdoptions)
+    _bind_pip_symbol("make_target_python", imported_make_target_python)
+    _bind_pip_symbol("decide_user_install", imported_decide_user_install)
+    _bind_pip_symbol("CommandError", imported_command_error)
+    _bind_pip_symbol("get_build_tracker", imported_get_build_tracker)
+    _bind_pip_symbol("check_externally_managed", imported_check_externally_managed)
+    _bind_pip_symbol("get_pip_version", imported_get_pip_version)
+    _bind_pip_symbol("TempDirectory", imported_temp_directory)
+    _bind_pip_symbol("logger", getLogger(__name__))
+    _PIP_IMPORT_GROUPS_LOADED.add("run-setup")
+
+
+def _ensure_status_imports() -> None:
+    if "status" in _PIP_IMPORT_GROUPS_LOADED and _has_pip_symbols(
+        "ERROR",
+        "SUCCESS",
+    ):
+        return
+    from pip._internal.cli.status_codes import ERROR as imported_error
+    from pip._internal.cli.status_codes import SUCCESS as imported_success
+
+    _bind_pip_symbol("ERROR", imported_error)
+    _bind_pip_symbol("SUCCESS", imported_success)
+    _PIP_IMPORT_GROUPS_LOADED.add("status")
+
+
+def _ensure_report_imports() -> None:
+    if "report" in _PIP_IMPORT_GROUPS_LOADED and _has_pip_symbols(
+        "InstallationReport",
+    ):
+        return
+    from pip._internal.models.installation_report import (
+        InstallationReport as imported_installation_report,
+    )
+
+    _bind_pip_symbol("InstallationReport", imported_installation_report)
+    _PIP_IMPORT_GROUPS_LOADED.add("report")
+
+
+def _ensure_print_json_imports() -> None:
+    if "print-json" in _PIP_IMPORT_GROUPS_LOADED and _has_pip_symbols("print_json"):
+        return
+    from pip._vendor.rich import print_json as imported_print_json
+
+    _bind_pip_symbol("print_json", imported_print_json)
+    _PIP_IMPORT_GROUPS_LOADED.add("print-json")
+
+
+def _ensure_output_imports() -> None:
+    if "output" in _PIP_IMPORT_GROUPS_LOADED and _has_pip_symbols("write_output"):
+        return
+    from pip._internal.utils.misc import write_output as imported_write_output
+
+    _bind_pip_symbol("write_output", imported_write_output)
+    _PIP_IMPORT_GROUPS_LOADED.add("output")
+
+
+def _ensure_protect_pip_imports() -> None:
+    if "protect-pip" in _PIP_IMPORT_GROUPS_LOADED and _has_pip_symbols(
+        "protect_pip_from_modification_on_windows",
+    ):
+        return
+    from pip._internal.utils.misc import (
+        protect_pip_from_modification_on_windows as imported_protect_pip,
+    )
+
+    _bind_pip_symbol("protect_pip_from_modification_on_windows", imported_protect_pip)
+    _PIP_IMPORT_GROUPS_LOADED.add("protect-pip")
+
+
+def _ensure_installation_error_imports() -> None:
+    if "installation-error" in _PIP_IMPORT_GROUPS_LOADED and _has_pip_symbols(
+        "InstallationError",
+    ):
+        return
+    from pip._internal.exceptions import (
+        InstallationError as imported_installation_error,
+    )
+
+    _bind_pip_symbol("InstallationError", imported_installation_error)
+    _PIP_IMPORT_GROUPS_LOADED.add("installation-error")
+
+
+def _ensure_install_function_imports() -> None:
+    if "install-function" in _PIP_IMPORT_GROUPS_LOADED and _has_pip_symbols(
+        "_pip_install_given_reqs",
+    ):
+        return
+    from pip._internal.req import install_given_reqs as imported_install_given_reqs
+
+    _bind_pip_symbol("_pip_install_given_reqs", imported_install_given_reqs)
+    _PIP_IMPORT_GROUPS_LOADED.add("install-function")
+
+
+def _ensure_summary_imports() -> None:
+    if "summary" in _PIP_IMPORT_GROUPS_LOADED and _has_pip_symbols(
+        "get_lib_location_guesses",
+        "get_environment",
+        "canonicalize_name",
+    ):
+        return
+    from pip._internal.commands.install import (
+        get_lib_location_guesses as imported_get_lib_location_guesses,
+    )
+    from pip._internal.metadata import get_environment as imported_get_environment
     from pip._vendor.packaging.utils import (
         canonicalize_name as imported_canonicalize_name,
     )
-    from pip._vendor.rich import print_json as imported_print_json
 
-    globals().update(
-        {
-            "WheelCache": imported_wheel_cache,
-            "cmdoptions": imported_cmdoptions,
-            "make_target_python": imported_make_target_python,
-            "with_cleanup": imported_with_cleanup,
-            "ERROR": imported_error,
-            "SUCCESS": imported_success,
-            "InstallCommand": imported_install_command,
-            "create_os_error_message": imported_create_os_error_message,
-            "decide_user_install": imported_decide_user_install,
-            "get_lib_location_guesses": imported_get_lib_location_guesses,
-            "CommandError": imported_command_error,
-            "InstallationError": imported_installation_error,
-            "get_environment": imported_get_environment,
-            "InstallationReport": imported_installation_report,
-            "get_build_tracker": imported_get_build_tracker,
-            "_pip_install_given_reqs": imported_install_given_reqs,
-            "check_externally_managed": imported_check_externally_managed,
-            "get_pip_version": imported_get_pip_version,
-            "protect_pip_from_modification_on_windows": imported_protect_pip,
-            "warn_if_run_as_root": imported_warn_if_run_as_root,
-            "write_output": imported_write_output,
-            "TempDirectory": imported_temp_directory,
-            "canonicalize_name": imported_canonicalize_name,
-            "print_json": imported_print_json,
-            "logger": getLogger(__name__),
-        }
+    _bind_pip_symbol("get_lib_location_guesses", imported_get_lib_location_guesses)
+    _bind_pip_symbol("get_environment", imported_get_environment)
+    _bind_pip_symbol("canonicalize_name", imported_canonicalize_name)
+    _PIP_IMPORT_GROUPS_LOADED.add("summary")
+
+
+def _ensure_os_error_imports() -> None:
+    if "os-error" in _PIP_IMPORT_GROUPS_LOADED and _has_pip_symbols(
+        "ERROR",
+        "create_os_error_message",
+        "logger",
+    ):
+        return
+    from pip._internal.cli.status_codes import ERROR as imported_error
+    from pip._internal.commands.install import (
+        create_os_error_message as imported_create_os_error_message,
     )
-    _PIP_IMPORTS_LOADED = True
+    from pip._internal.utils.logging import getLogger
+
+    _bind_pip_symbol("ERROR", imported_error)
+    _bind_pip_symbol("create_os_error_message", imported_create_os_error_message)
+    _bind_pip_symbol("logger", getLogger(__name__))
+    _PIP_IMPORT_GROUPS_LOADED.add("os-error")
+
+
+def _ensure_root_warning_imports() -> None:
+    if "root-warning" in _PIP_IMPORT_GROUPS_LOADED and _has_pip_symbols(
+        "warn_if_run_as_root",
+    ):
+        return
+    from pip._internal.utils.misc import (
+        warn_if_run_as_root as imported_warn_if_run_as_root,
+    )
+
+    _bind_pip_symbol("warn_if_run_as_root", imported_warn_if_run_as_root)
+    _PIP_IMPORT_GROUPS_LOADED.add("root-warning")
+
+
+def _ensure_pip_symbol(name: str) -> None:
+    if name in {"InstallCommand", "with_cleanup"}:
+        _ensure_guard_command_imports()
+        return
+    if name in {
+        "WheelCache",
+        "cmdoptions",
+        "make_target_python",
+        "decide_user_install",
+        "CommandError",
+        "get_build_tracker",
+        "check_externally_managed",
+        "get_pip_version",
+        "TempDirectory",
+        "logger",
+    }:
+        _ensure_run_setup_imports()
+        return
+    if name in {"ERROR", "SUCCESS"}:
+        _ensure_status_imports()
+        return
+    if name == "InstallationReport":
+        _ensure_report_imports()
+        return
+    if name == "print_json":
+        _ensure_print_json_imports()
+        return
+    if name == "write_output":
+        _ensure_output_imports()
+        return
+    if name == "protect_pip_from_modification_on_windows":
+        _ensure_protect_pip_imports()
+        return
+    if name == "InstallationError":
+        _ensure_installation_error_imports()
+        return
+    if name == "_pip_install_given_reqs":
+        _ensure_install_function_imports()
+        return
+    if name in {"get_lib_location_guesses", "get_environment", "canonicalize_name"}:
+        _ensure_summary_imports()
+        return
+    if name == "create_os_error_message":
+        _ensure_os_error_imports()
+        return
+    if name == "warn_if_run_as_root":
+        _ensure_root_warning_imports()
+        return
 
 
 def __getattr__(name: str):
     if name == "GuardedInstallCommand":
         return _guarded_install_command_class()
     if name in _PIP_IMPORT_NAMES:
-        _ensure_pip_imports()
+        _ensure_pip_symbol(name)
         return globals()[name]
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
@@ -166,7 +365,7 @@ def _legacy_setup_py_options_checker():
 
 
 def check_build_constraints(options: Values) -> None:
-    _ensure_pip_imports()
+    _ensure_run_setup_imports()
     checker = getattr(cmdoptions, "check_build_constraints", None)
     if checker is not None:
         checker(options)
@@ -180,7 +379,10 @@ def build(
     build_options: list[str] | None = None,
     global_options: list[str] | None = None,
 ):
-    _ensure_pip_imports()
+    requirements = list(requirements)
+    if not requirements:
+        return [], []
+
     build_func = _wheel_builder_build()
     parameters = _signature_parameter_names(build_func)
     kwargs = {
@@ -213,7 +415,10 @@ def install_given_reqs(
     pycompile: bool,
     progress_bar: str,
 ):
-    _ensure_pip_imports()
+    if not requirements:
+        return []
+
+    _ensure_install_function_imports()
     parameters = _signature_parameter_names(_pip_install_given_reqs)
     kwargs = {
         "root": root,
@@ -251,6 +456,7 @@ def prepare_linked_requirements_more(preparer, requirement_set) -> None:
         prepare_more(requirement_set.requirements.values())
 
 
+@lru_cache(maxsize=1)
 def _wheel_builder_build():
     return getattr(
         __import__("pip._internal.wheel_builder", fromlist=["build"]),
@@ -258,6 +464,7 @@ def _wheel_builder_build():
     )
 
 
+@lru_cache(maxsize=1)
 def _should_build_for_install_command_checker():
     return getattr(
         __import__(
@@ -274,7 +481,7 @@ def _guarded_install_command_class():
     if cached is not None:
         return cached
 
-    _ensure_pip_imports()
+    _ensure_guard_command_imports()
 
     class GuardedInstallCommand(InstallCommand):
         def __init__(
@@ -291,8 +498,10 @@ def _guarded_install_command_class():
         @with_cleanup
         def run(self, options: Values, args: List[str]) -> int:
             if options.use_user_site and options.target_dir is not None:
+                _ensure_pip_symbol("CommandError")
                 raise CommandError("Can not combine '--user' and '--target'")
 
+            _ensure_run_setup_imports()
             installing_into_current_environment = (
                 not (options.dry_run and options.json_report_file)
                 and options.root_path is None
@@ -395,11 +604,13 @@ def _guarded_install_command_class():
                     reqs, check_supported_wheels=not options.target_dir
                 )
 
+                _ensure_report_imports()
                 report_dict = InstallationReport(
                     requirement_set.requirements_to_install
                 ).to_dict()
                 if options.json_report_file:
                     if options.json_report_file == "-":
+                        _ensure_print_json_imports()
                         print_json(data=report_dict)
                     else:
                         with open(
@@ -408,6 +619,8 @@ def _guarded_install_command_class():
                             encoding="utf-8",
                         ) as f:
                             json.dump(report_dict, f, indent=2, ensure_ascii=False)
+
+                from secpipw.install_plan import install_plan_from_report
 
                 decision = self._plan_hook(install_plan_from_report(report_dict))
                 if not decision.allow_install:
@@ -419,10 +632,12 @@ def _guarded_install_command_class():
                         for r in requirement_set.requirements_to_install
                     )
                     if would_install_items:
+                        _ensure_output_imports()
                         write_output(
                             "Would install %s",
                             " ".join("-".join(item) for item in would_install_items),
                         )
+                    _ensure_status_imports()
                     return SUCCESS
 
                 prepare_linked_requirements_more(preparer, requirement_set)
@@ -440,6 +655,7 @@ def _guarded_install_command_class():
                     modifying_pip = False
                 else:
                     modifying_pip = pip_req.satisfied_by is None
+                _ensure_pip_symbol("protect_pip_from_modification_on_windows")
                 protect_pip_from_modification_on_windows(modifying_pip=modifying_pip)
 
                 reqs_to_build = [
@@ -448,15 +664,19 @@ def _guarded_install_command_class():
                     if should_build_for_install_command(r)
                 ]
 
-                _, build_failures = build(
-                    reqs_to_build,
-                    wheel_cache=wheel_cache,
-                    verify=True,
-                    build_options=[],
-                    global_options=global_options,
-                )
+                if reqs_to_build:
+                    _, build_failures = build(
+                        reqs_to_build,
+                        wheel_cache=wheel_cache,
+                        verify=True,
+                        build_options=[],
+                        global_options=global_options,
+                    )
+                else:
+                    build_failures = []
 
                 if build_failures:
+                    _ensure_pip_symbol("InstallationError")
                     raise InstallationError(
                         "Failed to build installable wheels for some "
                         "pyproject.toml based projects ({})".format(
@@ -495,32 +715,34 @@ def _guarded_install_command_class():
                     progress_bar=options.progress_bar,
                 )
 
-                lib_locations = get_lib_location_guesses(
-                    user=options.use_user_site,
-                    home=target_temp_dir_path,
-                    root=options.root_path,
-                    prefix=options.prefix_path,
-                    isolated=options.isolated_mode,
-                )
-                env = get_environment(lib_locations)
-
                 installed.sort(key=operator.attrgetter("name"))
                 summary = []
-                installed_versions = {}
-                for distribution in env.iter_all_distributions():
-                    installed_versions[distribution.canonical_name] = (
-                        distribution.version
+                if installed:
+                    _ensure_summary_imports()
+                    lib_locations = get_lib_location_guesses(
+                        user=options.use_user_site,
+                        home=target_temp_dir_path,
+                        root=options.root_path,
+                        prefix=options.prefix_path,
+                        isolated=options.isolated_mode,
                     )
-                for package in installed:
-                    display_name = package.name
-                    version = installed_versions.get(
-                        canonicalize_name(display_name), None
-                    )
-                    if version:
-                        text = f"{display_name}-{version}"
-                    else:
-                        text = display_name
-                    summary.append(text)
+                    env = get_environment(lib_locations)
+
+                    installed_versions = {}
+                    for distribution in env.iter_all_distributions():
+                        installed_versions[distribution.canonical_name] = (
+                            distribution.version
+                        )
+                    for package in installed:
+                        display_name = package.name
+                        version = installed_versions.get(
+                            canonicalize_name(display_name), None
+                        )
+                        if version:
+                            text = f"{display_name}-{version}"
+                        else:
+                            text = display_name
+                        summary.append(text)
 
                 if conflicts is not None:
                     self._warn_about_conflicts(
@@ -530,6 +752,7 @@ def _guarded_install_command_class():
 
                 installed_desc = " ".join(summary)
                 if installed_desc:
+                    _ensure_output_imports()
                     write_output(
                         "Successfully installed %s",
                         installed_desc,
@@ -537,6 +760,7 @@ def _guarded_install_command_class():
             except OSError as error:
                 show_traceback = self.verbosity >= 1
 
+                _ensure_os_error_imports()
                 message = create_os_error_message(
                     error,
                     show_traceback,
@@ -552,7 +776,9 @@ def _guarded_install_command_class():
                     options.target_dir, target_temp_dir, options.upgrade
                 )
             if options.root_user_action == "warn":
+                _ensure_root_warning_imports()
                 warn_if_run_as_root()
+            _ensure_status_imports()
             return SUCCESS
 
     GuardedInstallCommand.__module__ = __name__
@@ -562,4 +788,6 @@ def _guarded_install_command_class():
 
 
 def _allow_install_artifact_hook(requirements: list[object]) -> GateDecision:
+    from secpipw.warning_gate import GateDecision
+
     return GateDecision(allow_install=True, exit_code=0)

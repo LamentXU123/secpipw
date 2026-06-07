@@ -4,6 +4,8 @@ import json
 import unittest
 import builtins
 import os
+import subprocess
+import sys
 from contextlib import contextmanager, nullcontext
 from io import StringIO
 from types import SimpleNamespace
@@ -71,6 +73,39 @@ def contextlib_nested(patches):
 
 
 class PipGuardTests(unittest.TestCase):
+    def test_pip_guard_import_keeps_guard_dependencies_lazy(self) -> None:
+        script = """
+import sys
+import secpipw.pip_guard
+
+blocked = [
+    "pip._internal.commands.install",
+    "pip._internal.req",
+    "pip._internal.metadata",
+    "pip._internal.wheel_builder",
+    "pip._vendor.rich",
+    "secpipw.install_plan",
+    "secpipw.warning_gate",
+]
+print("\\n".join(name for name in blocked if name in sys.modules))
+"""
+        env = os.environ.copy()
+        env["PYTHONPATH"] = os.path.abspath("src") + os.pathsep + env.get(
+            "PYTHONPATH",
+            "",
+        )
+
+        result = subprocess.run(
+            [sys.executable, "-c", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            env=env,
+            cwd=os.getcwd(),
+        )
+
+        self.assertEqual(result.stdout.strip(), "")
+
     def test_run_guarded_pip_install_invokes_guarded_command(self) -> None:
         hook = Mock(return_value=GateDecision(allow_install=True, exit_code=0))
         with patch("secpipw.pip_guard.GuardedInstallCommand") as command_class:
@@ -142,6 +177,21 @@ class PipGuardTests(unittest.TestCase):
         self.assertNotIn("build_options", build_func.call_args.kwargs)
         self.assertNotIn("global_options", build_func.call_args.kwargs)
 
+    def test_wheel_build_wrapper_skips_pip_import_for_empty_requirements(self) -> None:
+        with patch(
+            "secpipw.pip_guard._wheel_builder_build",
+            side_effect=AssertionError("wheel builder should stay lazy"),
+        ):
+            result = build(
+                [],
+                wheel_cache=SimpleNamespace(),
+                verify=True,
+                build_options=[],
+                global_options=[],
+            )
+
+        self.assertEqual(result, ([], []))
+
     def test_install_given_reqs_wrapper_omits_removed_global_options(self) -> None:
         pip_install = Mock(return_value=[])
 
@@ -160,6 +210,25 @@ class PipGuardTests(unittest.TestCase):
 
         self.assertEqual(result, [])
         self.assertEqual(len(pip_install.call_args.args), 1)
+
+    def test_install_given_reqs_skips_pip_import_for_empty_requirements(self) -> None:
+        with patch(
+            "secpipw.pip_guard._ensure_install_function_imports",
+            side_effect=AssertionError("pip install function should stay lazy"),
+        ):
+            result = install_given_reqs(
+                [],
+                [],
+                root=None,
+                home=None,
+                prefix=None,
+                warn_script_location=True,
+                use_user_site=False,
+                pycompile=True,
+                progress_bar="off",
+            )
+
+        self.assertEqual(result, [])
 
     def test_make_resolver_omits_removed_use_pep517(self) -> None:
         class Command:
