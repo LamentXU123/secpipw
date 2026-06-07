@@ -189,7 +189,7 @@ For now, the project has several major check points:
 - [x] Yanked release checks: If pip resolves a release that is marked as yanked, `secpipw` will raise a `MEDIUM` warning using pip's install report.
 - [x] Archive hash checks: If PyPI release metadata is already available and the selected wheel/sdist digest does not match the resolved archive hash, `secpipw` will raise a `HIGH` warning.
 - [x] Empty description checks: If the selected PyPI release metadata has no summary and no long description, `secpipw` will raise a `LOW` warning.
-- [x] Suspicious metadata URL checks: If PyPI metadata points to a shortener, raw IP, suspicious TLD, embedded credentials, or similar suspicious URL, `secpipw` will raise a `LOW` warning.
+- [x] Suspicious metadata URL checks: If PyPI metadata points to a shortener, raw IP, embedded credentials, or similar suspicious URL, `secpipw` will raise a `LOW` warning.
 - [x] Repository mismatch checks: If PyPI metadata points to a GitHub/GitLab repository whose repo name appears unrelated to the package name, `secpipw` will raise a `LOW` warning.
 - [x] Maintainer email domain drift checks: If a package's maintainer email domain changes compared with the local `secpipw` history cache, `secpipw` will raise a `LOW` warning.
 - [x] Zero-version checks: If the selected package version is `0.0` or `0.0.0`, `secpipw` will raise a `LOW` warning.

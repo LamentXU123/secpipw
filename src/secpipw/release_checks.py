@@ -53,19 +53,6 @@ SHORTENER_DOMAINS = {
     "tiny.cc",
     "tinyurl.com",
 }
-SUSPICIOUS_TLDS = {
-    "cf",
-    "click",
-    "ga",
-    "gq",
-    "ml",
-    "mov",
-    "tk",
-    "top",
-    "work",
-    "xyz",
-    "zip",
-}
 REPOSITORY_LABEL_TOKENS = ("source", "repo", "repository", "code", "github", "gitlab")
 
 
@@ -1523,9 +1510,6 @@ def _suspicious_url_reason(url: str) -> str | None:
         return "URL uses a known shortener domain"
     if hostname.startswith("xn--") or ".xn--" in hostname:
         return "URL uses an internationalized domain"
-    tld = hostname.rsplit(".", 1)[-1]
-    if tld in SUSPICIOUS_TLDS:
-        return f"URL uses suspicious TLD '.{tld}'"
     return None
 
 
