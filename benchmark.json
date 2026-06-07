@@ -1,6 +1,6 @@
 {
-  "benchmark_url": "https://github.com/LamentXU123/secpipw/actions/runs/27096384181/job/79969203865",
-  "generated_at": "2026-06-07T15:15:32.487226Z",
+  "benchmark_url": "https://github.com/LamentXU123/secpipw/actions/runs/27096504353/job/79969529418",
+  "generated_at": "2026-06-07T15:20:38.146091Z",
   "mode": "local wheelhouse install, --no-index, --no-deps, fresh --target per run",
   "primary_metric": "median",
   "records": [
@@ -23,7 +23,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-0-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2774384349999934,
+      "duration_seconds": 1.2720968359999887,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -51,7 +51,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-0-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3387618429999861,
+      "duration_seconds": 1.3313857969999958,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -79,7 +79,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-0-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.691883109000003,
+      "duration_seconds": 4.705108381000002,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -106,7 +106,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-0-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.668080595000021,
+      "duration_seconds": 4.548173855999991,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -133,7 +133,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-0-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6638342060000184,
+      "duration_seconds": 0.6451508570000044,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -161,7 +161,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-0-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7093758529999832,
+      "duration_seconds": 0.7187839309999902,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -189,7 +189,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-1-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.696079021000003,
+      "duration_seconds": 4.611984594000006,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -216,7 +216,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-1-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.614402493,
+      "duration_seconds": 4.586978673000004,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -243,7 +243,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-1-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6514362050000102,
+      "duration_seconds": 0.6458344199999999,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -271,7 +271,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-1-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.707331484000008,
+      "duration_seconds": 0.6994629209999914,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -299,7 +299,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-1-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3284836249999898,
+      "duration_seconds": 1.3230414629999956,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -326,7 +326,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-1-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2748819820000108,
+      "duration_seconds": 1.271753512999993,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -353,7 +353,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-2-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.652745230999983,
+      "duration_seconds": 0.648902997999997,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -381,7 +381,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-2-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7214568940000277,
+      "duration_seconds": 0.7063683739999931,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -409,7 +409,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-2-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.433574531999966,
+      "duration_seconds": 1.3261019549999986,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -436,7 +436,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-2-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2774780180000107,
+      "duration_seconds": 1.2841841839999972,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -463,7 +463,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-2-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.669640028999993,
+      "duration_seconds": 4.619892978999999,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -491,7 +491,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-2-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.671862613999963,
+      "duration_seconds": 4.679246458999998,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -519,7 +519,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-3-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.337031455999977,
+      "duration_seconds": 2.127140114999989,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -546,7 +546,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-3-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2790277720000063,
+      "duration_seconds": 1.3541797919999965,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -573,7 +573,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-3-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.603722181000023,
+      "duration_seconds": 4.623515724000001,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -601,7 +601,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-3-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.681786767999995,
+      "duration_seconds": 4.673356937999998,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -629,7 +629,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-3-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7107878930000311,
+      "duration_seconds": 0.7053640489999964,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -656,7 +656,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-3-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.7134569990000159,
+      "duration_seconds": 0.6593206920000085,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -683,7 +683,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-4-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.584889071999953,
+      "duration_seconds": 4.569918344000001,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -711,7 +711,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-4-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.739524361999997,
+      "duration_seconds": 4.696366337000001,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -739,7 +739,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-4-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7109852570000044,
+      "duration_seconds": 0.7097801450000105,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -766,7 +766,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-4-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6517499229999544,
+      "duration_seconds": 0.6565316389999794,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -793,7 +793,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-4-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.281584395999971,
+      "duration_seconds": 1.2753134060000093,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -821,7 +821,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-4-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3332472630000325,
+      "duration_seconds": 1.3312082969999892,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -849,7 +849,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-5-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7100146989999985,
+      "duration_seconds": 0.7114621190000037,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -876,7 +876,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-5-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6541329429999792,
+      "duration_seconds": 0.7845853519999935,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -903,7 +903,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-5-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2787321250000332,
+      "duration_seconds": 1.2930563779999886,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -931,7 +931,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-5-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3338467739999942,
+      "duration_seconds": 1.3639729299999885,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -959,7 +959,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-5-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.692435547999992,
+      "duration_seconds": 4.697832640999991,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -986,7 +986,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-5-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.606362106999995,
+      "duration_seconds": 4.585996974000011,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1013,7 +1013,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-6-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.7154316220000396,
+      "duration_seconds": 1.2741164939999976,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1041,7 +1041,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-6-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.7073162080000088,
+      "duration_seconds": 1.3172261720000051,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1069,7 +1069,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-6-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.7088201660000095,
+      "duration_seconds": 4.688159739999975,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1096,7 +1096,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-6-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.653826306000042,
+      "duration_seconds": 4.608247012999982,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1123,7 +1123,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-6-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6620315409999762,
+      "duration_seconds": 0.6429666509999947,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1151,7 +1151,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-6-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.8553884479999851,
+      "duration_seconds": 0.7007168480000132,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1179,7 +1179,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-7-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.791454148000014,
+      "duration_seconds": 4.759258143000011,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1206,7 +1206,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-7-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.621968156000037,
+      "duration_seconds": 4.570864255999993,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1233,7 +1233,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-7-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6602630760000352,
+      "duration_seconds": 0.6572446570000068,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1261,7 +1261,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-7-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7130793530000119,
+      "duration_seconds": 0.7075814910000133,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1289,7 +1289,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-7-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3394475810000017,
+      "duration_seconds": 1.3322295760000031,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1316,7 +1316,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-7-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2908335100000272,
+      "duration_seconds": 1.2832419519999974,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1343,7 +1343,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-8-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 1.0112856029999762,
+      "duration_seconds": 0.6580347820000156,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1371,7 +1371,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-8-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7193920560000038,
+      "duration_seconds": 0.7082551430000024,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1399,7 +1399,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-8-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3583979690000092,
+      "duration_seconds": 1.3278918290000092,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1426,7 +1426,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-8-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3221716239999637,
+      "duration_seconds": 1.3192712959999824,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1453,7 +1453,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-8-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.680550756999992,
+      "duration_seconds": 5.95124457899999,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1481,7 +1481,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-8-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.7225746059999665,
+      "duration_seconds": 4.639855334999993,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1509,7 +1509,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-9-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3501074339999946,
+      "duration_seconds": 1.3184323800000186,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1536,7 +1536,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-9-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.285441134999985,
+      "duration_seconds": 1.2640330650000067,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1563,7 +1563,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-9-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.66834215099999,
+      "duration_seconds": 4.541502520999984,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1591,7 +1591,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-9-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.802488346000018,
+      "duration_seconds": 4.626270169999998,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1619,7 +1619,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-9-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7227884600000039,
+      "duration_seconds": 0.7059345060000055,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1646,7 +1646,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-9-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 1.2181974760000003,
+      "duration_seconds": 0.6474619149999796,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1673,7 +1673,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-10-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.7921080250000045,
+      "duration_seconds": 4.579999974000003,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1701,7 +1701,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-10-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.88279557300001,
+      "duration_seconds": 4.695828656000003,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1729,7 +1729,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-10-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.7253008860000136,
+      "duration_seconds": 0.7048978260000069,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1756,7 +1756,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-10-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6661457469999732,
+      "duration_seconds": 0.6472265840000091,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1783,7 +1783,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-10-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2853153529999872,
+      "duration_seconds": 1.2822309439999913,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1811,7 +1811,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-10-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3375115979999919,
+      "duration_seconds": 1.3314445949999936,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1839,7 +1839,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-11-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.726933339000027,
+      "duration_seconds": 0.7054884150000191,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1866,7 +1866,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-11-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6808491999999546,
+      "duration_seconds": 0.6480436189999921,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1893,7 +1893,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-11-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.308997196000007,
+      "duration_seconds": 1.356819373999997,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1921,7 +1921,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-11-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.489278947999992,
+      "duration_seconds": 1.6987024750000046,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1949,7 +1949,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-11-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.808829823999986,
+      "duration_seconds": 4.678355274000012,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1976,7 +1976,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-11-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.852598087999979,
+      "duration_seconds": 4.5783421399999895,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1997,125 +1997,125 @@
       "key": "opencv-python",
       "label": "opencv-python",
       "overhead": {
-        "avg_percent": 5.099546973239582,
-        "avg_seconds": 0.06747267191665918,
-        "median_percent": 4.33634679513272,
-        "median_seconds": 0.055654837500014764
+        "avg_percent": 10.29265780245691,
+        "avg_seconds": 0.1332066958333371,
+        "median_percent": 3.785703530582022,
+        "median_seconds": 0.048560598999998206
       },
       "pip": {
-        "avg": 1.3231110973333362,
-        "max": 1.7154316220000396,
-        "median": 1.2834498744999792,
-        "min": 1.2748819820000108
+        "avg": 1.2941914361666622,
+        "max": 1.356819373999997,
+        "median": 1.2827364479999943,
+        "min": 1.2640330650000067
       },
       "ratio": {
-        "avg": 1.0509954697323958,
-        "avg_label": "x1.0510",
-        "median": 1.0433634679513273,
-        "median_label": "x1.0434"
+        "avg": 1.1029265780245692,
+        "avg_label": "x1.1029",
+        "median": 1.0378570353058203,
+        "median_label": "x1.0379"
       },
       "requirement": "opencv-python",
       "spip": {
-        "avg": 1.3905837692499954,
-        "max": 1.7073162080000088,
-        "median": 1.339104711999994,
-        "min": 1.3284836249999898
+        "avg": 1.4273981319999993,
+        "max": 2.127140114999989,
+        "median": 1.3312970469999925,
+        "min": 1.3172261720000051
       }
     },
     {
       "key": "scipy",
       "label": "scipy",
       "overhead": {
-        "avg_percent": 1.5603336189469492,
-        "avg_seconds": 0.07283701041666024,
-        "median_percent": 1.174522253469059,
-        "median_seconds": 0.05474393549995682
+        "avg_percent": -0.3779927007746801,
+        "avg_seconds": -0.017754530416663528,
+        "median_percent": 2.197352368133892,
+        "median_seconds": 0.10070462549997927
       },
       "pip": {
-        "avg": 4.6680408300000025,
-        "max": 4.852598087999979,
-        "median": 4.660953450500031,
-        "min": 4.584889071999953
+        "avg": 4.697056419416662,
+        "max": 5.95124457899999,
+        "median": 4.582998474000007,
+        "min": 4.541502520999984
       },
       "ratio": {
-        "avg": 1.0156033361894694,
-        "avg_label": "x1.0156",
-        "median": 1.0117452225346906,
-        "median_label": "x1.0117"
+        "avg": 0.9962200729922532,
+        "avg_label": "x0.9962",
+        "median": 1.021973523681339,
+        "median_label": "x1.0220"
       },
       "requirement": "scipy",
       "spip": {
-        "avg": 4.740877840416663,
-        "max": 4.88279557300001,
-        "median": 4.715697385999988,
-        "min": 4.671862613999963
+        "avg": 4.679301888999999,
+        "max": 4.759258143000011,
+        "median": 4.683703099499986,
+        "min": 4.611984594000006
       }
     },
     {
       "key": "uv",
       "label": "uv",
       "overhead": {
-        "avg_percent": -1.7250879732111541,
-        "avg_seconds": -0.012774460666648224,
-        "median_percent": 8.040456753727534,
-        "median_seconds": 0.05330283100001054
+        "avg_percent": 6.835043598052583,
+        "avg_seconds": 0.04523263350000539,
+        "median_percent": 8.89444958550754,
+        "median_seconds": 0.05767813150000478
       },
       "pip": {
-        "avg": 0.7405106791666564,
-        "max": 1.2181974760000003,
-        "median": 0.6629328734999973,
-        "min": 0.6514362050000102
+        "avg": 0.6617753471666651,
+        "max": 0.7845853519999935,
+        "median": 0.6484733084999945,
+        "min": 0.6429666509999947
       },
       "ratio": {
-        "avg": 0.9827491202678884,
-        "avg_label": "x0.9827",
-        "median": 1.0804045675372753,
-        "median_label": "x1.0804"
+        "avg": 1.0683504359805258,
+        "avg_label": "x1.0684",
+        "median": 1.0889444958550754,
+        "median_label": "x1.0889"
       },
       "requirement": "uv",
       "spip": {
-        "avg": 0.7277362185000081,
-        "max": 0.8553884479999851,
-        "median": 0.7162357045000078,
-        "min": 0.707331484000008
+        "avg": 0.7070079806666705,
+        "max": 0.7187839309999902,
+        "median": 0.7061514399999993,
+        "min": 0.6994629209999914
       }
     }
   ],
   "source": {
     "job_name": "install-benchmark",
-    "job_url": "https://github.com/LamentXU123/secpipw/actions/runs/27096384181/job/79969203865",
+    "job_url": "https://github.com/LamentXU123/secpipw/actions/runs/27096504353/job/79969529418",
     "repository": "LamentXU123/secpipw",
     "run_attempt": "1",
-    "run_id": "27096384181",
-    "run_url": "https://github.com/LamentXU123/secpipw/actions/runs/27096384181"
+    "run_id": "27096504353",
+    "run_url": "https://github.com/LamentXU123/secpipw/actions/runs/27096504353"
   },
   "summary": {
     "key": "opencv-python",
     "label": "opencv-python",
     "overhead": {
-      "avg_percent": 5.099546973239582,
-      "avg_seconds": 0.06747267191665918,
-      "median_percent": 4.33634679513272,
-      "median_seconds": 0.055654837500014764
+      "avg_percent": 10.29265780245691,
+      "avg_seconds": 0.1332066958333371,
+      "median_percent": 3.785703530582022,
+      "median_seconds": 0.048560598999998206
     },
     "pip": {
-      "avg": 1.3231110973333362,
-      "max": 1.7154316220000396,
-      "median": 1.2834498744999792,
-      "min": 1.2748819820000108
+      "avg": 1.2941914361666622,
+      "max": 1.356819373999997,
+      "median": 1.2827364479999943,
+      "min": 1.2640330650000067
     },
     "ratio": {
-      "avg": 1.0509954697323958,
-      "avg_label": "x1.0510",
-      "median": 1.0433634679513273,
-      "median_label": "x1.0434"
+      "avg": 1.1029265780245692,
+      "avg_label": "x1.1029",
+      "median": 1.0378570353058203,
+      "median_label": "x1.0379"
     },
     "requirement": "opencv-python",
     "spip": {
-      "avg": 1.3905837692499954,
-      "max": 1.7073162080000088,
-      "median": 1.339104711999994,
-      "min": 1.3284836249999898
+      "avg": 1.4273981319999993,
+      "max": 2.127140114999989,
+      "median": 1.3312970469999925,
+      "min": 1.3172261720000051
     }
   },
   "warmups": 1
