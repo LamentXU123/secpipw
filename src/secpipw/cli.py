@@ -574,16 +574,20 @@ def _tool_passthrough_fast_path(tool: str, args: list[str]) -> bool:
 
 
 def _has_wrapper_options(args: list[str]) -> bool:
-    return any(
-        arg.startswith("--spip-")
-        or arg == "--sensitivity"
-        or arg.startswith("--sensitivity=")
-        for arg in args
-    )
+    for arg in args:
+        if (
+            arg.startswith("--spip-")
+            or arg == "--sensitivity"
+            or arg.startswith("--sensitivity=")
+        ):
+            return True
+        if arg == "--":
+            return False
+    return False
 
 
 def _first_non_option(args: list[str], *, value_options: set[str]) -> str | None:
-    found = _first_non_option_with_index(args, value_options=value_options)
+    found = _first_non_option_with_index(args, value_options=value_options, start=0)
     if found is None:
         return None
     return found[0]
@@ -593,8 +597,9 @@ def _first_non_option_with_index(
     args: list[str],
     *,
     value_options: set[str],
+    start: int = 0,
 ) -> tuple[str, int] | None:
-    i = 0
+    i = start
     while i < len(args):
         arg = args[i]
         if arg == "--":
@@ -602,7 +607,8 @@ def _first_non_option_with_index(
         if arg in value_options:
             i += 2
             continue
-        if any(arg.startswith(f"{option}=") for option in value_options):
+        equal_index = arg.find("=")
+        if equal_index != -1 and arg[:equal_index] in value_options:
             i += 1
             continue
         if arg.startswith("-"):
@@ -622,8 +628,12 @@ def _uv_fast_passthrough(args: list[str]) -> bool:
     if command not in {"pip", "tool"}:
         return False
 
-    nested = _first_non_option(
-        args[command_index + 1 :],
+    nested = _first_non_option_with_index(
+        args,
         value_options=UV_FAST_VALUE_OPTIONS,
+        start=command_index + 1,
     )
-    return nested is not None and (command, nested) in UV_FAST_NESTED_COMMANDS
+    if nested is None:
+        return False
+    nested_command, _ = nested
+    return (command, nested_command) in UV_FAST_NESTED_COMMANDS

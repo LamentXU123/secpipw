@@ -96,6 +96,7 @@ POETRY_ADD_VALUE_ALIASES = {
     "-E": "--extras",
     "-G": "--group",
 }
+POETRY_SELF_COMMANDS = {"add"}
 POETRY_ADD_FLAGS = {
     "--allow-prereleases",
     "--dev",
@@ -260,6 +261,7 @@ UV_UNSUPPORTED_VALUE_OPTIONS = {
     "--upgrade-group",
 }
 _UV_EMPTY_SET: frozenset[str] = frozenset()
+_UV_EMPTY_DICT: dict[str, str] = {}
 
 UV_PIP_PACKAGE_VALUE_OPTIONS = frozenset(
     {
@@ -595,8 +597,8 @@ def _poetry_preflight_pip_args(argv: list[str]) -> list[str] | None:
     if command.name == "self":
         nested = _find_command(
             argv[command.index + 1 :],
-            commands={"add"},
-            options_with_value=set(),
+            commands=POETRY_SELF_COMMANDS,
+            options_with_value=_UV_EMPTY_SET,
         )
         if nested is None:
             return None
@@ -714,10 +716,15 @@ def _pipx_pip_args(
     plain_requirements: Iterable[str],
 ) -> list[str] | None:
     pip_args = list(base_args)
-    pip_args.extend(_non_empty(normal_requirements))
-    for requirement in _non_empty(editable_requirements):
-        pip_args.extend(["--editable", requirement])
-    pip_args.extend(_non_empty(plain_requirements))
+    for requirement in normal_requirements:
+        if requirement:
+            pip_args.append(requirement)
+    for requirement in editable_requirements:
+        if requirement:
+            pip_args.extend(["--editable", requirement])
+    for requirement in plain_requirements:
+        if requirement:
+            pip_args.append(requirement)
     if not pip_args:
         return None
     return pip_args
@@ -872,10 +879,6 @@ def _parse_uv_package_options(
     with_requirement_files: list[str] = []
     pip_args: list[str] = []
     editable = False
-    allowed_value_options = value_options
-    aliases = value_aliases
-    allowed_flags = flags
-
     i = 0
     while i < len(args):
         arg = args[i]
@@ -886,8 +889,8 @@ def _parse_uv_package_options(
         consumed = _consume_option_value(
             args,
             i,
-            options_with_value=allowed_value_options,
-            aliases=aliases,
+            options_with_value=value_options,
+            aliases=value_aliases,
         )
         if consumed is not None:
             option, value, i = consumed
@@ -910,7 +913,7 @@ def _parse_uv_package_options(
 
         if arg in blocked_flags:
             return None
-        if arg in allowed_flags:
+        if arg in flags:
             if not _append_uv_flag(arg, pip_args=pip_args, editable_flag=editable_flag):
                 return None
             if editable_flag and arg in {"--editable", "-e"}:
@@ -1147,21 +1150,29 @@ def _pip_args_from_uv_package_options(
     parsed: ParsedUvPackageOptions,
 ) -> list[str] | None:
     result = list(parsed.pip_args)
-    for requirement_file in _non_empty(
-        (*parsed.requirement_files, *parsed.with_requirement_files)
-    ):
-        result.extend(["-r", requirement_file])
-    for requirement in _non_empty(
-        (*parsed.editable_requirements, *parsed.with_editable_requirements)
-    ):
-        result.extend(["--editable", requirement])
-    result.extend(_non_empty(parsed.with_requirements))
-    plain_requirements = _non_empty(parsed.positionals)
-    if parsed.editable:
-        for requirement in plain_requirements:
+    for requirement_file in parsed.requirement_files:
+        if requirement_file:
+            result.extend(["-r", requirement_file])
+    for requirement_file in parsed.with_requirement_files:
+        if requirement_file:
+            result.extend(["-r", requirement_file])
+    for requirement in parsed.editable_requirements:
+        if requirement:
             result.extend(["--editable", requirement])
+    for requirement in parsed.with_editable_requirements:
+        if requirement:
+            result.extend(["--editable", requirement])
+    for requirement in parsed.with_requirements:
+        if requirement:
+            result.append(requirement)
+    if parsed.editable:
+        for requirement in parsed.positionals:
+            if requirement:
+                result.extend(["--editable", requirement])
     else:
-        result.extend(plain_requirements)
+        for requirement in parsed.positionals:
+            if requirement:
+                result.append(requirement)
     if not result:
         return None
     return result
@@ -1261,6 +1272,20 @@ def _find_command(
     commands: set[str],
     options_with_value: set[str],
 ) -> ToolCommand | None:
+    if not options_with_value:
+        i = 0
+        while i < len(args):
+            arg = args[i]
+            if arg == "--":
+                return None
+            if arg in commands:
+                return ToolCommand(name=arg, index=i)
+            if arg.startswith("-"):
+                i += 1
+                continue
+            return None
+        return None
+
     i = 0
     while i < len(args):
         arg = args[i]
@@ -1324,7 +1349,7 @@ def _find_uv_nested_command(args: list[str], index: int, *, parent: str) -> UvCo
             args,
             i,
             options_with_value=UV_GLOBAL_OPTIONS_WITH_VALUE,
-            aliases={},
+            aliases=_UV_EMPTY_DICT,
         )
         if consumed is not None:
             _, _, i = consumed
@@ -1346,18 +1371,22 @@ def _consume_option_value(
     aliases: dict[str, str],
 ) -> tuple[str, str, int] | None:
     arg = args[index]
-    option = arg
-    value: str | None = None
     if arg.startswith("--") and "=" in arg:
         option, value = arg.split("=", 1)
-
-    canonical_option = aliases.get(option, option)
-    if canonical_option not in options_with_value and option not in options_with_value:
-        return None
-    canonical_option = aliases.get(option, canonical_option)
-
-    if value is not None:
+        canonical_option = aliases.get(option, option)
+        if canonical_option not in options_with_value:
+            return None
         return canonical_option, value, index + 1
+
+    option = arg
+    canonical_option = aliases.get(option)
+    if canonical_option is None:
+        canonical_option = option
+        if option not in options_with_value:
+            return None
+    elif canonical_option not in options_with_value:
+        return None
+
     if index + 1 >= len(args):
         return canonical_option, "", index + 1
     return canonical_option, args[index + 1], index + 2
@@ -1370,7 +1399,3 @@ def _split_pip_args(value: str) -> list[str]:
         return shlex.split(value)
     except ValueError:
         return [value]
-
-
-def _non_empty(values: Iterable[str]) -> tuple[str, ...]:
-    return tuple(value for value in values if value)
