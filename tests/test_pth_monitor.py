@@ -386,6 +386,38 @@ class PthMonitorTests(unittest.TestCase):
             },
         )
 
+    def test_collect_package_artifact_records_uses_exact_dist_info_without_metadata(
+        self,
+    ) -> None:
+        with temporary_workspace_dir() as tmp:
+            site_packages = tmp / "site-packages"
+            dist_info = site_packages / "demo-1.0.0.dist-info"
+            dist_info.mkdir(parents=True)
+
+            from secpipw import pth_monitor
+
+            with patch.object(
+                pth_monitor,
+                "_read_distribution_metadata",
+                side_effect=AssertionError("exact dist-info should not read metadata"),
+            ):
+                records = collect_package_artifact_records(
+                    [FakePackage("demo", "1.0.0")],
+                    [site_packages],
+                    script_directories=[],
+                )
+
+        self.assertEqual(
+            records["demo"],
+            {
+                "name": "demo",
+                "version": "1.0.0",
+                "pth_files": {},
+                "entry_points": [],
+                "script_files": [],
+            },
+        )
+
     def test_collect_package_artifact_records_skips_unrelated_dist_info(self) -> None:
         with temporary_workspace_dir() as tmp:
             site_packages = tmp / "site-packages"

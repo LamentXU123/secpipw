@@ -410,7 +410,10 @@ def collect_package_artifact_records(
         script_roots_exist = any(root.exists() for root in script_roots)
         found: set[str] = set()
         visited: set[Path] = set()
-        for dist_info in _candidate_dist_info_dirs(site_dir, requested):
+        for canonical_name, version, dist_info in _candidate_dist_info_dirs(
+            site_dir,
+            requested,
+        ):
             resolved_dist_info = dist_info.resolve()
             if resolved_dist_info in visited:
                 continue
@@ -422,6 +425,8 @@ def collect_package_artifact_records(
                 script_roots=script_roots,
                 site_has_pth=site_has_pth,
                 script_roots_exist=script_roots_exist,
+                known_canonical_name=canonical_name,
+                known_version=version,
             )
             if collected is None:
                 continue
@@ -520,7 +525,7 @@ def compare_package_artifact_record(
 def _candidate_dist_info_dirs(
     site_dir: Path,
     requested: dict[str, str],
-) -> Iterator[Path]:
+) -> Iterator[tuple[str, str, Path]]:
     for canonical_name, version in requested.items():
         names = _dist_info_name_variants(canonical_name)
         versions = _dist_info_version_variants(version)
@@ -528,7 +533,7 @@ def _candidate_dist_info_dirs(
             for version_text in versions:
                 candidate = site_dir / f"{name}-{version_text}.dist-info"
                 if candidate.is_dir():
-                    yield candidate
+                    yield canonical_name, version, candidate
 
 
 def _dist_info_name_variants(canonical_name: str) -> tuple[str, ...]:
@@ -556,17 +561,26 @@ def _collect_package_artifact_record_from_dist_info(
     script_roots: list[Path],
     site_has_pth: bool,
     script_roots_exist: bool,
+    known_canonical_name: str | None = None,
+    known_version: str | None = None,
 ) -> tuple[str, dict] | None:
-    from packaging.utils import canonicalize_name
+    if known_canonical_name is None:
+        from packaging.utils import canonicalize_name
 
-    metadata = _read_distribution_metadata(dist_info)
-    name = metadata.get("name") or _name_from_dist_info_dir(dist_info)
-    if not name:
-        return None
-    canonical_name = canonicalize_name(name)
-    if canonical_name not in requested:
-        return None
-    version = metadata.get("version") or requested[canonical_name]
+        metadata = _read_distribution_metadata(dist_info)
+        name = metadata.get("name") or _name_from_dist_info_dir(dist_info)
+        if not name:
+            return None
+        canonical_name = canonicalize_name(name)
+        if canonical_name not in requested:
+            return None
+        version = metadata.get("version") or requested[canonical_name]
+    else:
+        canonical_name = known_canonical_name
+        if canonical_name not in requested:
+            return None
+        name = _name_from_dist_info_dir(dist_info) or canonical_name
+        version = known_version or requested[canonical_name]
     return canonical_name, _package_artifact_record(
         name=name,
         version=version,
@@ -585,6 +599,8 @@ def package_artifact_history_path() -> Path:
 
 
 def load_package_artifact_history(path: Path) -> dict:
+    if not path.exists():
+        return {"version": 1, "packages": {}}
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except Exception:

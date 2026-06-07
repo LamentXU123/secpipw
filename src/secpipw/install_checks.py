@@ -34,6 +34,7 @@ CHECK_FIELDS = (
     "yanked_release_alerts",
     "archive_hash_mismatch_alerts",
 )
+_BOOTSTRAP_PROJECT_NAME_SET: frozenset[str] | None = None
 
 if TYPE_CHECKING:
     from secpipw.install_plan import InstallPlan
@@ -323,6 +324,8 @@ def _detect_typo_alerts(
     pip_args: list[str],
     context: _ReleaseCheckContext,
 ) -> tuple[WarningLike, ...]:
+    if _all_package_names_in_bootstrap(plan.packages):
+        return ()
     return tuple(detect_typos_in_resolved_packages(plan.packages))
 
 
@@ -512,6 +515,32 @@ _INSTALL_CHECKS: tuple[_InstallCheck, ...] = (
 
 def _empty_install_alerts() -> InstallAlerts:
     return _install_alerts_from_mapping({})
+
+
+def _all_package_names_in_bootstrap(packages: Iterable[object]) -> bool:
+    bootstrap_names = _bootstrap_project_name_set()
+    for package in packages:
+        name = getattr(package, "name", None)
+        if not name or _canonicalize_name(str(name)) not in bootstrap_names:
+            return False
+    return True
+
+
+def _bootstrap_project_name_set() -> frozenset[str]:
+    global _BOOTSTRAP_PROJECT_NAME_SET
+    if _BOOTSTRAP_PROJECT_NAME_SET is None:
+        from secpipw.pypi_api import BOOTSTRAP_PROJECT_NAMES
+
+        _BOOTSTRAP_PROJECT_NAME_SET = frozenset(
+            _canonicalize_name(name) for name in BOOTSTRAP_PROJECT_NAMES
+        )
+    return _BOOTSTRAP_PROJECT_NAME_SET
+
+
+def _canonicalize_name(name: str) -> str:
+    from packaging.utils import canonicalize_name
+
+    return canonicalize_name(name)
 
 
 def _install_alerts_from_mapping(alerts: dict[str, Iterable]) -> InstallAlerts:

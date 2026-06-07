@@ -9,6 +9,7 @@ from typing import Iterable, Protocol
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.utils import canonicalize_name
 
+from secpipw.pip_args import PIP_OPTIONS_WITH_VALUE
 from secpipw.pypi_api import BOOTSTRAP_PROJECT_NAMES, OfficialPyPIClient
 from secpipw.severity import Severity
 from secpipw.terminal import colorize
@@ -19,50 +20,6 @@ try:
 except ImportError:
     levenshtein_distance = None
     levenshtein_ratio = None
-
-PIP_OPTIONS_WITH_VALUE = {
-    "-C",
-    "-c",
-    "-e",
-    "-f",
-    "-i",
-    "-r",
-    "-t",
-    "--abi",
-    "--cache-dir",
-    "--cert",
-    "--client-cert",
-    "--config-settings",
-    "--constraint",
-    "--editable",
-    "--exists-action",
-    "--extra-index-url",
-    "--find-links",
-    "--global-option",
-    "--implementation",
-    "--index-url",
-    "--keyring-provider",
-    "--log",
-    "--platform",
-    "--prefix",
-    "--progress-bar",
-    "--proxy",
-    "--python",
-    "--python-version",
-    "--requirement",
-    "--report",
-    "--retries",
-    "--root",
-    "--root-user-action",
-    "--src",
-    "--target",
-    "--timeout",
-    "--trusted-host",
-    "--upgrade-strategy",
-    "--use-deprecated",
-    "--use-feature",
-}
-
 
 class PackageLike(Protocol):
     name: str

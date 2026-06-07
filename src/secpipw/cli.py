@@ -392,26 +392,33 @@ def _install_with_guard(
     if rc != 0:
         return rc
     if monitor is None:
-        decision = _allow_install_decision()
+        decision_exit_code = 0
     else:
-        decision = handle_suspicious_pth_alerts(
-            monitor.inspect(),
-            ignore_warning=ignore_warning,
-            ignore_severity=ignore_severity,
-        )
-    if not decision.allow_install:
-        return decision.exit_code
+        pth_alerts = monitor.inspect()
+        if pth_alerts:
+            decision = handle_suspicious_pth_alerts(
+                pth_alerts,
+                ignore_warning=ignore_warning,
+                ignore_severity=ignore_severity,
+            )
+            if not decision.allow_install:
+                return decision.exit_code
+            decision_exit_code = decision.exit_code
+        else:
+            decision_exit_code = 0
 
     if resolved_plan is None or _severity_ignored(
         ignore_severity,
         _severity_medium(),
     ):
-        return decision.exit_code
+        return decision_exit_code
     history_alerts = inspect_package_artifact_history(
         resolved_plan.packages,
         getattr(monitor, "directories", ()),
         pip_args=pip_args,
     )
+    if not history_alerts:
+        return decision_exit_code
     history_decision = handle_package_artifact_history_alerts(
         history_alerts,
         ignore_warning=ignore_warning,

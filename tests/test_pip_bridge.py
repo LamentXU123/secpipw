@@ -593,6 +593,58 @@ class PipBridgeTests(unittest.TestCase):
             ignore_severity=None,
         )
 
+    def test_install_with_guard_skips_empty_pth_alert_handler(self) -> None:
+        with patch("secpipw.cli._create_pth_monitor", return_value=FakeMonitor()):
+            with patch("secpipw.cli.run_guarded_pip_install", return_value=0):
+                with patch("secpipw.cli.handle_suspicious_pth_alerts") as handle_post:
+                    rc = cli._install_with_guard(
+                        ["requests", "--target", "vendor"],
+                        ignore_warning=False,
+                        debug=False,
+                        sensitivity=Severity.LOW,
+                    )
+
+        self.assertEqual(rc, 0)
+        handle_post.assert_not_called()
+
+    def test_install_with_guard_skips_empty_history_alert_handler(self) -> None:
+        plan = _plan(FakePackage(name="requests", version="2.31.0", requested=True))
+
+        def guarded(pip_args, plan_hook, artifact_hook=None):
+            decision = plan_hook(plan)
+            if not decision.allow_install:
+                return decision.exit_code
+            return 0
+
+        with patch("secpipw.cli._create_pth_monitor", return_value=FakeMonitor()):
+            with patch("secpipw.cli.run_install_checks") as run_checks:
+                run_checks.return_value = GateDecision(allow_install=True, exit_code=0)
+                with patch(
+                    "secpipw.cli.run_guarded_pip_install",
+                    side_effect=guarded,
+                ):
+                    with patch(
+                        "secpipw.cli.inspect_package_artifact_history",
+                        return_value=[],
+                    ) as inspect_history:
+                        with patch(
+                            "secpipw.cli.handle_package_artifact_history_alerts"
+                        ) as handle_history:
+                            rc = cli._install_with_guard(
+                                ["requests", "--target", "vendor"],
+                                ignore_warning=False,
+                                debug=False,
+                                sensitivity=Severity.LOW,
+                            )
+
+        self.assertEqual(rc, 0)
+        inspect_history.assert_called_once_with(
+            plan.packages,
+            (),
+            pip_args=["requests", "--target", "vendor"],
+        )
+        handle_history.assert_not_called()
+
     def test_install_with_guard_refuses_to_run_without_pth_monitor(self) -> None:
         stderr = io.StringIO()
 

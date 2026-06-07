@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from unittest.mock import patch
 
+from secpipw import install_checks
 from secpipw.install_checks import detect_install_alerts
 from secpipw.install_plan import InstallPlan
 from secpipw.severity import Severity
@@ -77,6 +78,21 @@ class InstallCheckIgnoreTests(unittest.TestCase):
             "]; "
             "print('\\n'.join(loaded)); "
             "raise SystemExit(1 if loaded else 0)"
+        )
+
+        completed = subprocess.run(
+            [sys.executable, "-c", code],
+            capture_output=True,
+            env=_src_env(),
+            text=True,
+        )
+
+        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+
+    def test_release_checks_does_not_import_typo_module(self) -> None:
+        code = (
+            "import secpipw.release_checks, sys; "
+            "raise SystemExit(1 if 'secpipw.typo' in sys.modules else 0)"
         )
 
         completed = subprocess.run(
@@ -289,6 +305,30 @@ class InstallCheckIgnoreTests(unittest.TestCase):
                     )
 
         self.assertEqual(alerts.all_alerts, ())
+
+    def test_bootstrap_exact_package_skips_typo_detector(self) -> None:
+        plan = _plan(FakePackage(name="uv", version="0.11.19"))
+
+        with patch(
+            "secpipw.install_checks.detect_typos_in_resolved_packages",
+            side_effect=AssertionError("bootstrap exact name should be skipped"),
+        ):
+            alerts = install_checks._detect_typo_alerts(plan, ["uv"], object())
+
+        self.assertEqual(alerts, ())
+
+    def test_unknown_package_still_uses_typo_detector(self) -> None:
+        alert = object()
+        plan = _plan(FakePackage(name="not-a-bootstrap-project", version="1.0.0"))
+
+        with patch(
+            "secpipw.install_checks.detect_typos_in_resolved_packages",
+            return_value=[alert],
+        ) as detect_typos:
+            alerts = install_checks._detect_typo_alerts(plan, ["demo"], object())
+
+        detect_typos.assert_called_once_with(plan.packages)
+        self.assertEqual(alerts, (alert,))
 
     def test_ignore_medium_keeps_high_hash_mismatch_check(self) -> None:
         plan = _plan(

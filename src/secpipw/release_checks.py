@@ -17,10 +17,10 @@ from packaging.requirements import InvalidRequirement, Requirement
 from packaging.utils import canonicalize_name
 from packaging.version import InvalidVersion, Version
 
+from secpipw.pip_args import PIP_OPTIONS_WITH_VALUE
 from secpipw.pypi_api import OfficialPyPIClient
 from secpipw.severity import Severity
 from secpipw.terminal import colorize
-from secpipw.typo import PIP_OPTIONS_WITH_VALUE
 
 RECENT_RELEASE_MEDIUM_THRESHOLD = timedelta(hours=8)
 RECENT_RELEASE_LOW_THRESHOLD = timedelta(hours=48)
