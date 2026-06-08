@@ -12,6 +12,7 @@ from secpipw import Severity
 from secpipw import cli
 from secpipw.install_plan import InstallPlan, InstallPlanError
 from secpipw.tool_bridge import (
+    inspect_install_plan_artifacts,
     preflight_pip_args_for_tool,
     tool_command_requires_preflight,
 )
@@ -335,6 +336,41 @@ print("\\n".join(name for name in blocked if name in sys.modules))
         self.assertEqual(rc, 2)
         tool.assert_not_called()
         self.assertIn("could not derive a pip install plan", stderr.getvalue())
+
+    def test_artifact_inspection_skips_download_for_remote_wheel_without_pth(
+        self,
+    ) -> None:
+        plan = InstallPlan(
+            packages=(
+                SimpleNamespace(
+                    name="demo",
+                    version="1.0.0",
+                    requested=True,
+                    is_direct=False,
+                    download_url="https://example.test/demo-1.0.0-py3-none-any.whl",
+                    artifact_name="demo-1.0.0-py3-none-any.whl",
+                    archive_hash="sha256=abc123",
+                    requires_dist=(),
+                    metadata={},
+                    yanked=False,
+                    yanked_reason=None,
+                ),
+            ),
+            raw_report={"install": []},
+        )
+
+        with patch(
+            "secpipw.pth_monitor.remote_zip_artifact_contains_pth",
+            return_value=False,
+        ) as remote_scan:
+            with patch("secpipw.package_install.download_artifact") as download:
+                alerts = inspect_install_plan_artifacts(plan)
+
+        self.assertEqual(alerts, [])
+        remote_scan.assert_called_once_with(
+            "https://example.test/demo-1.0.0-py3-none-any.whl"
+        )
+        download.assert_not_called()
 
     def test_spipx_entrypoint_uses_pipx_tool(self) -> None:
         with patch("secpipw.cli._tool_with_guard", return_value=6) as guarded:

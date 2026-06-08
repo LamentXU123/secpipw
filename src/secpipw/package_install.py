@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import heapq
+import hashlib
+import os
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from urllib.parse import unquote, urlparse, urlunparse
 from urllib.request import url2pathname, urlopen
+from uuid import uuid4
 
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.utils import canonicalize_name
@@ -182,10 +185,24 @@ def download_artifact(
     artifact_name = package.artifact_name or _artifact_name_from_path(parsed.path)
     destination.mkdir(parents=True, exist_ok=True)
     target_path = destination / artifact_name
+    cache_path = _artifact_cache_path(
+        download_url,
+        artifact_name,
+        archive_hash=package.archive_hash,
+    )
+
+    if cache_path is not None and cache_path.exists():
+        shutil.copy2(cache_path, target_path)
+        return DownloadedArtifact(package=package, path=target_path)
 
     if parsed.scheme == "file":
         source_path = Path(url2pathname(unquote(parsed.path)))
         shutil.copy2(source_path, target_path)
+        return DownloadedArtifact(package=package, path=target_path)
+
+    if cache_path is not None:
+        _download_http_artifact_to_cache(download_url, cache_path)
+        shutil.copy2(cache_path, target_path)
         return DownloadedArtifact(package=package, path=target_path)
 
     with urlopen(download_url, timeout=30) as response:
@@ -240,3 +257,47 @@ def _url_with_archive_hash(download_url: str, archive_hash: str | None) -> str:
     if parsed.fragment:
         return download_url
     return urlunparse(parsed._replace(fragment=archive_hash))
+
+
+def _artifact_cache_path(
+    download_url: str,
+    artifact_name: str,
+    *,
+    archive_hash: str | None,
+) -> Path | None:
+    parsed = urlparse(download_url)
+    if parsed.scheme not in {"http", "https"}:
+        return None
+    key = f"{download_url}|{archive_hash or ''}"
+    digest = hashlib.sha256(key.encode("utf-8")).hexdigest()
+    return _artifact_cache_root() / digest[:2] / f"{digest}-{artifact_name}"
+
+
+def _artifact_cache_root() -> Path:
+    configured = os.environ.get("SPIP_CACHE_DIR")
+    if configured:
+        return Path(configured).expanduser() / "artifacts"
+
+    if os.name == "nt":
+        local_app_data = os.environ.get("LOCALAPPDATA") or os.environ.get("APPDATA")
+        if local_app_data:
+            return Path(local_app_data) / "spip" / "cache" / "artifacts"
+
+    xdg_cache_home = os.environ.get("XDG_CACHE_HOME")
+    if xdg_cache_home:
+        return Path(xdg_cache_home) / "spip" / "artifacts"
+    return Path.home() / ".cache" / "spip" / "artifacts"
+
+
+def _download_http_artifact_to_cache(download_url: str, cache_path: Path) -> None:
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path = cache_path.with_name(
+        f".{cache_path.name}.{os.getpid()}.{uuid4().hex}.tmp"
+    )
+    try:
+        with urlopen(download_url, timeout=30) as response:
+            with temporary_path.open("wb") as handle:
+                shutil.copyfileobj(response, handle)
+        os.replace(temporary_path, cache_path)
+    finally:
+        temporary_path.unlink(missing_ok=True)

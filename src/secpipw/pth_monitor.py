@@ -240,6 +240,61 @@ def inspect_source_artifact_for_suspicious_pth(path: Path) -> list[SuspiciousPth
     return inspect_sdist_for_suspicious_pth(path)
 
 
+def remote_zip_artifact_contains_pth(
+    download_url: str,
+    *,
+    initial_tail_bytes: int = 131072,
+    max_tail_bytes: int = 1048576,
+    timeout: float = 15.0,
+) -> bool | None:
+    from urllib.parse import urlparse
+
+    parsed = urlparse(download_url)
+    if parsed.scheme not in {"http", "https"}:
+        return None
+
+    tail_bytes = max(initial_tail_bytes, 4096)
+    while tail_bytes <= max_tail_bytes:
+        try:
+            response = _fetch_http_suffix_range(
+                download_url,
+                tail_bytes=tail_bytes,
+                timeout=timeout,
+            )
+        except Exception:
+            return None
+        if response is None:
+            return None
+
+        if not response.partial:
+            return _zip_bytes_contain_pth(response.payload)
+
+        contains_pth = _zip_tail_contains_pth(
+            response.payload,
+            total_size=response.total_size,
+        )
+        if contains_pth is not None:
+            return contains_pth
+        if response.total_size <= len(response.payload):
+            return _zip_bytes_contain_pth(response.payload)
+        tail_bytes *= 2
+    return None
+
+
+class _SuffixRangeResponse(_FrozenRecord):
+    __slots__ = ("payload", "partial", "total_size")
+    _field_names = __slots__
+
+    def __init__(self, payload: bytes, partial: bool, total_size: int) -> None:
+        object.__setattr__(self, "payload", payload)
+        object.__setattr__(self, "partial", partial)
+        object.__setattr__(self, "total_size", total_size)
+
+    payload: bytes
+    partial: bool
+    total_size: int
+
+
 def inspect_sdist_for_suspicious_pth(path: Path) -> list[SuspiciousPthAlert]:
     import tarfile
 
@@ -1278,6 +1333,156 @@ def _inspect_zip_archive_for_suspicious_pth(
             )
         )
     return alerts
+
+
+def _fetch_http_suffix_range(
+    download_url: str,
+    *,
+    tail_bytes: int,
+    timeout: float,
+) -> _SuffixRangeResponse | None:
+    from urllib.request import Request, urlopen
+
+    request = Request(
+        download_url,
+        headers={"Range": f"bytes=-{tail_bytes}"},
+    )
+    with urlopen(request, timeout=timeout) as response:
+        payload = response.read()
+        content_range = response.headers.get("Content-Range", "")
+        total_size = _content_range_total_size(content_range)
+        partial = bool(content_range) or getattr(response, "status", None) == 206
+        if total_size is None:
+            total_length = response.headers.get("Content-Length")
+            if total_length and total_length.isdigit():
+                total_size = int(total_length)
+            else:
+                total_size = len(payload)
+        return _SuffixRangeResponse(
+            payload=payload,
+            partial=partial,
+            total_size=total_size,
+        )
+
+
+def _content_range_total_size(value: str) -> int | None:
+    normalized = value.strip()
+    if "/" not in normalized:
+        return None
+    total = normalized.rsplit("/", 1)[1]
+    if not total.isdigit():
+        return None
+    return int(total)
+
+
+def _zip_bytes_contain_pth(payload: bytes) -> bool | None:
+    import io
+    import zipfile
+
+    try:
+        with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+            return any(
+                not info.is_dir() and info.filename.lower().endswith(".pth")
+                for info in archive.infolist()
+            )
+    except Exception:
+        return None
+
+
+def _zip_tail_contains_pth(payload: bytes, *, total_size: int) -> bool | None:
+    import struct
+
+    eocd_offset = payload.rfind(b"PK\x05\x06")
+    if eocd_offset < 0 or len(payload) - eocd_offset < 22:
+        return None
+
+    (
+        _signature,
+        _disk_number,
+        _start_disk_number,
+        _disk_entries,
+        total_entries,
+        central_directory_size,
+        central_directory_offset,
+        comment_length,
+    ) = struct.unpack_from("<4s4H2LH", payload, eocd_offset)
+
+    if comment_length < 0 or eocd_offset + 22 + comment_length > len(payload):
+        return None
+    if total_entries == 0xFFFF:
+        return None
+    if (
+        central_directory_size == 0xFFFFFFFF
+        or central_directory_offset == 0xFFFFFFFF
+    ):
+        return None
+    if central_directory_offset + central_directory_size > total_size:
+        return None
+
+    tail_start = total_size - len(payload)
+    if central_directory_offset < tail_start:
+        return None
+
+    directory_start = central_directory_offset - tail_start
+    directory_end = directory_start + central_directory_size
+    if directory_end > len(payload):
+        return None
+
+    return _central_directory_contains_pth(
+        payload[directory_start:directory_end],
+        expected_entries=total_entries,
+    )
+
+
+def _central_directory_contains_pth(
+    payload: bytes,
+    *,
+    expected_entries: int,
+) -> bool | None:
+    import struct
+
+    offset = 0
+    seen_entries = 0
+    while offset < len(payload):
+        if len(payload) - offset < 46:
+            return None
+        (
+            signature,
+            _version_made_by,
+            _version_needed,
+            _flags,
+            _compression,
+            _modified_time,
+            _modified_date,
+            _crc32,
+            _compressed_size,
+            _uncompressed_size,
+            filename_length,
+            extra_length,
+            comment_length,
+            _disk_start,
+            _internal_attributes,
+            _external_attributes,
+            _local_header_offset,
+        ) = struct.unpack_from("<4s6H3L5H2L", payload, offset)
+        if signature != b"PK\x01\x02":
+            return None
+
+        record_end = offset + 46 + filename_length + extra_length + comment_length
+        if record_end > len(payload):
+            return None
+
+        filename_bytes = payload[offset + 46 : offset + 46 + filename_length]
+        filename = filename_bytes.decode("utf-8", errors="ignore").lower()
+        if filename.endswith(".pth"):
+            return True
+
+        seen_entries += 1
+        offset = record_end
+
+    if seen_entries != expected_entries:
+        return None
+    return False
 
 
 def _is_supported_sdist_path(path: Path) -> bool:

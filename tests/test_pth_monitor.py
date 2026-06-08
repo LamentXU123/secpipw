@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from secpipw import Severity
+from secpipw import pth_monitor
 from secpipw.pth_monitor import (
     PthMonitor,
     collect_package_artifact_records,
@@ -81,6 +82,38 @@ class PthMonitorTests(unittest.TestCase):
             alerts = inspect_wheel_for_suspicious_pth(path)
 
             self.assertEqual(alerts, [])
+
+    def test_remote_zip_tail_detector_finds_pth_member(self) -> None:
+        with temporary_workspace_dir() as tmp:
+            path = tmp / "demo.whl"
+            _write_zip_archive(
+                path,
+                {
+                    "suspicious-demo.pth": "import spip_pth_demo_marker\n",
+                    "pkg/__init__.py": "",
+                },
+            )
+
+            payload = path.read_bytes()
+            contains_pth = pth_monitor._zip_tail_contains_pth(
+                payload[-4096:],
+                total_size=len(payload),
+            )
+
+        self.assertTrue(contains_pth)
+
+    def test_remote_zip_tail_detector_ignores_archive_without_pth(self) -> None:
+        with temporary_workspace_dir() as tmp:
+            path = tmp / "demo.whl"
+            _write_zip_archive(path, {"pkg/__init__.py": ""})
+
+            payload = path.read_bytes()
+            contains_pth = pth_monitor._zip_tail_contains_pth(
+                payload[-4096:],
+                total_size=len(payload),
+            )
+
+        self.assertFalse(contains_pth)
 
     def test_inspect_install_artifacts_scans_local_file_paths(self) -> None:
         with temporary_workspace_dir() as tmp:

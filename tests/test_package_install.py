@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import io
 import shutil
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 from uuid import uuid4
 
 from secpipw.package_install import (
@@ -30,6 +32,14 @@ class FakePackage:
         self.artifact_name = artifact_name
         self.archive_hash = archive_hash
         self.requires_dist = requires_dist
+
+
+class FakeResponse(io.BytesIO):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
 
 
 class PackageInstallTests(unittest.TestCase):
@@ -106,6 +116,44 @@ class PackageInstallTests(unittest.TestCase):
             if root.exists():
                 shutil.rmtree(root, ignore_errors=True)
 
+    def test_download_artifact_reuses_cached_http_artifact(self) -> None:
+        root = Path(".tmp-package-install-tests") / uuid4().hex
+        destination_dir = root / "dst"
+        second_destination_dir = root / "dst2"
+        cache_root = root / "cache"
+        destination_dir.mkdir(parents=True, exist_ok=True)
+        second_destination_dir.mkdir(parents=True, exist_ok=True)
+        package = FakePackage(
+            "demo",
+            "1.0.0",
+            download_url="https://example.test/demo.whl",
+            artifact_name="demo.whl",
+            archive_hash="sha256=abc123",
+        )
+        try:
+            with patch(
+                "secpipw.package_install._artifact_cache_root",
+                return_value=cache_root,
+            ):
+                with patch(
+                    "secpipw.package_install.urlopen",
+                    return_value=FakeResponse(b"wheel-bytes"),
+                ) as open_url:
+                    artifact = download_artifact(package, destination_dir)
+
+                with patch(
+                    "secpipw.package_install.urlopen",
+                    side_effect=AssertionError("cache should satisfy second download"),
+                ):
+                    cached_artifact = download_artifact(package, second_destination_dir)
+
+            self.assertEqual(artifact.path.read_bytes(), b"wheel-bytes")
+            self.assertEqual(cached_artifact.path.read_bytes(), b"wheel-bytes")
+            open_url.assert_called_once()
+        finally:
+            if root.exists():
+                shutil.rmtree(root, ignore_errors=True)
+
     def test_install_resolved_packages_installs_exact_report_urls_without_deps(
         self,
     ) -> None:
@@ -122,8 +170,6 @@ class PackageInstallTests(unittest.TestCase):
             download_url="https://files.pythonhosted.org/packages/urllib3.whl",
             archive_hash="sha256=urlhash",
         )
-
-        from unittest.mock import patch
 
         with patch(
             "secpipw.package_install._run_pip_internal", return_value=0
@@ -153,8 +199,6 @@ class PackageInstallTests(unittest.TestCase):
         )
 
     def test_install_resolved_packages_noops_when_plan_is_empty(self) -> None:
-        from unittest.mock import patch
-
         with patch("secpipw.package_install._run_pip_internal") as run:
             rc = install_resolved_packages([], ["requests"])
 

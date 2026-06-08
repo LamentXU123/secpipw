@@ -641,11 +641,13 @@ def tool_command_requires_preflight(tool: str, argv: list[str]) -> bool:
 
 def inspect_install_plan_artifacts(plan: InstallPlan) -> list[object]:
     from pathlib import Path
+    from urllib.parse import urlparse
 
     from secpipw.package_install import download_artifact, temporary_artifact_directory
     from secpipw.pth_monitor import (
         inspect_source_artifact_for_suspicious_pth,
         inspect_wheel_for_suspicious_pth,
+        remote_zip_artifact_contains_pth,
     )
 
     alerts: list[object] = []
@@ -654,6 +656,14 @@ def inspect_install_plan_artifacts(plan: InstallPlan) -> list[object]:
         for package in plan.packages:
             if not package.download_url:
                 continue
+            artifact_name = (
+                package.artifact_name
+                or Path(urlparse(package.download_url).path).name
+            ).lower()
+            if artifact_name.endswith((".whl", ".zip")):
+                contains_pth = remote_zip_artifact_contains_pth(package.download_url)
+                if contains_pth is False:
+                    continue
             artifact = download_artifact(package, destination)
             artifact_name = artifact.path.name.lower()
             if artifact_name.endswith(".whl"):
