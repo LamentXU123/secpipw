@@ -41,6 +41,12 @@ _PIP_IMPORT_NAMES = {
     "logger",
 }
 
+_PIP_KEEPABLE_TEMPDIR_TYPES = (
+    "build-env",
+    "ephem-wheel-cache",
+    "req-build",
+)
+
 
 def _bind_pip_symbol(name: str, value: object) -> None:
     globals().setdefault(name, value)
@@ -71,16 +77,11 @@ def _ensure_pip_imports() -> None:
 
 def _ensure_guard_command_imports() -> None:
     if "guard-command" in _PIP_IMPORT_GROUPS_LOADED and _has_pip_symbols(
-        "with_cleanup",
         "InstallCommand",
     ):
         return
-    from pip._internal.cli.req_command import with_cleanup as imported_with_cleanup
-    from pip._internal.commands.install import (
-        InstallCommand as imported_install_command,
-    )
+    from pip._internal.commands.install import InstallCommand as imported_install_command
 
-    _bind_pip_symbol("with_cleanup", imported_with_cleanup)
     _bind_pip_symbol("InstallCommand", imported_install_command)
     _PIP_IMPORT_GROUPS_LOADED.add("guard-command")
 
@@ -267,7 +268,7 @@ def _ensure_root_warning_imports() -> None:
 
 
 def _ensure_pip_symbol(name: str) -> None:
-    if name in {"InstallCommand", "with_cleanup"}:
+    if name == "InstallCommand":
         _ensure_guard_command_imports()
         return
     if name in {
@@ -321,6 +322,27 @@ def __getattr__(name: str):
         _ensure_pip_symbol(name)
         return globals()[name]
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def _with_cleanup(func):
+    def wrapper(self, options, args):
+        assert self.tempdir_registry is not None
+        if options.no_clean:
+            _configure_tempdir_registry(self.tempdir_registry)
+
+        try:
+            return func(self, options, args)
+        except Exception as exc:
+            if type(exc).__name__ == "PreviousBuildDirError":
+                _configure_tempdir_registry(self.tempdir_registry)
+            raise
+
+    return wrapper
+
+
+def _configure_tempdir_registry(registry) -> None:
+    for tempdir_kind in _PIP_KEEPABLE_TEMPDIR_TYPES:
+        registry.set_delete(tempdir_kind, False)
 
 
 def run_guarded_pip_install(
@@ -497,7 +519,7 @@ def _build_guarded_install_command_class():
             self._artifact_hook = artifact_hook or _allow_install_artifact_hook
             super().__init__(*args, **kwargs)
 
-        @with_cleanup
+        @_with_cleanup
         def run(self, options: Values, args: list[str]) -> int:
             import json
             import os

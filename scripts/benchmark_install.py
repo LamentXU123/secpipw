@@ -142,6 +142,12 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
         help="directory for VizTracer reports; defaults to WORK_DIR/viztracer",
     )
     parser.add_argument(
+        "--viztracer-format",
+        choices=("html", "json"),
+        default="html",
+        help="VizTracer output format for measured runs",
+    )
+    parser.add_argument(
         "--viztracer-min-duration",
         type=float,
         default=0.02,
@@ -237,7 +243,8 @@ def _run_scenario(
     if args.viztracer and phase == "run":
         trace_dir = args.viztracer_dir or (work_dir / "viztracer")
         trace_dir.mkdir(parents=True, exist_ok=True)
-        trace_file = trace_dir / f"{phase}-{index}-{case_key}-{scenario.key}.html"
+        trace_suffix = ".json" if args.viztracer_format == "json" else ".html"
+        trace_file = trace_dir / f"{phase}-{index}-{case_key}-{scenario.key}{trace_suffix}"
         command = _viztracer_command(
             command,
             trace_file=trace_file,
