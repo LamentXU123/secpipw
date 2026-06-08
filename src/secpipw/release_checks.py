@@ -1521,13 +1521,29 @@ def _is_not_found_error(exc: Exception) -> bool:
 
 
 def _is_zero_version(version: str) -> bool:
-    from packaging.version import InvalidVersion, Version
-
-    try:
-        parsed = Version(version)
-    except InvalidVersion:
+    text = version.strip()
+    if not text.startswith("0"):
         return False
-    release = parsed.release
+
+    core = text.split("!", 1)[-1].split("+", 1)[0]
+    release: list[int] = []
+    digits: list[str] = []
+
+    for char in core:
+        if char.isdigit():
+            digits.append(char)
+            continue
+        if char == ".":
+            if not digits:
+                break
+            release.append(int("".join(digits)))
+            digits = []
+            continue
+        break
+
+    if digits:
+        release.append(int("".join(digits)))
+
     return len(release) >= 2 and all(component == 0 for component in release)
 
 
