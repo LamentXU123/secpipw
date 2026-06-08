@@ -1,1659 +1,436 @@
 {
-  "benchmark_url": "https://github.com/LamentXU123/secpipw/actions/runs/27147743068/job/80130091858",
-  "generated_at": "2026-06-08T15:23:26.253285Z",
+  "benchmark_url": "https://github.com/LamentXU123/secpipw/actions/runs/27151426477",
+  "generated_at": "2026-06-08T16:21:11.119791Z",
   "mode": "guarded package-manager wall-clock benchmark",
   "records": [
     {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.04617387000001827,
-      "label": "suv pip install",
-      "package": "opencv-python",
+      "guarded_duration_seconds": 1.288240862000002,
+      "guarded_entry": "spip",
+      "original_duration_seconds": 1.9558417169999984,
+      "package": "ruff",
       "run": 0,
-      "scenario": "uv"
+      "scenario": "pip",
+      "wrapper": "pip"
     },
     {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.03118534399999362,
-      "label": "suv pip install",
-      "package": "opencv-python",
+      "guarded_duration_seconds": 0.9889599799999971,
+      "guarded_entry": "spip",
+      "original_duration_seconds": 0.9700800869999995,
+      "package": "ruff",
       "run": 1,
-      "scenario": "uv"
+      "scenario": "pip",
+      "wrapper": "pip"
     },
     {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.0281786780000175,
-      "label": "suv pip install",
-      "package": "opencv-python",
+      "guarded_duration_seconds": 1.002171685999997,
+      "guarded_entry": "spip",
+      "original_duration_seconds": 0.9548918839999985,
+      "package": "ruff",
       "run": 2,
-      "scenario": "uv"
+      "scenario": "pip",
+      "wrapper": "pip"
     },
     {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.028534014000001662,
-      "label": "suv pip install",
-      "package": "opencv-python",
-      "run": 3,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.029163984999968307,
-      "label": "suv pip install",
-      "package": "opencv-python",
-      "run": 4,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.028481935999991492,
-      "label": "suv pip install",
-      "package": "opencv-python",
-      "run": 5,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.028558299999986048,
-      "label": "suv pip install",
-      "package": "opencv-python",
-      "run": 6,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.02801857600002222,
-      "label": "suv pip install",
-      "package": "opencv-python",
-      "run": 7,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.028048260999980812,
-      "label": "suv pip install",
-      "package": "opencv-python",
-      "run": 8,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.027568217000009554,
-      "label": "suv pip install",
-      "package": "opencv-python",
-      "run": 9,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.027467914999988352,
-      "label": "suv pip install",
-      "package": "scipy",
+      "guarded_duration_seconds": 0.7597020709999995,
+      "guarded_entry": "spip",
+      "original_duration_seconds": 0.7575698979999999,
+      "package": "httpie",
       "run": 0,
-      "scenario": "uv"
+      "scenario": "pip",
+      "wrapper": "pip"
     },
     {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.02720967599998403,
-      "label": "suv pip install",
-      "package": "scipy",
+      "guarded_duration_seconds": 0.6546389059999953,
+      "guarded_entry": "spip",
+      "original_duration_seconds": 0.5971253129999994,
+      "package": "httpie",
       "run": 1,
-      "scenario": "uv"
+      "scenario": "pip",
+      "wrapper": "pip"
     },
     {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.030972653999981503,
-      "label": "suv pip install",
-      "package": "scipy",
+      "guarded_duration_seconds": 0.6503254820000066,
+      "guarded_entry": "spip",
+      "original_duration_seconds": 0.6095727310000001,
+      "package": "httpie",
       "run": 2,
-      "scenario": "uv"
+      "scenario": "pip",
+      "wrapper": "pip"
     },
     {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.028419351000025017,
-      "label": "suv pip install",
-      "package": "scipy",
-      "run": 3,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.028335124000022915,
-      "label": "suv pip install",
-      "package": "scipy",
-      "run": 4,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.028658821999954398,
-      "label": "suv pip install",
-      "package": "scipy",
-      "run": 5,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.028147860999979457,
-      "label": "suv pip install",
-      "package": "scipy",
-      "run": 6,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.028861177999999654,
-      "label": "suv pip install",
-      "package": "scipy",
-      "run": 7,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.027725343999975394,
-      "label": "suv pip install",
-      "package": "scipy",
-      "run": 8,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.027553914999998597,
-      "label": "suv pip install",
-      "package": "scipy",
-      "run": 9,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.02739976300000535,
-      "label": "suv pip install",
-      "package": "requests",
+      "guarded_duration_seconds": 0.7310741980000017,
+      "guarded_entry": "spip",
+      "original_duration_seconds": 0.7690708999999956,
+      "package": "uvicorn",
       "run": 0,
-      "scenario": "uv"
+      "scenario": "pip",
+      "wrapper": "pip"
     },
     {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.027527454999983547,
-      "label": "suv pip install",
-      "package": "requests",
+      "guarded_duration_seconds": 0.6156556819999963,
+      "guarded_entry": "spip",
+      "original_duration_seconds": 0.6002779259999969,
+      "package": "uvicorn",
       "run": 1,
-      "scenario": "uv"
+      "scenario": "pip",
+      "wrapper": "pip"
     },
     {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.0273500879999915,
-      "label": "suv pip install",
-      "package": "requests",
+      "guarded_duration_seconds": 0.612203074,
+      "guarded_entry": "spip",
+      "original_duration_seconds": 0.5763751779999993,
+      "package": "uvicorn",
       "run": 2,
-      "scenario": "uv"
+      "scenario": "pip",
+      "wrapper": "pip"
     },
     {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.027135684999961995,
-      "label": "suv pip install",
-      "package": "requests",
-      "run": 3,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.026607397000020683,
-      "label": "suv pip install",
-      "package": "requests",
-      "run": 4,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.027576549000002615,
-      "label": "suv pip install",
-      "package": "requests",
-      "run": 5,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.02780555499998627,
-      "label": "suv pip install",
-      "package": "requests",
-      "run": 6,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.028031164999958946,
-      "label": "suv pip install",
-      "package": "requests",
-      "run": 7,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.027095684000016718,
-      "label": "suv pip install",
-      "package": "requests",
-      "run": 8,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "uv",
-        "pip",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.uv_main(['uv', 'pip', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.027567875999977787,
-      "label": "suv pip install",
-      "package": "requests",
-      "run": 9,
-      "scenario": "uv"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.027766837000001487,
-      "label": "spipx install",
-      "package": "opencv-python",
+      "guarded_duration_seconds": 2.3078478250000103,
+      "guarded_entry": "spipx",
+      "original_duration_seconds": 5.968258117000005,
+      "package": "ruff",
       "run": 0,
-      "scenario": "pipx"
+      "scenario": "pipx",
+      "wrapper": "pipx"
     },
     {
-      "argv": [
-        "pipx",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.02738872600002651,
-      "label": "spipx install",
-      "package": "opencv-python",
+      "guarded_duration_seconds": 2.173082426999997,
+      "guarded_entry": "spipx",
+      "original_duration_seconds": 5.590968846999999,
+      "package": "ruff",
       "run": 1,
-      "scenario": "pipx"
+      "scenario": "pipx",
+      "wrapper": "pipx"
     },
     {
-      "argv": [
-        "pipx",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.027480785000022934,
-      "label": "spipx install",
-      "package": "opencv-python",
+      "guarded_duration_seconds": 2.191239309000025,
+      "guarded_entry": "spipx",
+      "original_duration_seconds": 5.652689066999983,
+      "package": "ruff",
       "run": 2,
-      "scenario": "pipx"
+      "scenario": "pipx",
+      "wrapper": "pipx"
     },
     {
-      "argv": [
-        "pipx",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.028281823999975586,
-      "label": "spipx install",
-      "package": "opencv-python",
-      "run": 3,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.026332221000018308,
-      "label": "spipx install",
-      "package": "opencv-python",
-      "run": 4,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.027027410999949097,
-      "label": "spipx install",
-      "package": "opencv-python",
-      "run": 5,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.027433212999994794,
-      "label": "spipx install",
-      "package": "opencv-python",
-      "run": 6,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.026531020999982502,
-      "label": "spipx install",
-      "package": "opencv-python",
-      "run": 7,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.028775859000006676,
-      "label": "spipx install",
-      "package": "opencv-python",
-      "run": 8,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.02954513899999256,
-      "label": "spipx install",
-      "package": "opencv-python",
-      "run": 9,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.029172938999977305,
-      "label": "spipx install",
-      "package": "scipy",
+      "guarded_duration_seconds": 6.569006235000018,
+      "guarded_entry": "spipx",
+      "original_duration_seconds": 9.192577056999994,
+      "package": "httpie",
       "run": 0,
-      "scenario": "pipx"
+      "scenario": "pipx",
+      "wrapper": "pipx"
     },
     {
-      "argv": [
-        "pipx",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.028924813999992693,
-      "label": "spipx install",
-      "package": "scipy",
+      "guarded_duration_seconds": 6.468196092000028,
+      "guarded_entry": "spipx",
+      "original_duration_seconds": 9.031329917999983,
+      "package": "httpie",
       "run": 1,
-      "scenario": "pipx"
+      "scenario": "pipx",
+      "wrapper": "pipx"
     },
     {
-      "argv": [
-        "pipx",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.028442346000019825,
-      "label": "spipx install",
-      "package": "scipy",
+      "guarded_duration_seconds": 6.562703682000006,
+      "guarded_entry": "spipx",
+      "original_duration_seconds": 8.971564778000015,
+      "package": "httpie",
       "run": 2,
-      "scenario": "pipx"
+      "scenario": "pipx",
+      "wrapper": "pipx"
     },
     {
-      "argv": [
-        "pipx",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.02821536300001526,
-      "label": "spipx install",
-      "package": "scipy",
-      "run": 3,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.028558150999970167,
-      "label": "spipx install",
-      "package": "scipy",
-      "run": 4,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.027094291000025805,
-      "label": "spipx install",
-      "package": "scipy",
-      "run": 5,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.027648257000009835,
-      "label": "spipx install",
-      "package": "scipy",
-      "run": 6,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.027197646999979952,
-      "label": "spipx install",
-      "package": "scipy",
-      "run": 7,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.027761477999945328,
-      "label": "spipx install",
-      "package": "scipy",
-      "run": 8,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'scipy']))"
-      ],
-      "duration_seconds": 0.027787187000001268,
-      "label": "spipx install",
-      "package": "scipy",
-      "run": 9,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.02782808799997838,
-      "label": "spipx install",
-      "package": "requests",
+      "guarded_duration_seconds": 1.7247642250000013,
+      "guarded_entry": "spipx",
+      "original_duration_seconds": 5.603037863999987,
+      "package": "uvicorn",
       "run": 0,
-      "scenario": "pipx"
+      "scenario": "pipx",
+      "wrapper": "pipx"
     },
     {
-      "argv": [
-        "pipx",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.027741889000026276,
-      "label": "spipx install",
-      "package": "requests",
+      "guarded_duration_seconds": 1.668503587000032,
+      "guarded_entry": "spipx",
+      "original_duration_seconds": 5.438957769000012,
+      "package": "uvicorn",
       "run": 1,
-      "scenario": "pipx"
+      "scenario": "pipx",
+      "wrapper": "pipx"
     },
     {
-      "argv": [
-        "pipx",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.027916863000029934,
-      "label": "spipx install",
-      "package": "requests",
+      "guarded_duration_seconds": 1.7129406650000192,
+      "guarded_entry": "spipx",
+      "original_duration_seconds": 5.4321867210000505,
+      "package": "uvicorn",
       "run": 2,
-      "scenario": "pipx"
+      "scenario": "pipx",
+      "wrapper": "pipx"
     },
     {
-      "argv": [
-        "pipx",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.027827096999999412,
-      "label": "spipx install",
-      "package": "requests",
-      "run": 3,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.027654006000034315,
-      "label": "spipx install",
-      "package": "requests",
-      "run": 4,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.02907138500000883,
-      "label": "spipx install",
-      "package": "requests",
-      "run": 5,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.02792052799998146,
-      "label": "spipx install",
-      "package": "requests",
-      "run": 6,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.02672758899996097,
-      "label": "spipx install",
-      "package": "requests",
-      "run": 7,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.027161852999995517,
-      "label": "spipx install",
-      "package": "requests",
-      "run": 8,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "pipx",
-        "install",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.pipx_main(['pipx', 'install', 'requests']))"
-      ],
-      "duration_seconds": 0.027628848999995625,
-      "label": "spipx install",
-      "package": "requests",
-      "run": 9,
-      "scenario": "pipx"
-    },
-    {
-      "argv": [
-        "poetry",
-        "add",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.027873577999969257,
-      "label": "spoetry add",
-      "package": "opencv-python",
+      "guarded_duration_seconds": 1.9280317379999872,
+      "guarded_entry": "spoetry",
+      "original_duration_seconds": 3.045709144,
+      "package": "ruff",
       "run": 0,
-      "scenario": "poetry"
+      "scenario": "poetry",
+      "wrapper": "poetry"
     },
     {
-      "argv": [
-        "poetry",
-        "add",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.027473244000020713,
-      "label": "spoetry add",
-      "package": "opencv-python",
+      "guarded_duration_seconds": 1.7145440759999815,
+      "guarded_entry": "spoetry",
+      "original_duration_seconds": 1.90536046699998,
+      "package": "ruff",
       "run": 1,
-      "scenario": "poetry"
+      "scenario": "poetry",
+      "wrapper": "poetry"
     },
     {
-      "argv": [
-        "poetry",
-        "add",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.027792846000011195,
-      "label": "spoetry add",
-      "package": "opencv-python",
+      "guarded_duration_seconds": 1.6827600009999912,
+      "guarded_entry": "spoetry",
+      "original_duration_seconds": 1.7192617450000114,
+      "package": "ruff",
       "run": 2,
-      "scenario": "poetry"
+      "scenario": "poetry",
+      "wrapper": "poetry"
     },
     {
-      "argv": [
-        "poetry",
-        "add",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.026922561999981554,
-      "label": "spoetry add",
-      "package": "opencv-python",
-      "run": 3,
-      "scenario": "poetry"
-    },
-    {
-      "argv": [
-        "poetry",
-        "add",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.027496718999998393,
-      "label": "spoetry add",
-      "package": "opencv-python",
-      "run": 4,
-      "scenario": "poetry"
-    },
-    {
-      "argv": [
-        "poetry",
-        "add",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.02676747800001067,
-      "label": "spoetry add",
-      "package": "opencv-python",
-      "run": 5,
-      "scenario": "poetry"
-    },
-    {
-      "argv": [
-        "poetry",
-        "add",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.027414194000016323,
-      "label": "spoetry add",
-      "package": "opencv-python",
-      "run": 6,
-      "scenario": "poetry"
-    },
-    {
-      "argv": [
-        "poetry",
-        "add",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.02698619900002086,
-      "label": "spoetry add",
-      "package": "opencv-python",
-      "run": 7,
-      "scenario": "poetry"
-    },
-    {
-      "argv": [
-        "poetry",
-        "add",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.02690689899998233,
-      "label": "spoetry add",
-      "package": "opencv-python",
-      "run": 8,
-      "scenario": "poetry"
-    },
-    {
-      "argv": [
-        "poetry",
-        "add",
-        "opencv-python"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'opencv-python']))"
-      ],
-      "duration_seconds": 0.02753015000001824,
-      "label": "spoetry add",
-      "package": "opencv-python",
-      "run": 9,
-      "scenario": "poetry"
-    },
-    {
-      "argv": [
-        "poetry",
-        "add",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'scipy']))"
-      ],
-      "duration_seconds": 0.027623671000014838,
-      "label": "spoetry add",
-      "package": "scipy",
+      "guarded_duration_seconds": 2.4213049189999936,
+      "guarded_entry": "spoetry",
+      "original_duration_seconds": 4.008050497999989,
+      "package": "httpie",
       "run": 0,
-      "scenario": "poetry"
+      "scenario": "poetry",
+      "wrapper": "poetry"
     },
     {
-      "argv": [
-        "poetry",
-        "add",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'scipy']))"
-      ],
-      "duration_seconds": 0.027434595999977773,
-      "label": "spoetry add",
-      "package": "scipy",
+      "guarded_duration_seconds": 2.17325388499998,
+      "guarded_entry": "spoetry",
+      "original_duration_seconds": 3.912477026000005,
+      "package": "httpie",
       "run": 1,
-      "scenario": "poetry"
+      "scenario": "poetry",
+      "wrapper": "poetry"
     },
     {
-      "argv": [
-        "poetry",
-        "add",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'scipy']))"
-      ],
-      "duration_seconds": 0.02764332999998942,
-      "label": "spoetry add",
-      "package": "scipy",
+      "guarded_duration_seconds": 2.1427500519999967,
+      "guarded_entry": "spoetry",
+      "original_duration_seconds": 3.9203958720000003,
+      "package": "httpie",
       "run": 2,
-      "scenario": "poetry"
+      "scenario": "poetry",
+      "wrapper": "poetry"
     },
     {
-      "argv": [
-        "poetry",
-        "add",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'scipy']))"
-      ],
-      "duration_seconds": 0.02710425700001906,
-      "label": "spoetry add",
-      "package": "scipy",
-      "run": 3,
-      "scenario": "poetry"
-    },
-    {
-      "argv": [
-        "poetry",
-        "add",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'scipy']))"
-      ],
-      "duration_seconds": 0.027474054000037995,
-      "label": "spoetry add",
-      "package": "scipy",
-      "run": 4,
-      "scenario": "poetry"
-    },
-    {
-      "argv": [
-        "poetry",
-        "add",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'scipy']))"
-      ],
-      "duration_seconds": 0.02733496500002275,
-      "label": "spoetry add",
-      "package": "scipy",
-      "run": 5,
-      "scenario": "poetry"
-    },
-    {
-      "argv": [
-        "poetry",
-        "add",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'scipy']))"
-      ],
-      "duration_seconds": 0.027525563000040165,
-      "label": "spoetry add",
-      "package": "scipy",
-      "run": 6,
-      "scenario": "poetry"
-    },
-    {
-      "argv": [
-        "poetry",
-        "add",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'scipy']))"
-      ],
-      "duration_seconds": 0.027515796999978193,
-      "label": "spoetry add",
-      "package": "scipy",
-      "run": 7,
-      "scenario": "poetry"
-    },
-    {
-      "argv": [
-        "poetry",
-        "add",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'scipy']))"
-      ],
-      "duration_seconds": 0.027457308999998986,
-      "label": "spoetry add",
-      "package": "scipy",
-      "run": 8,
-      "scenario": "poetry"
-    },
-    {
-      "argv": [
-        "poetry",
-        "add",
-        "scipy"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'scipy']))"
-      ],
-      "duration_seconds": 0.027473454000016773,
-      "label": "spoetry add",
-      "package": "scipy",
-      "run": 9,
-      "scenario": "poetry"
-    },
-    {
-      "argv": [
-        "poetry",
-        "add",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'requests']))"
-      ],
-      "duration_seconds": 0.027167542000029243,
-      "label": "spoetry add",
-      "package": "requests",
+      "guarded_duration_seconds": 1.5615168079999933,
+      "guarded_entry": "spoetry",
+      "original_duration_seconds": 1.2661686949999762,
+      "package": "uvicorn",
       "run": 0,
-      "scenario": "poetry"
+      "scenario": "poetry",
+      "wrapper": "poetry"
     },
     {
-      "argv": [
-        "poetry",
-        "add",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'requests']))"
-      ],
-      "duration_seconds": 0.027385541000001012,
-      "label": "spoetry add",
-      "package": "requests",
+      "guarded_duration_seconds": 1.3853943469999876,
+      "guarded_entry": "spoetry",
+      "original_duration_seconds": 1.297082343999989,
+      "package": "uvicorn",
       "run": 1,
-      "scenario": "poetry"
+      "scenario": "poetry",
+      "wrapper": "poetry"
     },
     {
-      "argv": [
-        "poetry",
-        "add",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'requests']))"
-      ],
-      "duration_seconds": 0.02727644600003032,
-      "label": "spoetry add",
-      "package": "requests",
+      "guarded_duration_seconds": 1.3996699850000027,
+      "guarded_entry": "spoetry",
+      "original_duration_seconds": 1.286441099000001,
+      "package": "uvicorn",
       "run": 2,
-      "scenario": "poetry"
+      "scenario": "poetry",
+      "wrapper": "poetry"
     },
     {
-      "argv": [
-        "poetry",
-        "add",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'requests']))"
-      ],
-      "duration_seconds": 0.027257528000006914,
-      "label": "spoetry add",
-      "package": "requests",
-      "run": 3,
-      "scenario": "poetry"
+      "guarded_duration_seconds": 1.2169045390000122,
+      "guarded_entry": "suv",
+      "original_duration_seconds": 0.28728334799998834,
+      "package": "ruff",
+      "run": 0,
+      "scenario": "uv",
+      "wrapper": "uv"
     },
     {
-      "argv": [
-        "poetry",
-        "add",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'requests']))"
-      ],
-      "duration_seconds": 0.026848661000030916,
-      "label": "spoetry add",
-      "package": "requests",
-      "run": 4,
-      "scenario": "poetry"
+      "guarded_duration_seconds": 0.9849001519999945,
+      "guarded_entry": "suv",
+      "original_duration_seconds": 0.015913313000027074,
+      "package": "ruff",
+      "run": 1,
+      "scenario": "uv",
+      "wrapper": "uv"
     },
     {
-      "argv": [
-        "poetry",
-        "add",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'requests']))"
-      ],
-      "duration_seconds": 0.02748617299999978,
-      "label": "spoetry add",
-      "package": "requests",
-      "run": 5,
-      "scenario": "poetry"
+      "guarded_duration_seconds": 0.9748081319999926,
+      "guarded_entry": "suv",
+      "original_duration_seconds": 0.015732340999988992,
+      "package": "ruff",
+      "run": 2,
+      "scenario": "uv",
+      "wrapper": "uv"
     },
     {
-      "argv": [
-        "poetry",
-        "add",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'requests']))"
-      ],
-      "duration_seconds": 0.027313852999952815,
-      "label": "spoetry add",
-      "package": "requests",
-      "run": 6,
-      "scenario": "poetry"
+      "guarded_duration_seconds": 0.7235349700000029,
+      "guarded_entry": "suv",
+      "original_duration_seconds": 0.09576713599997788,
+      "package": "httpie",
+      "run": 0,
+      "scenario": "uv",
+      "wrapper": "uv"
     },
     {
-      "argv": [
-        "poetry",
-        "add",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'requests']))"
-      ],
-      "duration_seconds": 0.027341403999969316,
-      "label": "spoetry add",
-      "package": "requests",
-      "run": 7,
-      "scenario": "poetry"
+      "guarded_duration_seconds": 0.642215197000013,
+      "guarded_entry": "suv",
+      "original_duration_seconds": 0.015306402000021535,
+      "package": "httpie",
+      "run": 1,
+      "scenario": "uv",
+      "wrapper": "uv"
     },
     {
-      "argv": [
-        "poetry",
-        "add",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'requests']))"
-      ],
-      "duration_seconds": 0.02741352300000699,
-      "label": "spoetry add",
-      "package": "requests",
-      "run": 8,
-      "scenario": "poetry"
+      "guarded_duration_seconds": 0.6394094960000132,
+      "guarded_entry": "suv",
+      "original_duration_seconds": 0.015302385000012464,
+      "package": "httpie",
+      "run": 2,
+      "scenario": "uv",
+      "wrapper": "uv"
     },
     {
-      "argv": [
-        "poetry",
-        "add",
-        "requests"
-      ],
-      "command": [
-        "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python",
-        "-c",
-        "import secpipw.cli as c; c.resolve_install_plan=lambda *a, **k: type('P', (), {'packages': (), 'raw_report': {'install': []}})(); c.run_install_checks=lambda *a, **k: c._allow_install_decision(); c.inspect_install_plan_artifacts=lambda *a, **k: []; c.run_tool=lambda *a, **k: 0; raise SystemExit(c.poetry_main(['poetry', 'add', 'requests']))"
-      ],
-      "duration_seconds": 0.027130695999971977,
-      "label": "spoetry add",
-      "package": "requests",
-      "run": 9,
-      "scenario": "poetry"
+      "guarded_duration_seconds": 0.7183326150000084,
+      "guarded_entry": "suv",
+      "original_duration_seconds": 0.09104318100000341,
+      "package": "uvicorn",
+      "run": 0,
+      "scenario": "uv",
+      "wrapper": "uv"
+    },
+    {
+      "guarded_duration_seconds": 0.6414076050000119,
+      "guarded_entry": "suv",
+      "original_duration_seconds": 0.01401486700001442,
+      "package": "uvicorn",
+      "run": 1,
+      "scenario": "uv",
+      "wrapper": "uv"
+    },
+    {
+      "guarded_duration_seconds": 0.6279847200000006,
+      "guarded_entry": "suv",
+      "original_duration_seconds": 0.013854474999988042,
+      "package": "uvicorn",
+      "run": 2,
+      "scenario": "uv",
+      "wrapper": "uv"
     }
   ],
-  "runs": 10,
+  "runs": 3,
   "source": {
-    "job_name": "install-benchmark",
-    "job_url": "https://github.com/LamentXU123/secpipw/actions/runs/27147743068/job/80130091858",
+    "job_name": "publish-benchmark",
     "repository": "LamentXU123/secpipw",
-    "run_attempt": "1",
-    "run_id": "27147743068",
-    "run_url": "https://github.com/LamentXU123/secpipw/actions/runs/27147743068"
+    "run_id": "27151426477",
+    "run_url": "https://github.com/LamentXU123/secpipw/actions/runs/27151426477"
   },
   "summaries": [
     {
-      "avg": 0.03039111809999895,
-      "label": "suv pip install",
-      "max": 0.04617387000001827,
-      "median": 0.028507974999996577,
-      "min": 0.027568217000009554,
-      "package": "opencv-python",
-      "scenario": "uv"
+      "guarded": {
+        "avg": 0.8114413267777772,
+        "max": 1.288240862000002,
+        "min": 0.612203074
+      },
+      "guarded_entry": "spip",
+      "original": {
+        "avg": 0.865645070444443,
+        "max": 1.9558417169999984,
+        "min": 0.5763751779999993
+      },
+      "packages": [
+        "httpie",
+        "ruff",
+        "uvicorn"
+      ],
+      "ratio": {
+        "avg": 0.9373834086078301,
+        "avg_label": "x0.9374"
+      },
+      "scenario": "pip",
+      "wrapper": "pip"
     },
     {
-      "avg": 0.02833518399999093,
-      "label": "suv pip install",
-      "max": 0.030972653999981503,
-      "median": 0.028241492500001186,
-      "min": 0.02720967599998403,
-      "package": "scipy",
-      "scenario": "uv"
+      "guarded": {
+        "avg": 3.4864760052222374,
+        "max": 6.569006235000018,
+        "min": 1.668503587000032
+      },
+      "guarded_entry": "spipx",
+      "original": {
+        "avg": 6.764618904222226,
+        "max": 9.192577056999994,
+        "min": 5.4321867210000505
+      },
+      "packages": [
+        "httpie",
+        "ruff",
+        "uvicorn"
+      ],
+      "ratio": {
+        "avg": 0.5153987319294673,
+        "avg_label": "x0.5154"
+      },
+      "scenario": "pipx",
+      "wrapper": "pipx"
     },
     {
-      "avg": 0.027409721699990543,
-      "label": "suv pip install",
-      "max": 0.028031164999958946,
-      "median": 0.02746360899999445,
-      "min": 0.026607397000020683,
-      "package": "requests",
-      "scenario": "uv"
+      "guarded": {
+        "avg": 1.8232473123333237,
+        "max": 2.4213049189999936,
+        "min": 1.3853943469999876
+      },
+      "guarded_entry": "spoetry",
+      "original": {
+        "avg": 2.484549654444439,
+        "max": 4.008050497999989,
+        "min": 1.2661686949999762
+      },
+      "packages": [
+        "httpie",
+        "ruff",
+        "uvicorn"
+      ],
+      "ratio": {
+        "avg": 0.7338341212347448,
+        "avg_label": "x0.7338"
+      },
+      "scenario": "poetry",
+      "wrapper": "poetry"
     },
     {
-      "avg": 0.027656303599997045,
-      "label": "spipx install",
-      "max": 0.02954513899999256,
-      "median": 0.027456999000008864,
-      "min": 0.026332221000018308,
-      "package": "opencv-python",
-      "scenario": "pipx"
-    },
-    {
-      "avg": 0.028080247299993744,
-      "label": "spipx install",
-      "max": 0.029172938999977305,
-      "median": 0.028001275000008263,
-      "min": 0.027094291000025805,
-      "package": "scipy",
-      "scenario": "pipx"
-    },
-    {
-      "avg": 0.027747814700001074,
-      "label": "spipx install",
-      "max": 0.02907138500000883,
-      "median": 0.027784493000012844,
-      "min": 0.02672758899996097,
-      "package": "requests",
-      "scenario": "pipx"
-    },
-    {
-      "avg": 0.027316386900002952,
-      "label": "spoetry add",
-      "max": 0.027873577999969257,
-      "median": 0.02744371900001852,
-      "min": 0.02676747800001067,
-      "package": "opencv-python",
-      "scenario": "poetry"
-    },
-    {
-      "avg": 0.027458699600009594,
-      "label": "spoetry add",
-      "max": 0.02764332999998942,
-      "median": 0.027473754000027384,
-      "min": 0.02710425700001906,
-      "package": "scipy",
-      "scenario": "poetry"
-    },
-    {
-      "avg": 0.02726213669999993,
-      "label": "spoetry add",
-      "max": 0.02748617299999978,
-      "median": 0.027295149499991567,
-      "min": 0.026848661000030916,
-      "package": "requests",
-      "scenario": "poetry"
+      "guarded": {
+        "avg": 0.7966108251111166,
+        "max": 1.2169045390000122,
+        "min": 0.6279847200000006
+      },
+      "guarded_entry": "suv",
+      "original": {
+        "avg": 0.06269082755555802,
+        "max": 0.28728334799998834,
+        "min": 0.013854474999988042
+      },
+      "packages": [
+        "httpie",
+        "ruff",
+        "uvicorn"
+      ],
+      "ratio": {
+        "avg": 12.706975743862085,
+        "avg_label": "x12.7070"
+      },
+      "scenario": "uv",
+      "wrapper": "uv"
     }
   ]
 }
