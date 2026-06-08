@@ -1,32 +1,75 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from difflib import SequenceMatcher
 from functools import lru_cache
 from pathlib import Path
-from typing import Iterable, Protocol
-
-from packaging.requirements import InvalidRequirement, Requirement
-from packaging.utils import canonicalize_name
+from typing import TYPE_CHECKING, Iterable, Protocol
 
 from secpipw.pip_args import PIP_OPTIONS_WITH_VALUE
-from secpipw.pypi_api import BOOTSTRAP_PROJECT_NAMES, OfficialPyPIClient
 from secpipw.severity import Severity
-from secpipw.terminal import colorize
 
-try:
-    from Levenshtein import distance as levenshtein_distance
-    from Levenshtein import ratio as levenshtein_ratio
-except ImportError:
-    levenshtein_distance = None
-    levenshtein_ratio = None
+if TYPE_CHECKING:
+    from secpipw.pypi_api import OfficialPyPIClient
+
 
 class PackageLike(Protocol):
     name: str
 
 
-@dataclass(frozen=True)
-class TypoAlert:
+class _FrozenRecord:
+    __slots__ = ()
+    _field_names: tuple[str, ...] = ()
+
+    def __setattr__(self, name: str, value: object) -> None:
+        raise AttributeError(f"{type(self).__name__} is immutable")
+
+    def __delattr__(self, name: str) -> None:
+        raise AttributeError(f"{type(self).__name__} is immutable")
+
+    def __repr__(self) -> str:
+        values = ", ".join(
+            f"{name}={getattr(self, name)!r}" for name in self._field_names
+        )
+        return f"{type(self).__name__}({values})"
+
+    def __eq__(self, other: object) -> bool:
+        if type(self) is not type(other):
+            return False
+        return all(
+            getattr(self, name) == getattr(other, name) for name in self._field_names
+        )
+
+    def __hash__(self) -> int:
+        return hash(tuple(getattr(self, name) for name in self._field_names))
+
+
+class TypoAlert(_FrozenRecord):
+    __slots__ = (
+        "severity",
+        "package_name",
+        "matched_name",
+        "score",
+        "requested_exists",
+        "message",
+    )
+    _field_names = __slots__
+
+    def __init__(
+        self,
+        severity: Severity,
+        package_name: str,
+        matched_name: str,
+        score: float,
+        requested_exists: bool,
+        message: str,
+    ) -> None:
+        object.__setattr__(self, "severity", severity)
+        object.__setattr__(self, "package_name", package_name)
+        object.__setattr__(self, "matched_name", matched_name)
+        object.__setattr__(self, "score", score)
+        object.__setattr__(self, "requested_exists", requested_exists)
+        object.__setattr__(self, "message", message)
+
     severity: Severity
     package_name: str
     matched_name: str
@@ -35,25 +78,31 @@ class TypoAlert:
     message: str
 
 
-@dataclass(frozen=True)
-class _Candidate:
+class _Candidate(_FrozenRecord):
+    __slots__ = ("original_name", "canonical_name")
+    _field_names = __slots__
+
+    def __init__(self, original_name: str, canonical_name: str) -> None:
+        object.__setattr__(self, "original_name", original_name)
+        object.__setattr__(self, "canonical_name", canonical_name)
+
     original_name: str
     canonical_name: str
 
 
 class TypoDetector:
     def __init__(self, client: OfficialPyPIClient | None = None) -> None:
-        self.client = client or OfficialPyPIClient()
+        self.client = client or _official_pypi_client_class()()
         self._project_name_set: set[str] | None = None
         self._candidates: tuple[_Candidate, ...] | None = None
         self._first_char_index: dict[str, tuple[_Candidate, ...]] | None = None
         self._last_char_index: dict[str, tuple[_Candidate, ...]] | None = None
         self._popular_exact_names = {
-            canonicalize_name(name) for name in BOOTSTRAP_PROJECT_NAMES
+            _canonicalize_name(name) for name in _bootstrap_project_names()
         }
 
     def detect(self, package_name: str) -> TypoAlert | None:
-        requested = canonicalize_name(package_name)
+        requested = _canonicalize_name(package_name)
         if not requested:
             return None
 
@@ -124,19 +173,19 @@ class TypoDetector:
         try:
             names = self.client.load_cached_project_names()
         except Exception:
-            names = list(BOOTSTRAP_PROJECT_NAMES)
+            names = list(_bootstrap_project_names())
 
         candidate_names = _candidate_names_from_project_names(names)
         candidates: list[_Candidate] = []
         project_name_set: set[str] = {
-            canonicalize_name(name)
-            for name in set(names).union(BOOTSTRAP_PROJECT_NAMES)
+            _canonicalize_name(name)
+            for name in set(names).union(_bootstrap_project_names())
         }
         first_char_index: dict[str, list[_Candidate]] = {}
         last_char_index: dict[str, list[_Candidate]] = {}
 
         for name in candidate_names:
-            canonical_name = canonicalize_name(name)
+            canonical_name = _canonicalize_name(name)
             if not canonical_name:
                 continue
             candidate = _Candidate(original_name=name, canonical_name=canonical_name)
@@ -158,9 +207,9 @@ def _candidate_names_from_project_names(
     names: Iterable[str],
 ) -> list[str]:
     canonical_to_original: dict[str, str] = {}
-    popular_names = {canonicalize_name(item) for item in BOOTSTRAP_PROJECT_NAMES}
-    for name in sorted(set(names).union(BOOTSTRAP_PROJECT_NAMES)):
-        canonical_name = canonicalize_name(name)
+    popular_names = {_canonicalize_name(item) for item in _bootstrap_project_names()}
+    for name in sorted(set(names).union(_bootstrap_project_names())):
+        canonical_name = _canonicalize_name(name)
         if not canonical_name:
             continue
         existing = canonical_to_original.get(canonical_name)
@@ -170,7 +219,7 @@ def _candidate_names_from_project_names(
     ranked = sorted(
         canonical_to_original.values(),
         key=lambda name: (
-            0 if canonicalize_name(name) in popular_names else 1,
+            0 if _canonicalize_name(name) in popular_names else 1,
             len(name),
             name,
         ),
@@ -187,7 +236,7 @@ def detect_typos_in_resolved_packages(
     seen: set[str] = set()
 
     for package in packages:
-        canonical_name = canonicalize_name(package.name)
+        canonical_name = _canonicalize_name(package.name)
         if canonical_name in seen:
             continue
         seen.add(canonical_name)
@@ -206,7 +255,7 @@ def detect_typos_in_install_args(
     seen: set[str] = set()
 
     for name in extract_requested_package_names(pip_args):
-        canonical_name = canonicalize_name(name)
+        canonical_name = _canonicalize_name(name)
         if canonical_name in seen:
             continue
         seen.add(canonical_name)
@@ -217,6 +266,8 @@ def detect_typos_in_install_args(
 
 
 def render_alerts(alerts: Iterable[TypoAlert]) -> str:
+    from secpipw.terminal import colorize
+
     lines = []
     for alert in alerts:
         lines.append(
@@ -339,6 +390,8 @@ def _path_signature(path: Path) -> tuple[int, int] | None:
 
 
 def _extract_name_from_requirement(value: str) -> str | None:
+    from packaging.requirements import InvalidRequirement, Requirement
+
     try:
         return Requirement(value).name
     except InvalidRequirement:
@@ -394,11 +447,12 @@ def _normalized_similarity(left: str, right: str, distance: int) -> float:
 
 
 def _distance(left: str, right: str) -> int:
+    distance_func, _ = _levenshtein_functions()
     if _is_single_adjacent_swap(left, right):
         return 1
-    if levenshtein_distance is None:
+    if distance_func is None:
         return _levenshtein_distance_fallback(left, right)
-    return levenshtein_distance(left, right)
+    return distance_func(left, right)
 
 
 def _is_single_adjacent_swap(left: str, right: str) -> bool:
@@ -415,8 +469,9 @@ def _is_single_adjacent_swap(left: str, right: str) -> bool:
 
 
 def _ratio(left: str, right: str) -> float:
-    if levenshtein_ratio is not None:
-        return levenshtein_ratio(left, right)
+    _, ratio_func = _levenshtein_functions()
+    if ratio_func is not None:
+        return ratio_func(left, right)
     return SequenceMatcher(a=left, b=right).ratio()
 
 
@@ -443,3 +498,34 @@ def _levenshtein_distance_fallback(left: str, right: str) -> int:
         prev, curr = curr, prev
 
     return prev[-1]
+
+
+@lru_cache(maxsize=1)
+def _bootstrap_project_names() -> tuple[str, ...]:
+    from secpipw.pypi_api import BOOTSTRAP_PROJECT_NAMES
+
+    return tuple(BOOTSTRAP_PROJECT_NAMES)
+
+
+@lru_cache(maxsize=1)
+def _official_pypi_client_class():
+    from secpipw.pypi_api import OfficialPyPIClient
+
+    return OfficialPyPIClient
+
+
+@lru_cache(maxsize=4096)
+def _canonicalize_name(value: str) -> str:
+    from packaging.utils import canonicalize_name
+
+    return canonicalize_name(value)
+
+
+@lru_cache(maxsize=1)
+def _levenshtein_functions():
+    try:
+        from Levenshtein import distance as distance_func
+        from Levenshtein import ratio as ratio_func
+    except ImportError:
+        return None, None
+    return distance_func, ratio_func

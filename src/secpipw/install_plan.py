@@ -3,17 +3,78 @@ from __future__ import annotations
 import json
 import os
 import subprocess
-from dataclasses import dataclass
-from pathlib import PurePosixPath
-from urllib.parse import unquote, urlparse
+import sys
 
-from secpipw.pip_bridge import build_pip_command
-from secpipw.severity import Severity
-from secpipw.terminal import colorize
+class _FrozenRecord:
+    __slots__ = ()
+    _field_names: tuple[str, ...] = ()
+
+    def __setattr__(self, name: str, value: object) -> None:
+        raise AttributeError(f"{type(self).__name__} is immutable")
+
+    def __delattr__(self, name: str) -> None:
+        raise AttributeError(f"{type(self).__name__} is immutable")
+
+    def __repr__(self) -> str:
+        values = ", ".join(
+            f"{name}={getattr(self, name)!r}" for name in self._field_names
+        )
+        return f"{type(self).__name__}({values})"
+
+    def __eq__(self, other: object) -> bool:
+        if type(self) is not type(other):
+            return False
+        return all(
+            getattr(self, name) == getattr(other, name) for name in self._field_names
+        )
+
+    def __hash__(self) -> int:
+        return hash(tuple(getattr(self, name) for name in self._field_names))
 
 
-@dataclass(frozen=True)
-class ResolvedPackage:
+class ResolvedPackage(_FrozenRecord):
+    __slots__ = (
+        "name",
+        "version",
+        "requested",
+        "is_direct",
+        "download_url",
+        "artifact_name",
+        "archive_hash",
+        "requires_dist",
+        "metadata",
+        "yanked",
+        "yanked_reason",
+    )
+    _field_names = __slots__
+
+    def __init__(
+        self,
+        *,
+        name: str,
+        version: str,
+        requested: bool,
+        is_direct: bool,
+        download_url: str | None,
+        artifact_name: str | None,
+        archive_hash: str | None,
+        requires_dist: tuple[str, ...],
+        metadata: dict,
+        yanked: bool = False,
+        yanked_reason: str | None = None,
+    ) -> None:
+        object.__setattr__(self, "name", name)
+        object.__setattr__(self, "version", version)
+        object.__setattr__(self, "requested", requested)
+        object.__setattr__(self, "is_direct", is_direct)
+        object.__setattr__(self, "download_url", download_url)
+        object.__setattr__(self, "artifact_name", artifact_name)
+        object.__setattr__(self, "archive_hash", archive_hash)
+        object.__setattr__(self, "requires_dist", requires_dist)
+        object.__setattr__(self, "metadata", metadata)
+        object.__setattr__(self, "yanked", yanked)
+        object.__setattr__(self, "yanked_reason", yanked_reason)
+
     name: str
     version: str
     requested: bool
@@ -23,12 +84,18 @@ class ResolvedPackage:
     archive_hash: str | None
     requires_dist: tuple[str, ...]
     metadata: dict
-    yanked: bool = False
-    yanked_reason: str | None = None
+    yanked: bool
+    yanked_reason: str | None
 
 
-@dataclass(frozen=True)
-class InstallPlan:
+class InstallPlan(_FrozenRecord):
+    __slots__ = ("packages", "raw_report")
+    _field_names = __slots__
+
+    def __init__(self, packages: tuple[ResolvedPackage, ...], raw_report: dict) -> None:
+        object.__setattr__(self, "packages", packages)
+        object.__setattr__(self, "raw_report", raw_report)
+
     packages: tuple[ResolvedPackage, ...]
     raw_report: dict
 
@@ -42,7 +109,7 @@ class InstallPlanError(RuntimeError):
 
 
 def resolve_install_plan(pip_args: list[str]) -> InstallPlan:
-    command = build_pip_command(
+    command = _build_pip_command(
         [
             "install",
             "--dry-run",
@@ -80,6 +147,9 @@ def install_plan_from_report(report: dict) -> InstallPlan:
 
 
 def render_install_plan(plan: InstallPlan) -> str:
+    from secpipw.severity import Severity
+    from secpipw.terminal import colorize
+
     lines = [
         colorize(
             f"[INFO] resolved packages to download ({len(plan.packages)}):",
@@ -121,6 +191,9 @@ def _package_from_report_item(item: dict) -> ResolvedPackage | None:
 
 
 def _artifact_name_from_url(download_url: str | None) -> str | None:
+    from pathlib import PurePosixPath
+    from urllib.parse import unquote, urlparse
+
     if not download_url:
         return None
     parsed = urlparse(download_url)
@@ -178,3 +251,7 @@ def _pip_report_env() -> dict[str, str]:
     env["PYTHONUTF8"] = "1"
     env.setdefault("PIP_DISABLE_PIP_VERSION_CHECK", "1")
     return env
+
+
+def _build_pip_command(argv: list[str]) -> list[str]:
+    return [sys.executable, "-m", "pip", *argv]

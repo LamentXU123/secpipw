@@ -2,22 +2,61 @@ from __future__ import annotations
 
 import subprocess
 import sys
-from dataclasses import dataclass
 from typing import TYPE_CHECKING, Iterable, TextIO
 
 if TYPE_CHECKING:
     from secpipw.severity import Severity
 
 
-@dataclass(frozen=True)
-class OutputEvent:
+class _FrozenRecord:
+    __slots__ = ()
+    _field_names: tuple[str, ...] = ()
+
+    def __setattr__(self, name: str, value: object) -> None:
+        raise AttributeError(f"{type(self).__name__} is immutable")
+
+    def __delattr__(self, name: str) -> None:
+        raise AttributeError(f"{type(self).__name__} is immutable")
+
+    def __repr__(self) -> str:
+        values = ", ".join(
+            f"{name}={getattr(self, name)!r}" for name in self._field_names
+        )
+        return f"{type(self).__name__}({values})"
+
+    def __eq__(self, other: object) -> bool:
+        if type(self) is not type(other):
+            return False
+        return all(
+            getattr(self, name) == getattr(other, name) for name in self._field_names
+        )
+
+    def __hash__(self) -> int:
+        return hash(tuple(getattr(self, name) for name in self._field_names))
+
+
+class OutputEvent(_FrozenRecord):
+    __slots__ = ("severity", "stream", "text")
+    _field_names = __slots__
+
+    def __init__(self, severity: Severity, stream: str, text: str) -> None:
+        object.__setattr__(self, "severity", severity)
+        object.__setattr__(self, "stream", stream)
+        object.__setattr__(self, "text", text)
+
     severity: "Severity"
     stream: str
     text: str
 
 
-@dataclass(frozen=True)
-class BridgeResult:
+class BridgeResult(_FrozenRecord):
+    __slots__ = ("returncode", "events")
+    _field_names = __slots__
+
+    def __init__(self, returncode: int, events: tuple[OutputEvent, ...]) -> None:
+        object.__setattr__(self, "returncode", returncode)
+        object.__setattr__(self, "events", events)
+
     returncode: int
     events: tuple[OutputEvent, ...]
 

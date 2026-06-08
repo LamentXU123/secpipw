@@ -1,20 +1,11 @@
 from __future__ import annotations
 
-import configparser
 import json
 import os
-import socket
 import threading
-from email.utils import getaddresses
-from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
-from urllib.parse import urlparse
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
-
-from packaging.requirements import InvalidRequirement, Requirement
 
 DEFAULT_PYPI_BASE_URL = "https://pypi.org"
 DEFAULT_JSON_API_TIMEOUT_SECONDS = 2.5
@@ -111,15 +102,38 @@ def _default_email_domain_history_path() -> Path:
     return _default_cache_root() / "pypi-email-domains.json"
 
 
-@dataclass(frozen=True)
 class OfficialPyPIClient:
-    base_url: str = DEFAULT_PYPI_BASE_URL
-    network_enabled: bool = True
-    cache_path: Path = field(default_factory=_default_cache_path)
-    release_cache_path: Path = field(default_factory=_default_release_cache_path)
-    email_domain_history_path: Path = field(
-        default_factory=_default_email_domain_history_path
+    __slots__ = (
+        "base_url",
+        "network_enabled",
+        "cache_path",
+        "release_cache_path",
+        "email_domain_history_path",
     )
+
+    def __init__(
+        self,
+        base_url: str = DEFAULT_PYPI_BASE_URL,
+        network_enabled: bool = True,
+        cache_path: Path | None = None,
+        release_cache_path: Path | None = None,
+        email_domain_history_path: Path | None = None,
+    ) -> None:
+        self.base_url = base_url
+        self.network_enabled = network_enabled
+        self.cache_path = (
+            _default_cache_path() if cache_path is None else Path(cache_path)
+        )
+        self.release_cache_path = (
+            _default_release_cache_path()
+            if release_cache_path is None
+            else Path(release_cache_path)
+        )
+        self.email_domain_history_path = (
+            _default_email_domain_history_path()
+            if email_domain_history_path is None
+            else Path(email_domain_history_path)
+        )
 
     def fetch_reference_package_names(self) -> list[str]:
         return self.fetch_all_project_names()
@@ -172,6 +186,8 @@ class OfficialPyPIClient:
         return len(names)
 
     def project_exists(self, name: str) -> bool:
+        from urllib.error import HTTPError
+
         request = Request(
             f"{self.base_url}/pypi/{name}/json",
             headers={"Accept": "application/json"},
@@ -244,6 +260,8 @@ class OfficialPyPIClient:
         return _parse_upload_time(selected.get("upload_time_iso_8601"))
 
     def fetch_release_contact_emails(self, name: str, version: str) -> tuple[str, ...]:
+        from email.utils import getaddresses
+
         payload = self.fetch_release_metadata(name, version)
         info = payload.get("info") or {}
         raw_values = [
@@ -370,6 +388,9 @@ class OfficialPyPIClient:
 
 
 def _is_timeout_error(exc: Exception) -> bool:
+    import socket
+    from urllib.error import URLError
+
     if isinstance(exc, (TimeoutError, socket.timeout)):
         return True
     if isinstance(exc, URLError):
@@ -573,6 +594,9 @@ def _disable_registry_requests_for_install_args(args: list[str]) -> bool:
 
 
 def _is_local_install_target(value: str) -> bool:
+    from packaging.requirements import InvalidRequirement, Requirement
+    from urllib.parse import urlparse
+
     try:
         requirement = Requirement(value)
     except InvalidRequirement:
@@ -696,6 +720,8 @@ def _pip_config_paths(env: dict[str, str]) -> list[Path]:
 
 
 def _index_url_from_config_file(path: Path) -> str | None:
+    import configparser
+
     if not path.exists() or not path.is_file():
         return None
 
@@ -714,6 +740,8 @@ def _index_url_from_config_file(path: Path) -> str | None:
 
 
 def _base_url_from_index_url(index_url: str) -> str:
+    from urllib.parse import urlparse
+
     parsed = urlparse(index_url)
     if not parsed.scheme or not parsed.netloc:
         return DEFAULT_PYPI_BASE_URL
@@ -724,3 +752,15 @@ def _base_url_from_index_url(index_url: str) -> str:
             path = path[: -len(suffix.rstrip("/"))]
             break
     return f"{parsed.scheme}://{parsed.netloc}{path}".rstrip("/")
+
+
+def Request(*args, **kwargs):
+    from urllib.request import Request as request_class
+
+    return request_class(*args, **kwargs)
+
+
+def urlopen(*args, **kwargs):
+    from urllib.request import urlopen as open_url
+
+    return open_url(*args, **kwargs)

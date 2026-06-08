@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import sys
-from dataclasses import dataclass
 from typing import Callable, Iterable, Protocol, TextIO
 
 from secpipw.severity import Severity
-from secpipw.terminal import colorize
 
 
 class WarningLike(Protocol):
@@ -13,8 +11,35 @@ class WarningLike(Protocol):
     message: str
 
 
-@dataclass(frozen=True)
 class GateDecision:
+    __slots__ = ("allow_install", "exit_code")
+
+    def __init__(self, allow_install: bool, exit_code: int) -> None:
+        object.__setattr__(self, "allow_install", allow_install)
+        object.__setattr__(self, "exit_code", exit_code)
+
+    def __setattr__(self, name: str, value: object) -> None:
+        raise AttributeError("GateDecision is immutable")
+
+    def __delattr__(self, name: str) -> None:
+        raise AttributeError("GateDecision is immutable")
+
+    def __repr__(self) -> str:
+        return (
+            "GateDecision("
+            f"allow_install={self.allow_install!r}, exit_code={self.exit_code!r})"
+        )
+
+    def __eq__(self, other: object) -> bool:
+        return (
+            isinstance(other, GateDecision)
+            and self.allow_install == other.allow_install
+            and self.exit_code == other.exit_code
+        )
+
+    def __hash__(self) -> int:
+        return hash((self.allow_install, self.exit_code))
+
     allow_install: bool
     exit_code: int
 
@@ -48,13 +73,13 @@ def enforce_warning_policy(
     if blocking_severities:
         severity = max(blocking_severities)
         stderr.write(
-            colorize(
+            _colorize(
                 f"installation paused: {severity.label} severity warning detected.\n",
                 severity,
             )
         )
         stderr.write(
-            colorize(
+            _colorize(
                 "rerun with --spip-ignore-warning to continue anyway.\n",
                 severity,
             )
@@ -73,13 +98,13 @@ def enforce_warning_policy(
         severity = max(prompt_severities)
         if not is_tty():
             stderr.write(
-                colorize(
+                _colorize(
                     f"installation paused: {severity.label} severity warning requires confirmation.\n",
                     severity,
                 )
             )
             stderr.write(
-                colorize(
+                _colorize(
                     "run interactively and answer y/n, or rerun with --spip-ignore-warning "
                     "to ignore this warning.\n",
                     severity,
@@ -88,7 +113,7 @@ def enforce_warning_policy(
             return GateDecision(allow_install=False, exit_code=2)
 
         stderr.write(
-            colorize(
+            _colorize(
                 f"{severity.label} severity warning detected. continue install? enter y/n [y/N] "
                 "(rerun with --spip-ignore-warning to ignore this warning): ",
                 severity,
@@ -97,7 +122,7 @@ def enforce_warning_policy(
         stderr.flush()
         answer = stdin.readline().strip().lower()
         if answer not in {"y", "yes"}:
-            stderr.write(colorize("installation cancelled.\n", severity))
+            stderr.write(_colorize("installation cancelled.\n", severity))
             return GateDecision(allow_install=False, exit_code=1)
 
     return GateDecision(allow_install=True, exit_code=0)
@@ -121,6 +146,12 @@ def severity_is_ignored(
 
 def _default_is_tty() -> bool:
     return sys.stdin.isatty()
+
+
+def _colorize(text: str, severity: Severity) -> str:
+    from secpipw.terminal import colorize
+
+    return colorize(text, severity)
 
 
 def _block_threshold(sensitivity: Severity) -> Severity:

@@ -1,26 +1,17 @@
 from __future__ import annotations
 
-import socket
 from collections.abc import Iterable as IterableABC
-from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from email.utils import getaddresses, parseaddr
 from difflib import SequenceMatcher
 from ipaddress import ip_address
 from pathlib import Path
-from typing import Iterable, Mapping, Protocol
-from urllib.error import HTTPError, URLError
-from urllib.parse import urlparse
-
-from packaging.requirements import InvalidRequirement, Requirement
-from packaging.utils import canonicalize_name
-from packaging.version import InvalidVersion, Version
+from typing import TYPE_CHECKING, Iterable, Mapping, Protocol
 
 from secpipw.pip_args import PIP_OPTIONS_WITH_VALUE
-from secpipw.pypi_api import OfficialPyPIClient
 from secpipw.severity import Severity
-from secpipw.terminal import colorize
+
+if TYPE_CHECKING:
+    from secpipw.pypi_api import OfficialPyPIClient
 
 RECENT_RELEASE_MEDIUM_THRESHOLD = timedelta(hours=8)
 RECENT_RELEASE_LOW_THRESHOLD = timedelta(hours=48)
@@ -67,8 +58,53 @@ class PackageLike(Protocol):
     metadata: dict
 
 
-@dataclass(frozen=True)
-class ReleaseAgeAlert:
+class _FrozenRecord:
+    __slots__ = ()
+    _field_names: tuple[str, ...] = ()
+
+    def __setattr__(self, name: str, value: object) -> None:
+        raise AttributeError(f"{type(self).__name__} is immutable")
+
+    def __delattr__(self, name: str) -> None:
+        raise AttributeError(f"{type(self).__name__} is immutable")
+
+    def __repr__(self) -> str:
+        values = ", ".join(
+            f"{name}={getattr(self, name)!r}" for name in self._field_names
+        )
+        return f"{type(self).__name__}({values})"
+
+    def __eq__(self, other: object) -> bool:
+        if type(self) is not type(other):
+            return False
+        return all(
+            getattr(self, name) == getattr(other, name) for name in self._field_names
+        )
+
+    def __hash__(self) -> int:
+        return hash(tuple(getattr(self, name) for name in self._field_names))
+
+
+class ReleaseAgeAlert(_FrozenRecord):
+    __slots__ = ("severity", "package_name", "version", "published_at", "age", "message")
+    _field_names = __slots__
+
+    def __init__(
+        self,
+        severity: Severity,
+        package_name: str,
+        version: str,
+        published_at: datetime | None,
+        age: timedelta | None,
+        message: str,
+    ) -> None:
+        object.__setattr__(self, "severity", severity)
+        object.__setattr__(self, "package_name", package_name)
+        object.__setattr__(self, "version", version)
+        object.__setattr__(self, "published_at", published_at)
+        object.__setattr__(self, "age", age)
+        object.__setattr__(self, "message", message)
+
     severity: Severity
     package_name: str
     version: str
@@ -77,24 +113,60 @@ class ReleaseAgeAlert:
     message: str
 
 
-@dataclass(frozen=True)
-class VersionAlert:
+class VersionAlert(_FrozenRecord):
+    __slots__ = ("severity", "package_name", "version", "message")
+    _field_names = __slots__
+
+    def __init__(
+        self, severity: Severity, package_name: str, version: str, message: str
+    ) -> None:
+        object.__setattr__(self, "severity", severity)
+        object.__setattr__(self, "package_name", package_name)
+        object.__setattr__(self, "version", version)
+        object.__setattr__(self, "message", message)
+
     severity: Severity
     package_name: str
     version: str
     message: str
 
 
-@dataclass(frozen=True)
-class EmptyDescriptionAlert:
+class EmptyDescriptionAlert(_FrozenRecord):
+    __slots__ = ("severity", "package_name", "version", "message")
+    _field_names = __slots__
+
+    def __init__(
+        self, severity: Severity, package_name: str, version: str, message: str
+    ) -> None:
+        object.__setattr__(self, "severity", severity)
+        object.__setattr__(self, "package_name", package_name)
+        object.__setattr__(self, "version", version)
+        object.__setattr__(self, "message", message)
+
     severity: Severity
     package_name: str
     version: str
     message: str
 
 
-@dataclass(frozen=True)
-class DirectUrlAlert:
+class DirectUrlAlert(_FrozenRecord):
+    __slots__ = ("severity", "package_name", "version", "requirement", "message")
+    _field_names = __slots__
+
+    def __init__(
+        self,
+        severity: Severity,
+        package_name: str | None,
+        version: str | None,
+        requirement: str,
+        message: str,
+    ) -> None:
+        object.__setattr__(self, "severity", severity)
+        object.__setattr__(self, "package_name", package_name)
+        object.__setattr__(self, "version", version)
+        object.__setattr__(self, "requirement", requirement)
+        object.__setattr__(self, "message", message)
+
     severity: Severity
     package_name: str | None
     version: str | None
@@ -102,8 +174,26 @@ class DirectUrlAlert:
     message: str
 
 
-@dataclass(frozen=True)
-class MetadataUrlAlert:
+class MetadataUrlAlert(_FrozenRecord):
+    __slots__ = ("severity", "package_name", "version", "url", "reason", "message")
+    _field_names = __slots__
+
+    def __init__(
+        self,
+        severity: Severity,
+        package_name: str,
+        version: str,
+        url: str,
+        reason: str,
+        message: str,
+    ) -> None:
+        object.__setattr__(self, "severity", severity)
+        object.__setattr__(self, "package_name", package_name)
+        object.__setattr__(self, "version", version)
+        object.__setattr__(self, "url", url)
+        object.__setattr__(self, "reason", reason)
+        object.__setattr__(self, "message", message)
+
     severity: Severity
     package_name: str
     version: str
@@ -112,8 +202,26 @@ class MetadataUrlAlert:
     message: str
 
 
-@dataclass(frozen=True)
-class RepositoryMismatchAlert:
+class RepositoryMismatchAlert(_FrozenRecord):
+    __slots__ = ("severity", "package_name", "version", "url", "repository_name", "message")
+    _field_names = __slots__
+
+    def __init__(
+        self,
+        severity: Severity,
+        package_name: str,
+        version: str,
+        url: str,
+        repository_name: str,
+        message: str,
+    ) -> None:
+        object.__setattr__(self, "severity", severity)
+        object.__setattr__(self, "package_name", package_name)
+        object.__setattr__(self, "version", version)
+        object.__setattr__(self, "url", url)
+        object.__setattr__(self, "repository_name", repository_name)
+        object.__setattr__(self, "message", message)
+
     severity: Severity
     package_name: str
     version: str
@@ -122,8 +230,33 @@ class RepositoryMismatchAlert:
     message: str
 
 
-@dataclass(frozen=True)
-class EmailDomainDriftAlert:
+class EmailDomainDriftAlert(_FrozenRecord):
+    __slots__ = (
+        "severity",
+        "package_name",
+        "version",
+        "previous_domains",
+        "current_domains",
+        "message",
+    )
+    _field_names = __slots__
+
+    def __init__(
+        self,
+        severity: Severity,
+        package_name: str,
+        version: str,
+        previous_domains: tuple[str, ...],
+        current_domains: tuple[str, ...],
+        message: str,
+    ) -> None:
+        object.__setattr__(self, "severity", severity)
+        object.__setattr__(self, "package_name", package_name)
+        object.__setattr__(self, "version", version)
+        object.__setattr__(self, "previous_domains", previous_domains)
+        object.__setattr__(self, "current_domains", current_domains)
+        object.__setattr__(self, "message", message)
+
     severity: Severity
     package_name: str
     version: str
@@ -132,8 +265,24 @@ class EmailDomainDriftAlert:
     message: str
 
 
-@dataclass(frozen=True)
-class YankedReleaseAlert:
+class YankedReleaseAlert(_FrozenRecord):
+    __slots__ = ("severity", "package_name", "version", "reason", "message")
+    _field_names = __slots__
+
+    def __init__(
+        self,
+        severity: Severity,
+        package_name: str,
+        version: str,
+        reason: str | None,
+        message: str,
+    ) -> None:
+        object.__setattr__(self, "severity", severity)
+        object.__setattr__(self, "package_name", package_name)
+        object.__setattr__(self, "version", version)
+        object.__setattr__(self, "reason", reason)
+        object.__setattr__(self, "message", message)
+
     severity: Severity
     package_name: str
     version: str
@@ -141,8 +290,39 @@ class YankedReleaseAlert:
     message: str
 
 
-@dataclass(frozen=True)
-class ArchiveHashMismatchAlert:
+class ArchiveHashMismatchAlert(_FrozenRecord):
+    __slots__ = (
+        "severity",
+        "package_name",
+        "version",
+        "filename",
+        "algorithm",
+        "expected_digest",
+        "actual_digest",
+        "message",
+    )
+    _field_names = __slots__
+
+    def __init__(
+        self,
+        severity: Severity,
+        package_name: str,
+        version: str,
+        filename: str | None,
+        algorithm: str,
+        expected_digest: str,
+        actual_digest: str,
+        message: str,
+    ) -> None:
+        object.__setattr__(self, "severity", severity)
+        object.__setattr__(self, "package_name", package_name)
+        object.__setattr__(self, "version", version)
+        object.__setattr__(self, "filename", filename)
+        object.__setattr__(self, "algorithm", algorithm)
+        object.__setattr__(self, "expected_digest", expected_digest)
+        object.__setattr__(self, "actual_digest", actual_digest)
+        object.__setattr__(self, "message", message)
+
     severity: Severity
     package_name: str
     version: str
@@ -153,29 +333,56 @@ class ArchiveHashMismatchAlert:
     message: str
 
 
-@dataclass(frozen=True)
-class _ReleaseLookupResult:
+class _ReleaseLookupResult(_FrozenRecord):
+    __slots__ = ("timed_out", "published_at")
+    _field_names = __slots__
+
+    def __init__(self, timed_out: bool, published_at: datetime | None) -> None:
+        object.__setattr__(self, "timed_out", timed_out)
+        object.__setattr__(self, "published_at", published_at)
+
     timed_out: bool
     published_at: datetime | None
 
 
-@dataclass(frozen=True)
-class _DescriptionLookupResult:
+class _DescriptionLookupResult(_FrozenRecord):
+    __slots__ = ("has_empty_description",)
+    _field_names = __slots__
+
+    def __init__(self, has_empty_description: bool) -> None:
+        object.__setattr__(self, "has_empty_description", has_empty_description)
+
     has_empty_description: bool
 
 
-@dataclass(frozen=True)
-class _SuspiciousUrlLookupResult:
+class _SuspiciousUrlLookupResult(_FrozenRecord):
+    __slots__ = ("findings",)
+    _field_names = __slots__
+
+    def __init__(self, findings: tuple[tuple[str, str], ...]) -> None:
+        object.__setattr__(self, "findings", findings)
+
     findings: tuple[tuple[str, str], ...]
 
 
-@dataclass(frozen=True)
-class _RepositoryMismatchLookupResult:
+class _RepositoryMismatchLookupResult(_FrozenRecord):
+    __slots__ = ("findings",)
+    _field_names = __slots__
+
+    def __init__(self, findings: tuple[tuple[str, str], ...]) -> None:
+        object.__setattr__(self, "findings", findings)
+
     findings: tuple[tuple[str, str], ...]
 
 
-@dataclass(frozen=True)
-class _RegistryMetadataLookupResult:
+class _RegistryMetadataLookupResult(_FrozenRecord):
+    __slots__ = ("timed_out", "metadata")
+    _field_names = __slots__
+
+    def __init__(self, timed_out: bool, metadata: dict | None) -> None:
+        object.__setattr__(self, "timed_out", timed_out)
+        object.__setattr__(self, "metadata", metadata)
+
     timed_out: bool
     metadata: dict | None
 
@@ -191,7 +398,7 @@ def prefetch_release_metadata(
     *,
     client: OfficialPyPIClient | None = None,
 ) -> dict[tuple[str, str, str], _RegistryMetadataLookupResult]:
-    client = client or OfficialPyPIClient()
+    client = _client_or_default(client)
     candidates = [
         package
         for package in _packages_with_registry_metadata(packages)
@@ -234,7 +441,7 @@ def detect_recent_release_alerts(
     report_metadata_available: bool | None = None,
     registry_metadata: RegistryMetadataLookup | None = None,
 ) -> list[ReleaseAgeAlert]:
-    client = client or OfficialPyPIClient()
+    client = _client_or_default(client)
     now = datetime.now(timezone.utc) if now is None else now
     alerts: list[ReleaseAgeAlert] = []
     candidates = _packages_with_registry_metadata(packages)
@@ -348,7 +555,7 @@ def detect_empty_description_alerts(
     report_metadata_available: bool | None = None,
     registry_metadata: RegistryMetadataLookup | None = None,
 ) -> list[EmptyDescriptionAlert]:
-    client = client or OfficialPyPIClient()
+    client = _client_or_default(client)
     alerts: list[EmptyDescriptionAlert] = []
     candidates = _packages_with_registry_metadata(packages)
 
@@ -447,7 +654,7 @@ def detect_suspicious_metadata_url_alerts(
     report_metadata_available: bool | None = None,
     registry_metadata: RegistryMetadataLookup | None = None,
 ) -> list[MetadataUrlAlert]:
-    client = client or OfficialPyPIClient()
+    client = _client_or_default(client)
     alerts: list[MetadataUrlAlert] = []
     candidates = _packages_with_registry_metadata(packages)
 
@@ -502,7 +709,7 @@ def detect_repository_mismatch_alerts(
     report_metadata_available: bool | None = None,
     registry_metadata: RegistryMetadataLookup | None = None,
 ) -> list[RepositoryMismatchAlert]:
-    client = client or OfficialPyPIClient()
+    client = _client_or_default(client)
     alerts: list[RepositoryMismatchAlert] = []
     candidates = _packages_with_registry_metadata(packages)
 
@@ -558,7 +765,7 @@ def detect_email_domain_drift_alerts(
     report_metadata_available: bool | None = None,
     registry_metadata: RegistryMetadataLookup | None = None,
 ) -> list[EmailDomainDriftAlert]:
-    client = client or OfficialPyPIClient()
+    client = _client_or_default(client)
     alerts: list[EmailDomainDriftAlert] = []
     candidates = _packages_with_registry_metadata(packages)
 
@@ -594,7 +801,7 @@ def detect_email_domain_drift_alerts(
     for package, domains in zip(candidates, current_domains):
         if not domains:
             continue
-        project_key = canonicalize_name(package.name)
+        project_key = _canonicalize_name(package.name)
         previous = tuple(history.get(project_key, ()))
         if previous and set(previous).isdisjoint(domains):
             alerts.append(
@@ -654,7 +861,7 @@ def detect_archive_hash_mismatch_alerts(
     client: OfficialPyPIClient | None = None,
     registry_metadata: RegistryMetadataLookup | None = None,
 ) -> list[ArchiveHashMismatchAlert]:
-    client = client or OfficialPyPIClient()
+    client = _client_or_default(client)
     alerts: list[ArchiveHashMismatchAlert] = []
     seen: set[tuple[str, str, str, str | None]] = set()
 
@@ -707,7 +914,7 @@ def render_release_age_alerts(alerts: Iterable[ReleaseAgeAlert]) -> str:
     lines = []
     for alert in alerts:
         lines.append(
-            colorize(
+            _colorize(
                 f"[{alert.severity.label.upper()}] recent-release: {alert.message}",
                 alert.severity,
             )
@@ -719,7 +926,7 @@ def render_version_alerts(alerts: Iterable[VersionAlert]) -> str:
     lines = []
     for alert in alerts:
         lines.append(
-            colorize(
+            _colorize(
                 f"[{alert.severity.label.upper()}] zero-version: {alert.message}",
                 alert.severity,
             )
@@ -731,7 +938,7 @@ def render_empty_description_alerts(alerts: Iterable[EmptyDescriptionAlert]) -> 
     lines = []
     for alert in alerts:
         lines.append(
-            colorize(
+            _colorize(
                 f"[{alert.severity.label.upper()}] empty-description: {alert.message}",
                 alert.severity,
             )
@@ -743,7 +950,7 @@ def render_direct_url_alerts(alerts: Iterable[DirectUrlAlert]) -> str:
     lines = []
     for alert in alerts:
         lines.append(
-            colorize(
+            _colorize(
                 f"[{alert.severity.label.upper()}] direct-url: {alert.message}",
                 alert.severity,
             )
@@ -757,7 +964,7 @@ def render_suspicious_metadata_url_alerts(
     lines = []
     for alert in alerts:
         lines.append(
-            colorize(
+            _colorize(
                 f"[{alert.severity.label.upper()}] suspicious-url: {alert.message}",
                 alert.severity,
             )
@@ -771,7 +978,7 @@ def render_repository_mismatch_alerts(
     lines = []
     for alert in alerts:
         lines.append(
-            colorize(
+            _colorize(
                 f"[{alert.severity.label.upper()}] repository-mismatch: {alert.message}",
                 alert.severity,
             )
@@ -785,7 +992,7 @@ def render_email_domain_drift_alerts(
     lines = []
     for alert in alerts:
         lines.append(
-            colorize(
+            _colorize(
                 f"[{alert.severity.label.upper()}] email-domain-drift: {alert.message}",
                 alert.severity,
             )
@@ -797,7 +1004,7 @@ def render_yanked_release_alerts(alerts: Iterable[YankedReleaseAlert]) -> str:
     lines = []
     for alert in alerts:
         lines.append(
-            colorize(
+            _colorize(
                 f"[{alert.severity.label.upper()}] yanked-release: {alert.message}",
                 alert.severity,
             )
@@ -811,7 +1018,7 @@ def render_archive_hash_mismatch_alerts(
     lines = []
     for alert in alerts:
         lines.append(
-            colorize(
+            _colorize(
                 f"[{alert.severity.label.upper()}] archive-hash: {alert.message}",
                 alert.severity,
             )
@@ -1296,6 +1503,9 @@ def _parse_upload_time(value: str | None) -> datetime | None:
 
 
 def _is_timeout_error(exc: Exception) -> bool:
+    import socket
+    from urllib.error import URLError
+
     if isinstance(exc, (TimeoutError, socket.timeout)):
         return True
     if isinstance(exc, URLError):
@@ -1305,10 +1515,14 @@ def _is_timeout_error(exc: Exception) -> bool:
 
 
 def _is_not_found_error(exc: Exception) -> bool:
+    from urllib.error import HTTPError
+
     return isinstance(exc, HTTPError) and exc.code == 404
 
 
 def _is_zero_version(version: str) -> bool:
+    from packaging.version import InvalidVersion, Version
+
     try:
         parsed = Version(version)
     except InvalidVersion:
@@ -1318,6 +1532,8 @@ def _is_zero_version(version: str) -> bool:
 
 
 def _domain_from_email(email: str) -> str | None:
+    from email.utils import parseaddr
+
     _, address = parseaddr(email)
     if "@" not in address:
         return None
@@ -1417,6 +1633,8 @@ def _extract_direct_urls_from_requirement_file(
 
 
 def _input_uses_direct_url(value: str) -> bool:
+    from urllib.parse import urlparse
+
     if value.startswith(VCS_URL_PREFIXES):
         return True
     if _requirement_uses_direct_url(value):
@@ -1426,6 +1644,8 @@ def _input_uses_direct_url(value: str) -> bool:
 
 
 def _requirement_uses_direct_url(requirement: str) -> bool:
+    from packaging.requirements import InvalidRequirement, Requirement
+
     try:
         parsed = Requirement(requirement)
     except InvalidRequirement:
@@ -1463,6 +1683,8 @@ def _metadata_info(metadata: dict) -> dict:
 
 
 def _contact_emails_from_metadata(metadata: dict) -> tuple[str, ...]:
+    from email.utils import getaddresses
+
     info = _metadata_info(metadata)
     raw_values = [
         str(info.get("author_email") or ""),
@@ -1513,6 +1735,8 @@ def _metadata_urls(metadata: dict) -> tuple[tuple[str, str], ...]:
 
 
 def _suspicious_url_reason(url: str) -> str | None:
+    from urllib.parse import urlparse
+
     parsed = urlparse(url)
     if parsed.scheme and parsed.scheme not in {"http", "https"}:
         return f"non-http URL scheme '{parsed.scheme}'"
@@ -1548,6 +1772,8 @@ def _label_looks_like_repository(label: str) -> bool:
 
 
 def _repository_name_from_url(url: str) -> str | None:
+    from urllib.parse import urlparse
+
     parsed = urlparse(url)
     hostname = (parsed.hostname or "").lower()
     if hostname not in {"github.com", "www.github.com", "gitlab.com", "www.gitlab.com"}:
@@ -1562,8 +1788,8 @@ def _repository_name_from_url(url: str) -> str | None:
 
 
 def _repository_looks_unrelated(package_name: str, repository_name: str) -> bool:
-    package = canonicalize_name(package_name)
-    repository = canonicalize_name(repository_name)
+    package = _canonicalize_name(package_name)
+    repository = _canonicalize_name(repository_name)
     if not package or not repository:
         return False
     if package == repository or package in repository or repository in package:
@@ -1594,3 +1820,31 @@ def _format_age(age: timedelta) -> str:
     if hours:
         return f"{hours}h {minutes}m"
     return f"{minutes}m"
+
+
+def ThreadPoolExecutor(*args, **kwargs):
+    from concurrent.futures import ThreadPoolExecutor as executor_class
+
+    return executor_class(*args, **kwargs)
+
+
+def _client_or_default(client: OfficialPyPIClient | None):
+    return client or _official_pypi_client_class()()
+
+
+def _official_pypi_client_class():
+    from secpipw.pypi_api import OfficialPyPIClient
+
+    return OfficialPyPIClient
+
+
+def _canonicalize_name(value: str) -> str:
+    from packaging.utils import canonicalize_name
+
+    return canonicalize_name(value)
+
+
+def _colorize(text: str, severity: Severity) -> str:
+    from secpipw.terminal import colorize
+
+    return colorize(text, severity)
