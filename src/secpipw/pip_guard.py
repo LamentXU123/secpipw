@@ -1,19 +1,13 @@
 from __future__ import annotations
 
-import json
-import operator
-import os
-import inspect
 from functools import lru_cache
-from optparse import Values
-from typing import TYPE_CHECKING, Callable, Iterable, List, Optional
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable
+    from optparse import Values
     from secpipw.install_plan import InstallPlan
     from secpipw.warning_gate import GateDecision
-
-PlanHook = Callable[["InstallPlan"], "GateDecision"]
-ArtifactHook = Callable[[list[object]], "GateDecision"]
 
 _REAL_GUARDED_INSTALL_COMMAND: type | None = None
 
@@ -349,7 +343,7 @@ def _guarded_install_command_class():
     return _REAL_GUARDED_INSTALL_COMMAND
 
 
-def check_legacy_setup_py_options(options: Values, reqs: List[object]) -> None:
+def check_legacy_setup_py_options(options: Values, reqs: list[object]) -> None:
     checker = _legacy_setup_py_options_checker()
     if checker is not None:
         checker(options, reqs)
@@ -452,6 +446,8 @@ def make_resolver(command, **kwargs):
 
 @lru_cache(maxsize=None)
 def _signature_parameter_names(callable_obj) -> frozenset[str]:
+    import inspect
+
     return frozenset(inspect.signature(callable_obj).parameters)
 
 
@@ -502,7 +498,10 @@ def _build_guarded_install_command_class():
             super().__init__(*args, **kwargs)
 
         @with_cleanup
-        def run(self, options: Values, args: List[str]) -> int:
+        def run(self, options: Values, args: list[str]) -> int:
+            import json
+            import os
+
             if options.use_user_site and options.target_dir is not None:
                 _ensure_pip_symbol("CommandError")
                 raise CommandError("Can not combine '--user' and '--target'")
@@ -536,8 +535,8 @@ def _build_guarded_install_command_class():
                 isolated_mode=options.isolated_mode,
             )
 
-            target_temp_dir: Optional[TempDirectory] = None
-            target_temp_dir_path: Optional[str] = None
+            target_temp_dir: TempDirectory | None = None
+            target_temp_dir_path: str | None = None
             if options.target_dir:
                 options.ignore_installed = True
                 options.target_dir = os.path.abspath(options.target_dir)
@@ -721,7 +720,7 @@ def _build_guarded_install_command_class():
                     progress_bar=options.progress_bar,
                 )
 
-                installed.sort(key=operator.attrgetter("name"))
+                installed.sort(key=lambda package: package.name)
                 summary = []
                 if installed:
                     _ensure_summary_imports()

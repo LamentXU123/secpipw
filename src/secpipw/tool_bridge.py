@@ -1,24 +1,70 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import TYPE_CHECKING, Iterable
 
 if TYPE_CHECKING:
     from secpipw.install_plan import InstallPlan
 
 
-@dataclass(frozen=True)
-class ToolCommand:
+class _FrozenRecord:
+    __slots__ = ()
+    _field_names: tuple[str, ...] = ()
+
+    def __setattr__(self, name: str, value: object) -> None:
+        raise AttributeError(f"{type(self).__name__} is immutable")
+
+    def __delattr__(self, name: str) -> None:
+        raise AttributeError(f"{type(self).__name__} is immutable")
+
+    def __repr__(self) -> str:
+        values = ", ".join(
+            f"{name}={getattr(self, name)!r}" for name in self._field_names
+        )
+        return f"{type(self).__name__}({values})"
+
+    def __eq__(self, other: object) -> bool:
+        if type(self) is not type(other):
+            return False
+        return all(
+            getattr(self, name) == getattr(other, name) for name in self._field_names
+        )
+
+    def __hash__(self) -> int:
+        return hash(tuple(getattr(self, name) for name in self._field_names))
+
+
+class ToolCommand(_FrozenRecord):
+    __slots__ = ("name", "index")
+    _field_names = ("name", "index")
+
+    def __init__(self, name: str, index: int) -> None:
+        object.__setattr__(self, "name", name)
+        object.__setattr__(self, "index", index)
+
     name: str
     index: int
 
 
-@dataclass(frozen=True)
-class UvCommand:
+class UvCommand(_FrozenRecord):
+    __slots__ = ("path", "index", "args_index", "unsupported")
+    _field_names = ("path", "index", "args_index", "unsupported")
+
+    def __init__(
+        self,
+        path: tuple[str, ...],
+        index: int,
+        args_index: int,
+        unsupported: bool = False,
+    ) -> None:
+        object.__setattr__(self, "path", path)
+        object.__setattr__(self, "index", index)
+        object.__setattr__(self, "args_index", args_index)
+        object.__setattr__(self, "unsupported", unsupported)
+
     path: tuple[str, ...]
     index: int
     args_index: int
-    unsupported: bool = False
+    unsupported: bool
 
 
 PIPX_COMMANDS = {
@@ -707,8 +753,36 @@ def _uv_preflight_pip_args(argv: list[str]) -> list[str] | None:
     return None
 
 
-@dataclass(frozen=True)
-class ParsedPipxOptions:
+class ParsedPipxOptions(_FrozenRecord):
+    __slots__ = (
+        "positionals",
+        "pip_args",
+        "specs",
+        "preinstall",
+        "with_requirements",
+        "editable",
+        "unsupported",
+    )
+    _field_names = __slots__
+
+    def __init__(
+        self,
+        positionals: tuple[str, ...],
+        pip_args: tuple[str, ...],
+        specs: tuple[str, ...],
+        preinstall: tuple[str, ...],
+        with_requirements: tuple[str, ...],
+        editable: bool,
+        unsupported: bool,
+    ) -> None:
+        object.__setattr__(self, "positionals", positionals)
+        object.__setattr__(self, "pip_args", pip_args)
+        object.__setattr__(self, "specs", specs)
+        object.__setattr__(self, "preinstall", preinstall)
+        object.__setattr__(self, "with_requirements", with_requirements)
+        object.__setattr__(self, "editable", editable)
+        object.__setattr__(self, "unsupported", unsupported)
+
     positionals: tuple[str, ...]
     pip_args: tuple[str, ...]
     specs: tuple[str, ...]
@@ -931,8 +1005,41 @@ def _uv_tool_run_pip_args(args: list[str]) -> list[str] | None:
     return _pip_args_from_uv_package_options(parsed)
 
 
-@dataclass(frozen=True)
-class ParsedUvPackageOptions:
+class ParsedUvPackageOptions(_FrozenRecord):
+    __slots__ = (
+        "positionals",
+        "editable_requirements",
+        "requirement_files",
+        "with_requirements",
+        "with_editable_requirements",
+        "with_requirement_files",
+        "pip_args",
+        "editable",
+    )
+    _field_names = __slots__
+
+    def __init__(
+        self,
+        positionals: tuple[str, ...],
+        editable_requirements: tuple[str, ...],
+        requirement_files: tuple[str, ...],
+        with_requirements: tuple[str, ...],
+        with_editable_requirements: tuple[str, ...],
+        with_requirement_files: tuple[str, ...],
+        pip_args: tuple[str, ...],
+        editable: bool,
+    ) -> None:
+        object.__setattr__(self, "positionals", positionals)
+        object.__setattr__(self, "editable_requirements", editable_requirements)
+        object.__setattr__(self, "requirement_files", requirement_files)
+        object.__setattr__(self, "with_requirements", with_requirements)
+        object.__setattr__(
+            self, "with_editable_requirements", with_editable_requirements
+        )
+        object.__setattr__(self, "with_requirement_files", with_requirement_files)
+        object.__setattr__(self, "pip_args", pip_args)
+        object.__setattr__(self, "editable", editable)
+
     positionals: tuple[str, ...]
     editable_requirements: tuple[str, ...]
     requirement_files: tuple[str, ...]

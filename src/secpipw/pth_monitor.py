@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import json
-import re
 import sys
-from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Iterable, Iterator, TextIO
 
@@ -11,7 +9,6 @@ if TYPE_CHECKING:
     from secpipw.severity import Severity
     from secpipw.warning_gate import GateDecision
 
-IMPORT_LINE_RE = re.compile(r"^\s*import\b")
 PYTHON_DIRECTORY_QUERY_TIMEOUT_SECONDS = 10
 PIP_OPTIONS_WITH_VALUE = {
     "-t",
@@ -22,8 +19,51 @@ PIP_OPTIONS_WITH_VALUE = {
 }
 
 
-@dataclass(frozen=True)
-class SuspiciousPthAlert:
+class _FrozenRecord:
+    __slots__ = ()
+    _field_names: tuple[str, ...] = ()
+
+    def __setattr__(self, name: str, value: object) -> None:
+        raise AttributeError(f"{type(self).__name__} is immutable")
+
+    def __delattr__(self, name: str) -> None:
+        raise AttributeError(f"{type(self).__name__} is immutable")
+
+    def __repr__(self) -> str:
+        values = ", ".join(
+            f"{name}={getattr(self, name)!r}" for name in self._field_names
+        )
+        return f"{type(self).__name__}({values})"
+
+    def __eq__(self, other: object) -> bool:
+        if type(self) is not type(other):
+            return False
+        return all(
+            getattr(self, name) == getattr(other, name) for name in self._field_names
+        )
+
+    def __hash__(self) -> int:
+        return hash(tuple(getattr(self, name) for name in self._field_names))
+
+
+class SuspiciousPthAlert(_FrozenRecord):
+    __slots__ = ("severity", "path", "import_lines", "message", "remediation")
+    _field_names = __slots__
+
+    def __init__(
+        self,
+        severity: Severity,
+        path: Path,
+        import_lines: tuple[str, ...],
+        message: str,
+        remediation: str,
+    ) -> None:
+        object.__setattr__(self, "severity", severity)
+        object.__setattr__(self, "path", path)
+        object.__setattr__(self, "import_lines", import_lines)
+        object.__setattr__(self, "message", message)
+        object.__setattr__(self, "remediation", remediation)
+
     severity: Severity
     path: Path
     import_lines: tuple[str, ...]
@@ -31,15 +71,47 @@ class SuspiciousPthAlert:
     remediation: str
 
 
-@dataclass(frozen=True)
-class PthSnapshotEntry:
+class PthSnapshotEntry(_FrozenRecord):
+    __slots__ = ("mtime_ns", "size", "digest")
+    _field_names = __slots__
+
+    def __init__(self, mtime_ns: int, size: int, digest: str) -> None:
+        object.__setattr__(self, "mtime_ns", mtime_ns)
+        object.__setattr__(self, "size", size)
+        object.__setattr__(self, "digest", digest)
+
     mtime_ns: int
     size: int
     digest: str
 
 
-@dataclass(frozen=True)
-class PackageArtifactHistoryAlert:
+class PackageArtifactHistoryAlert(_FrozenRecord):
+    __slots__ = (
+        "severity",
+        "package_name",
+        "previous_version",
+        "current_version",
+        "change_type",
+        "message",
+    )
+    _field_names = __slots__
+
+    def __init__(
+        self,
+        severity: Severity,
+        package_name: str,
+        previous_version: str | None,
+        current_version: str | None,
+        change_type: str,
+        message: str,
+    ) -> None:
+        object.__setattr__(self, "severity", severity)
+        object.__setattr__(self, "package_name", package_name)
+        object.__setattr__(self, "previous_version", previous_version)
+        object.__setattr__(self, "current_version", current_version)
+        object.__setattr__(self, "change_type", change_type)
+        object.__setattr__(self, "message", message)
+
     severity: Severity
     package_name: str
     previous_version: str | None
@@ -48,8 +120,18 @@ class PackageArtifactHistoryAlert:
     message: str
 
 
-@dataclass(frozen=True)
-class PthMonitor:
+class PthMonitor(_FrozenRecord):
+    __slots__ = ("directories", "snapshot")
+    _field_names = __slots__
+
+    def __init__(
+        self,
+        directories: tuple[Path, ...],
+        snapshot: dict[Path, PthSnapshotEntry],
+    ) -> None:
+        object.__setattr__(self, "directories", directories)
+        object.__setattr__(self, "snapshot", snapshot)
+
     directories: tuple[Path, ...]
     snapshot: dict[Path, PthSnapshotEntry]
 
@@ -1130,8 +1212,17 @@ def _dedupe_paths(paths: Iterable[Path]) -> list[Path]:
 
 def _import_lines_from_text(text: str) -> Iterator[str]:
     for line in text.splitlines():
-        if IMPORT_LINE_RE.match(line):
+        if _looks_like_import_line(line):
             yield line.strip()
+
+
+def _looks_like_import_line(line: str) -> bool:
+    stripped = line.lstrip()
+    if not stripped.startswith("import"):
+        return False
+    if len(stripped) == len("import"):
+        return True
+    return not (stripped[len("import")].isalnum() or stripped[len("import")] == "_")
 
 
 def _iter_sdist_pth_files(archive: tarfile.TarFile) -> Iterator[tuple[str, str]]:
