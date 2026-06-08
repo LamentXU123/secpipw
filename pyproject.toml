@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 license = "MIT"
 name = "secpipw"
-version = "1.0.2"
+version = "1.0.3"
 description = "A defensive pip wrapper with supply-chain preflight checks."
 readme = "README.md"
 requires-python = ">=3.10"
