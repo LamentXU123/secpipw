@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_WORK_DIR = ROOT / ".tmp-benchmark"
-DEFAULT_REQUIREMENTS = ("opencv-python", "scipy", "uv")
+DEFAULT_REQUIREMENTS = ("opencv-python", "scipy", "requests")
 BENCHMARK_MODE = (
     "local wheelhouse install, --no-index, --no-deps, fresh --target per run"
 )
@@ -43,7 +43,12 @@ class ToolScenario:
 
 
 PIP_SCENARIO = ToolScenario("pip", "pip", "pip")
-SPIP_SCENARIO = ToolScenario("spip", "spip", "secpipw", ("--spip-ignore-warning",))
+SPIP_SCENARIO = ToolScenario(
+    "spip",
+    "spip",
+    "secpipw",
+    ("--spip-ignore-warning",),
+)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -388,19 +393,14 @@ def _print_summary(records: list[RunResult], requirements: tuple[str, ...]) -> N
         _print_stats("  spip", spip_stats)
         print(
             f"  overhead: avg {metrics['overhead']['avg_seconds']:+.4f}s "
-            f"({metrics['overhead']['avg_percent']:+.2f}%), "
-            f"median {metrics['overhead']['median_seconds']:+.4f}s "
-            f"({metrics['overhead']['median_percent']:+.2f}%)"
+            f"({metrics['overhead']['avg_percent']:+.2f}%)"
         )
-        print(
-            f"  ratio: median {metrics['ratio']['median_label']}, "
-            f"avg {metrics['ratio']['avg_label']}"
-        )
+        print(f"  ratio: avg {metrics['ratio']['avg_label']}")
 
 
 def _print_stats(label: str, stats: dict[str, float]) -> None:
     print(
-        f"{label}: avg {stats['avg']:.4f}s, median {stats['median']:.4f}s, "
+        f"{label}: avg {stats['avg']:.4f}s, "
         f"min {stats['min']:.4f}s, max {stats['max']:.4f}s"
     )
 
@@ -431,7 +431,6 @@ def _case_key(requirement: str) -> str:
 def _stats(values: list[float]) -> dict[str, float]:
     return {
         "avg": statistics.fmean(values),
-        "median": statistics.median(values),
         "min": min(values),
         "max": max(values),
     }
@@ -441,28 +440,16 @@ def _comparison_metrics(
     pip_stats: dict[str, float], spip_stats: dict[str, float]
 ) -> dict[str, dict[str, float | str]]:
     avg_ratio = spip_stats["avg"] / pip_stats["avg"] if pip_stats["avg"] else 0.0
-    median_ratio = (
-        spip_stats["median"] / pip_stats["median"] if pip_stats["median"] else 0.0
-    )
     avg_overhead = spip_stats["avg"] - pip_stats["avg"]
-    median_overhead = spip_stats["median"] - pip_stats["median"]
     return {
         "ratio": {
             "avg": avg_ratio,
-            "median": median_ratio,
             "avg_label": f"x{avg_ratio:.4f}",
-            "median_label": f"x{median_ratio:.4f}",
         },
         "overhead": {
             "avg_seconds": avg_overhead,
-            "median_seconds": median_overhead,
             "avg_percent": (
                 (avg_overhead / pip_stats["avg"]) * 100 if pip_stats["avg"] else 0.0
-            ),
-            "median_percent": (
-                (median_overhead / pip_stats["median"]) * 100
-                if pip_stats["median"]
-                else 0.0
             ),
         },
     }
@@ -487,7 +474,7 @@ def _json_payload(records: list[RunResult], args: argparse.Namespace) -> dict:
     default_summary = scenario_summaries[0]
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        "primary_metric": "median",
+        "primary_metric": "avg",
         "requirement": args.requirements[0],
         "requirements": list(args.requirements),
         "runs": args.runs,

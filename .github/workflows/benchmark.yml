@@ -11,10 +11,13 @@ on:
     paths:
       - ".github/workflows/benchmark.yml"
       - "scripts/benchmark_install.py"
+      - "scripts/benchmark_package_managers.py"
+      - "scripts/benchmark_viztracer.py"
       - "src/**"
       - "pyproject.toml"
       - "README.md"
       - "README.zh-CN.md"
+      - "doc/**"
   workflow_dispatch:
     inputs:
       runs:
@@ -31,146 +34,582 @@ on:
         default: |
           opencv-python
           scipy
-          uv
+          requests
   schedule:
     - cron: "17 2 * * 1"
+
+concurrency:
+  group: benchmark-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   install-benchmark:
     runs-on: ubuntu-latest
-    concurrency:
-      group: benchmark-${{ github.ref }}
-      cancel-in-progress: true
-
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.12"
-        cache: pip
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
 
-    - name: Install package
-      run: python -m pip install -e .
+      - name: Install package
+        run: python -m pip install -e .
 
-    - name: Resolve benchmark job URL
-      env:
-        GH_API_URL: ${{ github.api_url }}
-        GH_JOB_NAME: ${{ github.job }}
-        GH_REPOSITORY: ${{ github.repository }}
-        GH_RUN_ATTEMPT: ${{ github.run_attempt }}
-        GH_RUN_ID: ${{ github.run_id }}
-        GH_SERVER_URL: ${{ github.server_url }}
-        GH_TOKEN: ${{ github.token }}
-      run: |
-        python - <<'PY'
-        import json
-        import os
-        import urllib.request
+      - name: Resolve benchmark job URL
+        env:
+          GH_API_URL: ${{ github.api_url }}
+          GH_JOB_NAME: ${{ github.job }}
+          GH_REPOSITORY: ${{ github.repository }}
+          GH_RUN_ATTEMPT: ${{ github.run_attempt }}
+          GH_RUN_ID: ${{ github.run_id }}
+          GH_SERVER_URL: ${{ github.server_url }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
 
-        api_url = os.environ.get("GH_API_URL", "https://api.github.com").rstrip("/")
-        job_name = os.environ.get("GH_JOB_NAME", "")
-        repository = os.environ["GH_REPOSITORY"]
-        run_attempt = os.environ.get("GH_RUN_ATTEMPT", "")
-        run_id = os.environ["GH_RUN_ID"]
-        server_url = os.environ.get("GH_SERVER_URL", "https://github.com").rstrip("/")
-        token = os.environ.get("GH_TOKEN", "")
-        run_url = f"{server_url}/{repository}/actions/runs/{run_id}"
-        job_url = run_url
+          api_url = os.environ.get("GH_API_URL", "https://api.github.com").rstrip("/")
+          job_name = os.environ.get("GH_JOB_NAME", "")
+          repository = os.environ["GH_REPOSITORY"]
+          run_attempt = os.environ.get("GH_RUN_ATTEMPT", "")
+          run_id = os.environ["GH_RUN_ID"]
+          server_url = os.environ.get("GH_SERVER_URL", "https://github.com").rstrip("/")
+          token = os.environ.get("GH_TOKEN", "")
+          run_url = f"{server_url}/{repository}/actions/runs/{run_id}"
+          job_url = run_url
 
-        headers = {
-            "Accept": "application/vnd.github+json",
-            "X-GitHub-Api-Version": "2022-11-28",
-        }
-        if token:
-            headers["Authorization"] = f"Bearer {token}"
+          headers = {
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+          }
+          if token:
+              headers["Authorization"] = f"Bearer {token}"
 
-        endpoints = []
-        if run_attempt:
-            endpoints.append(
-                f"{api_url}/repos/{repository}/actions/runs/{run_id}/attempts/{run_attempt}/jobs?per_page=100"
-            )
-        endpoints.append(
-            f"{api_url}/repos/{repository}/actions/runs/{run_id}/jobs?per_page=100"
-        )
+          endpoints = []
+          if run_attempt:
+              endpoints.append(
+                  f"{api_url}/repos/{repository}/actions/runs/{run_id}/attempts/{run_attempt}/jobs?per_page=100"
+              )
+          endpoints.append(
+              f"{api_url}/repos/{repository}/actions/runs/{run_id}/jobs?per_page=100"
+          )
 
-        for endpoint in endpoints:
-            try:
-                request = urllib.request.Request(endpoint, headers=headers)
-                with urllib.request.urlopen(request, timeout=20) as response:
-                    jobs = json.loads(response.read().decode("utf-8")).get("jobs", [])
-            except Exception as exc:
-                print(f"could not resolve benchmark job URL from {endpoint}: {exc}")
-                continue
+          for endpoint in endpoints:
+              try:
+                  request = urllib.request.Request(endpoint, headers=headers)
+                  with urllib.request.urlopen(request, timeout=20) as response:
+                      jobs = json.loads(response.read().decode("utf-8")).get("jobs", [])
+              except Exception as exc:
+                  print(f"could not resolve benchmark job URL from {endpoint}: {exc}")
+                  continue
 
-            selected = next((job for job in jobs if job.get("name") == job_name), None)
-            if selected is None and len(jobs) == 1:
-                selected = jobs[0]
-            if selected and selected.get("html_url"):
-                job_url = selected["html_url"]
-                break
+              selected = next((job for job in jobs if job.get("name") == job_name), None)
+              if selected is None and len(jobs) == 1:
+                  selected = jobs[0]
+              if selected and selected.get("html_url"):
+                  job_url = selected["html_url"]
+                  break
 
-        with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
-            env_file.write(f"BENCHMARK_RUN_URL={run_url}\n")
-            env_file.write(f"BENCHMARK_JOB_URL={job_url}\n")
-        print(f"benchmark run URL: {run_url}")
-        print(f"benchmark job URL: {job_url}")
-        PY
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
+              env_file.write(f"BENCHMARK_RUN_URL={run_url}\n")
+              env_file.write(f"BENCHMARK_JOB_URL={job_url}\n")
+          print(f"benchmark run URL: {run_url}")
+          print(f"benchmark job URL: {job_url}")
+          PY
 
-    - name: Run install benchmark
-      env:
-        BENCHMARK_RUNS: ${{ github.event.inputs.runs || '20' }}
-        BENCHMARK_WARMUPS: ${{ github.event.inputs.warmups || '1' }}
-        BENCHMARK_REQUIREMENTS: ${{ github.event.inputs.requirements }}
-      run: |
-        if [ -z "$BENCHMARK_REQUIREMENTS" ]; then
-          BENCHMARK_REQUIREMENTS="$(printf 'opencv-python\nscipy\nuv\n')"
-        fi
-        args=()
-        while IFS= read -r requirement; do
-          if [ -n "$requirement" ]; then
-            args+=(--requirement "$requirement")
+      - name: Run install benchmark
+        env:
+          BENCHMARK_RUNS: ${{ github.event.inputs.runs || '20' }}
+          BENCHMARK_WARMUPS: ${{ github.event.inputs.warmups || '1' }}
+          BENCHMARK_REQUIREMENTS: ${{ github.event.inputs.requirements }}
+        run: |
+          if [ -z "$BENCHMARK_REQUIREMENTS" ]; then
+            BENCHMARK_REQUIREMENTS="$(printf 'opencv-python\nscipy\nrequests\n')"
           fi
-        done <<< "$BENCHMARK_REQUIREMENTS"
-        python scripts/benchmark_install.py \
-          --runs "$BENCHMARK_RUNS" \
-          --warmups "$BENCHMARK_WARMUPS" \
-          "${args[@]}" \
-          --json benchmark-results.json
+          args=()
+          while IFS= read -r requirement; do
+            if [ -n "$requirement" ]; then
+              args+=(--requirement "$requirement")
+            fi
+          done <<< "$BENCHMARK_REQUIREMENTS"
+          python scripts/benchmark_install.py \
+            --runs "$BENCHMARK_RUNS" \
+            --warmups "$BENCHMARK_WARMUPS" \
+            "${args[@]}" \
+            --json benchmark-results.json
 
-    - name: Upload benchmark results
-      uses: actions/upload-artifact@v4
-      with:
-        name: benchmark-results
-        path: benchmark-results.json
+      - name: Upload install benchmark
+        uses: actions/upload-artifact@v4
+        with:
+          name: install-benchmark-results
+          path: benchmark-results.json
 
-    - name: Publish website benchmark data
-      if: github.ref == 'refs/heads/main'
-      env:
-        DATA_BRANCH: benchmark-data
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        rm -rf .benchmark-data
-        if git ls-remote --exit-code --heads origin "$DATA_BRANCH" >/dev/null 2>&1; then
-          git fetch origin "$DATA_BRANCH"
-          git worktree add .benchmark-data "origin/$DATA_BRANCH"
-        else
-          git worktree add --detach .benchmark-data HEAD
-          git -C .benchmark-data checkout --orphan "$DATA_BRANCH"
-          git -C .benchmark-data rm -rf .
-        fi
-        cp benchmark-results.json .benchmark-data/benchmark.json
-        cat > .benchmark-data/vercel.json <<'JSON'
-        {
-          "ignoreCommand": "exit 0"
-        }
-        JSON
-        git -C .benchmark-data add -f benchmark.json vercel.json
-        if git -C .benchmark-data diff --cached --quiet; then
-          echo "benchmark data unchanged"
-        else
-          git -C .benchmark-data commit -m "Update benchmark data"
-          git -C .benchmark-data push origin HEAD:"$DATA_BRANCH"
-        fi
+  manager-benchmark-pip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install package
+        run: python -m pip install -e .
+
+      - name: Resolve benchmark job URL
+        env:
+          GH_API_URL: ${{ github.api_url }}
+          GH_JOB_NAME: ${{ github.job }}
+          GH_REPOSITORY: ${{ github.repository }}
+          GH_RUN_ATTEMPT: ${{ github.run_attempt }}
+          GH_RUN_ID: ${{ github.run_id }}
+          GH_SERVER_URL: ${{ github.server_url }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          api_url = os.environ.get("GH_API_URL", "https://api.github.com").rstrip("/")
+          job_name = os.environ.get("GH_JOB_NAME", "")
+          repository = os.environ["GH_REPOSITORY"]
+          run_attempt = os.environ.get("GH_RUN_ATTEMPT", "")
+          run_id = os.environ["GH_RUN_ID"]
+          server_url = os.environ.get("GH_SERVER_URL", "https://github.com").rstrip("/")
+          token = os.environ.get("GH_TOKEN", "")
+          run_url = f"{server_url}/{repository}/actions/runs/{run_id}"
+          job_url = run_url
+
+          headers = {
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+          }
+          if token:
+              headers["Authorization"] = f"Bearer {token}"
+
+          endpoints = []
+          if run_attempt:
+              endpoints.append(
+                  f"{api_url}/repos/{repository}/actions/runs/{run_id}/attempts/{run_attempt}/jobs?per_page=100"
+              )
+          endpoints.append(
+              f"{api_url}/repos/{repository}/actions/runs/{run_id}/jobs?per_page=100"
+          )
+
+          for endpoint in endpoints:
+              try:
+                  request = urllib.request.Request(endpoint, headers=headers)
+                  with urllib.request.urlopen(request, timeout=20) as response:
+                      jobs = json.loads(response.read().decode("utf-8")).get("jobs", [])
+              except Exception as exc:
+                  print(f"could not resolve benchmark job URL from {endpoint}: {exc}")
+                  continue
+
+              selected = next((job for job in jobs if job.get("name") == job_name), None)
+              if selected is None and len(jobs) == 1:
+                  selected = jobs[0]
+              if selected and selected.get("html_url"):
+                  job_url = selected["html_url"]
+                  break
+
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
+              env_file.write(f"BENCHMARK_RUN_URL={run_url}\n")
+              env_file.write(f"BENCHMARK_JOB_URL={job_url}\n")
+          PY
+
+      - name: Run pip vs spip benchmark
+        run: |
+          python scripts/benchmark_package_managers.py \
+            --runs 3 \
+            --scenario pip \
+            --json manager-benchmark-pip.json
+
+      - name: Upload pip manager benchmark
+        uses: actions/upload-artifact@v4
+        with:
+          name: manager-benchmark-pip
+          path: manager-benchmark-pip.json
+
+  manager-benchmark-uv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install package and uv
+        run: |
+          python -m pip install -e .
+          python -m pip install uv
+
+      - name: Resolve benchmark job URL
+        env:
+          GH_API_URL: ${{ github.api_url }}
+          GH_JOB_NAME: ${{ github.job }}
+          GH_REPOSITORY: ${{ github.repository }}
+          GH_RUN_ATTEMPT: ${{ github.run_attempt }}
+          GH_RUN_ID: ${{ github.run_id }}
+          GH_SERVER_URL: ${{ github.server_url }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          api_url = os.environ.get("GH_API_URL", "https://api.github.com").rstrip("/")
+          job_name = os.environ.get("GH_JOB_NAME", "")
+          repository = os.environ["GH_REPOSITORY"]
+          run_attempt = os.environ.get("GH_RUN_ATTEMPT", "")
+          run_id = os.environ["GH_RUN_ID"]
+          server_url = os.environ.get("GH_SERVER_URL", "https://github.com").rstrip("/")
+          token = os.environ.get("GH_TOKEN", "")
+          run_url = f"{server_url}/{repository}/actions/runs/{run_id}"
+          job_url = run_url
+
+          headers = {
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+          }
+          if token:
+              headers["Authorization"] = f"Bearer {token}"
+
+          endpoints = []
+          if run_attempt:
+              endpoints.append(
+                  f"{api_url}/repos/{repository}/actions/runs/{run_id}/attempts/{run_attempt}/jobs?per_page=100"
+              )
+          endpoints.append(
+              f"{api_url}/repos/{repository}/actions/runs/{run_id}/jobs?per_page=100"
+          )
+
+          for endpoint in endpoints:
+              try:
+                  request = urllib.request.Request(endpoint, headers=headers)
+                  with urllib.request.urlopen(request, timeout=20) as response:
+                      jobs = json.loads(response.read().decode("utf-8")).get("jobs", [])
+              except Exception as exc:
+                  print(f"could not resolve benchmark job URL from {endpoint}: {exc}")
+                  continue
+
+              selected = next((job for job in jobs if job.get("name") == job_name), None)
+              if selected is None and len(jobs) == 1:
+                  selected = jobs[0]
+              if selected and selected.get("html_url"):
+                  job_url = selected["html_url"]
+                  break
+
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
+              env_file.write(f"BENCHMARK_RUN_URL={run_url}\n")
+              env_file.write(f"BENCHMARK_JOB_URL={job_url}\n")
+          PY
+
+      - name: Run uv vs suv benchmark
+        run: |
+          python scripts/benchmark_package_managers.py \
+            --runs 3 \
+            --scenario uv \
+            --json manager-benchmark-uv.json
+
+      - name: Upload uv manager benchmark
+        uses: actions/upload-artifact@v4
+        with:
+          name: manager-benchmark-uv
+          path: manager-benchmark-uv.json
+
+  manager-benchmark-pipx:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install package and pipx
+        run: |
+          python -m pip install -e .
+          python -m pip install pipx
+
+      - name: Resolve benchmark job URL
+        env:
+          GH_API_URL: ${{ github.api_url }}
+          GH_JOB_NAME: ${{ github.job }}
+          GH_REPOSITORY: ${{ github.repository }}
+          GH_RUN_ATTEMPT: ${{ github.run_attempt }}
+          GH_RUN_ID: ${{ github.run_id }}
+          GH_SERVER_URL: ${{ github.server_url }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          api_url = os.environ.get("GH_API_URL", "https://api.github.com").rstrip("/")
+          job_name = os.environ.get("GH_JOB_NAME", "")
+          repository = os.environ["GH_REPOSITORY"]
+          run_attempt = os.environ.get("GH_RUN_ATTEMPT", "")
+          run_id = os.environ["GH_RUN_ID"]
+          server_url = os.environ.get("GH_SERVER_URL", "https://github.com").rstrip("/")
+          token = os.environ.get("GH_TOKEN", "")
+          run_url = f"{server_url}/{repository}/actions/runs/{run_id}"
+          job_url = run_url
+
+          headers = {
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+          }
+          if token:
+              headers["Authorization"] = f"Bearer {token}"
+
+          endpoints = []
+          if run_attempt:
+              endpoints.append(
+                  f"{api_url}/repos/{repository}/actions/runs/{run_id}/attempts/{run_attempt}/jobs?per_page=100"
+              )
+          endpoints.append(
+              f"{api_url}/repos/{repository}/actions/runs/{run_id}/jobs?per_page=100"
+          )
+
+          for endpoint in endpoints:
+              try:
+                  request = urllib.request.Request(endpoint, headers=headers)
+                  with urllib.request.urlopen(request, timeout=20) as response:
+                      jobs = json.loads(response.read().decode("utf-8")).get("jobs", [])
+              except Exception as exc:
+                  print(f"could not resolve benchmark job URL from {endpoint}: {exc}")
+                  continue
+
+              selected = next((job for job in jobs if job.get("name") == job_name), None)
+              if selected is None and len(jobs) == 1:
+                  selected = jobs[0]
+              if selected and selected.get("html_url"):
+                  job_url = selected["html_url"]
+                  break
+
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
+              env_file.write(f"BENCHMARK_RUN_URL={run_url}\n")
+              env_file.write(f"BENCHMARK_JOB_URL={job_url}\n")
+          PY
+
+      - name: Run pipx vs spipx benchmark
+        run: |
+          python scripts/benchmark_package_managers.py \
+            --runs 3 \
+            --scenario pipx \
+            --json manager-benchmark-pipx.json
+
+      - name: Upload pipx manager benchmark
+        uses: actions/upload-artifact@v4
+        with:
+          name: manager-benchmark-pipx
+          path: manager-benchmark-pipx.json
+
+  manager-benchmark-poetry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install package and poetry
+        run: |
+          python -m pip install -e .
+          python -m pip install poetry
+
+      - name: Resolve benchmark job URL
+        env:
+          GH_API_URL: ${{ github.api_url }}
+          GH_JOB_NAME: ${{ github.job }}
+          GH_REPOSITORY: ${{ github.repository }}
+          GH_RUN_ATTEMPT: ${{ github.run_attempt }}
+          GH_RUN_ID: ${{ github.run_id }}
+          GH_SERVER_URL: ${{ github.server_url }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          api_url = os.environ.get("GH_API_URL", "https://api.github.com").rstrip("/")
+          job_name = os.environ.get("GH_JOB_NAME", "")
+          repository = os.environ["GH_REPOSITORY"]
+          run_attempt = os.environ.get("GH_RUN_ATTEMPT", "")
+          run_id = os.environ["GH_RUN_ID"]
+          server_url = os.environ.get("GH_SERVER_URL", "https://github.com").rstrip("/")
+          token = os.environ.get("GH_TOKEN", "")
+          run_url = f"{server_url}/{repository}/actions/runs/{run_id}"
+          job_url = run_url
+
+          headers = {
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+          }
+          if token:
+              headers["Authorization"] = f"Bearer {token}"
+
+          endpoints = []
+          if run_attempt:
+              endpoints.append(
+                  f"{api_url}/repos/{repository}/actions/runs/{run_id}/attempts/{run_attempt}/jobs?per_page=100"
+              )
+          endpoints.append(
+              f"{api_url}/repos/{repository}/actions/runs/{run_id}/jobs?per_page=100"
+          )
+
+          for endpoint in endpoints:
+              try:
+                  request = urllib.request.Request(endpoint, headers=headers)
+                  with urllib.request.urlopen(request, timeout=20) as response:
+                      jobs = json.loads(response.read().decode("utf-8")).get("jobs", [])
+              except Exception as exc:
+                  print(f"could not resolve benchmark job URL from {endpoint}: {exc}")
+                  continue
+
+              selected = next((job for job in jobs if job.get("name") == job_name), None)
+              if selected is None and len(jobs) == 1:
+                  selected = jobs[0]
+              if selected and selected.get("html_url"):
+                  job_url = selected["html_url"]
+                  break
+
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
+              env_file.write(f"BENCHMARK_RUN_URL={run_url}\n")
+              env_file.write(f"BENCHMARK_JOB_URL={job_url}\n")
+          PY
+
+      - name: Run poetry vs spoetry benchmark
+        run: |
+          python scripts/benchmark_package_managers.py \
+            --runs 3 \
+            --scenario poetry \
+            --json manager-benchmark-poetry.json
+
+      - name: Upload poetry manager benchmark
+        uses: actions/upload-artifact@v4
+        with:
+          name: manager-benchmark-poetry
+          path: manager-benchmark-poetry.json
+
+  publish-benchmark:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs:
+      - install-benchmark
+      - manager-benchmark-pip
+      - manager-benchmark-uv
+      - manager-benchmark-pipx
+      - manager-benchmark-poetry
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download install benchmark artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: install-benchmark-results
+          path: .benchmark-artifacts/install
+
+      - name: Download manager benchmark artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: manager-benchmark-*
+          merge-multiple: true
+          path: .benchmark-artifacts/manager
+
+      - name: Merge manager benchmark data
+        env:
+          GH_REPOSITORY: ${{ github.repository }}
+          GH_RUN_ID: ${{ github.run_id }}
+          GH_SERVER_URL: ${{ github.server_url }}
+          GH_JOB_NAME: ${{ github.job }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(".benchmark-artifacts/manager")
+          payloads = []
+          for path in sorted(root.glob("*.json")):
+              payloads.append(json.loads(path.read_text(encoding="utf-8")))
+
+          if not payloads:
+              raise SystemExit("no manager benchmark artifacts found")
+
+          summary_rows = []
+          records = []
+          runs = None
+          for payload in payloads:
+              if runs is None:
+                  runs = payload.get("runs")
+              summary_rows.extend(payload.get("summaries", []))
+              records.extend(payload.get("records", []))
+
+          merged = {
+              "generated_at": payloads[0].get("generated_at"),
+              "runs": runs,
+              "mode": "guarded package-manager wall-clock benchmark",
+              "summaries": summary_rows,
+              "records": records,
+              "source": {
+                  "repository": os.environ.get("GH_REPOSITORY"),
+                  "run_id": os.environ.get("GH_RUN_ID"),
+                  "job_name": os.environ.get("GH_JOB_NAME"),
+                  "run_url": f"{os.environ.get('GH_SERVER_URL', 'https://github.com').rstrip('/')}/{os.environ.get('GH_REPOSITORY')}/actions/runs/{os.environ.get('GH_RUN_ID')}",
+              },
+          }
+          merged["benchmark_url"] = merged["source"]["run_url"]
+          Path("manager-benchmark-results.json").write_text(
+              json.dumps(merged, indent=2, sort_keys=True),
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Publish website benchmark data
+        env:
+          DATA_BRANCH: benchmark-data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -rf .benchmark-data
+          if git ls-remote --exit-code --heads origin "$DATA_BRANCH" >/dev/null 2>&1; then
+            git fetch origin "$DATA_BRANCH"
+            git worktree add .benchmark-data "origin/$DATA_BRANCH"
+          else
+            git worktree add --detach .benchmark-data HEAD
+            git -C .benchmark-data checkout --orphan "$DATA_BRANCH"
+            git -C .benchmark-data rm -rf .
+          fi
+          cp .benchmark-artifacts/install/benchmark-results.json .benchmark-data/benchmark.json
+          cp manager-benchmark-results.json .benchmark-data/manager-benchmark.json
+          cat > .benchmark-data/vercel.json <<'JSON'
+          {
+            "ignoreCommand": "exit 0"
+          }
+          JSON
+          git -C .benchmark-data add -f benchmark.json manager-benchmark.json vercel.json
+          if git -C .benchmark-data diff --cached --quiet; then
+            echo "benchmark data unchanged"
+          else
+            git -C .benchmark-data commit -m "Update benchmark data"
+            git -C .benchmark-data push origin HEAD:"$DATA_BRANCH"
+          fi

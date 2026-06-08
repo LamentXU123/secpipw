@@ -236,26 +236,31 @@ def _payload(records: list[dict], args: argparse.Namespace) -> dict:
                 "scenario": scenario.key,
                 "label": scenario.label,
                 "avg": statistics.fmean(durations),
-                "median": statistics.median(durations),
                 "min": min(durations),
                 "max": max(durations),
             }
         )
-    return {
+    payload = {
         "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "runs": args.runs,
         "min_duration": args.min_duration,
         "summaries": summaries,
         "records": records,
     }
+    source = _github_actions_source()
+    if source:
+        payload["source"] = source
+        benchmark_url = source.get("job_url") or source.get("run_url")
+        if benchmark_url:
+            payload["benchmark_url"] = benchmark_url
+    return payload
 
 
 def _print_summary(payload: dict, summary_path: Path) -> None:
     print("\nVizTracer benchmark")
     for summary in payload["summaries"]:
         print(
-            f"{summary['scenario']}: median {summary['median']:.4f}s, "
-            f"avg {summary['avg']:.4f}s, min {summary['min']:.4f}s, "
+            f"{summary['scenario']}: avg {summary['avg']:.4f}s, min {summary['min']:.4f}s, "
             f"max {summary['max']:.4f}s"
         )
     print(f"\nwrote summary to {summary_path}")
@@ -272,6 +277,36 @@ def _print_failure(
         print("\nstdout:\n" + completed.stdout)
     if completed.stderr:
         print("\nstderr:\n" + completed.stderr)
+
+
+def _github_actions_source() -> dict[str, str] | None:
+    repository = os.environ.get("GITHUB_REPOSITORY")
+    run_id = os.environ.get("GITHUB_RUN_ID")
+    server_url = os.environ.get("GITHUB_SERVER_URL", "https://github.com").rstrip("/")
+    run_url = os.environ.get("BENCHMARK_RUN_URL")
+    if not run_url and repository and run_id:
+        run_url = f"{server_url}/{repository}/actions/runs/{run_id}"
+
+    job_url = os.environ.get("BENCHMARK_JOB_URL")
+    if not run_url and not job_url:
+        return None
+
+    source: dict[str, str] = {}
+    if repository:
+        source["repository"] = repository
+    if run_id:
+        source["run_id"] = run_id
+    run_attempt = os.environ.get("GITHUB_RUN_ATTEMPT")
+    if run_attempt:
+        source["run_attempt"] = run_attempt
+    job_name = os.environ.get("GITHUB_JOB")
+    if job_name:
+        source["job_name"] = job_name
+    if run_url:
+        source["run_url"] = run_url
+    if job_url:
+        source["job_url"] = job_url
+    return source
 
 
 if __name__ == "__main__":

@@ -21,7 +21,7 @@
       <header class="site-header">
         <a class="brand brand-mark" href="./" aria-label="secpipw home">
           <img class="brand-logo" src="/assets/logo.png" alt="secpipw" />
-          <span class="brand-version" data-project-version>v1.0.0</span>
+          <span class="brand-version" data-project-version>v1.0.3</span>
         </a>
         <nav class="site-nav">
           <a href="/docs/">Docs</a>
@@ -88,7 +88,7 @@
               <article class="release-copy-block">
                 <h3>What problem does it solve?</h3>
                 <p>Supply-chain poisoning has always been a persistent security problem. Existing solutions include mature but expensive-to-run tools like GuardDog, and lightweight tools like sfw that rely entirely on a paid Socket API. GuardDog is too heavy for everyday CI usage and is better suited to static analysis by security researchers. Running GuardDog against every artifact downloaded by <code>pip install</code>, including all dependencies, would slow installs down. sfw is lighter, but its dependence on a paid API creates another cost for everyday developers.</p>
-                <p>secpipw solves this by hooking into pip's installer and merging security checks directly into the <code>pip install</code> download and installation flow. The latest GitHub Actions benchmark compares the full download and install flow for default <code>spip install</code> against <code>pip install</code> across multiple target packages. The primary median is <code data-benchmark-ratio>x--</code> of pip time. secpipw is completely free for everyone.</p>
+                <p>secpipw solves this by hooking into pip's installer and merging security checks directly into the <code>pip install</code> download and installation flow. The latest GitHub Actions benchmark compares the full download and install flow for default <code>spip install</code> against <code>pip install</code> across multiple target packages. The primary average ratio is <code data-benchmark-ratio>x--</code> of pip time. secpipw is completely free for everyone.</p>
                 <p>Today, many independent developers have suffered CI server compromises that leak secret keys and cause serious damage. With secpipw installed, that risk is greatly reduced, while requiring <strong>no payment, no extra performance budget, and no learning or configuration</strong>. Install it once with <code>pip install secpipw</code>, set an alias once, and keep using pip while gaining an important protection layer in the background.</p>
               </article>
 
@@ -158,17 +158,17 @@
             <h2><span class="title-accent">benchmark</span> results.</h2>
             <p>
               The latest GitHub Actions benchmark compares default <code>spip install</code> with
-              <code>pip install</code> for opencv-python, scipy, and uv using a local wheelhouse.
+              <code>pip install</code> for opencv-python, scipy, and requests using a local wheelhouse.
             </p>
             <div class="benchmark-table-wrap">
               <table class="benchmark-table">
                 <thead>
                   <tr>
                     <th>Package</th>
-                    <th>pip median</th>
-                    <th>spip median</th>
+                    <th>pip average</th>
+                    <th>spip average</th>
                     <th>Ratio</th>
-                    <th>Median overhead</th>
+                    <th>Average overhead</th>
                   </tr>
                 </thead>
                 <tbody data-benchmark-table>
@@ -187,7 +187,7 @@
                     <td><code>--</code></td>
                   </tr>
                   <tr>
-                    <td>uv</td>
+                    <td>requests</td>
                     <td><code>--</code></td>
                     <td><code>--</code></td>
                     <td><code>x--</code></td>
@@ -200,6 +200,7 @@
               Runs: <code data-benchmark-runs>--</code>.
               Updated: <code data-benchmark-generated>--</code>.
               <a class="hero-message-safe" data-benchmark-source-link href="https://github.com/LamentXU123/secpipw/actions/runs/26761792242/job/78877084922" target="_blank" rel="noreferrer">Open GitHub Actions benchmark job</a>.
+              <a class="hero-message-safe" href="/docs/benchmark.html">See the full benchmark docs</a>.
             </p>
           </div>
         </section>
@@ -208,6 +209,7 @@
           <div class="download-copy">
             <h2>Let's <span class="title-accent">install</span>.</h2>
             <p>Install <code>secpipw</code>, then use the <code>spip</code> command. Best to alias <code>pip</code> to <code>spip</code> to keep your usual workflow.</p>
+            <p><a class="manager-support-link" href="/docs/benchmark.html">See full benchmark results in the docs</a></p>
           </div>
 
           <div class="install-guides" data-command-guides>

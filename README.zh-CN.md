@@ -1,8 +1,7 @@
-# secpipw
-
 <p align="center">
   <img src="doc/assets/logo.png" alt="secpipw logo" width="160">
 </p>
+
 [English](./README.md) | 简体中文
 
 [![Test](https://github.com/LamentXU123/spip/actions/workflows/test.yml/badge.svg)](https://github.com/LamentXU123/spip/actions/workflows/test.yml)
@@ -162,13 +161,21 @@ warning 的检查项也会被跳过。
 python scripts/benchmark_install.py --runs 5 --warmups 0
 ```
 
-默认 benchmark 会比较 `pip install ruff` 和 `spip install ruff`，下载和安装
-全过程都会计时。它会使用 `--no-cache-dir`、`--no-deps`，以及每次测量新建的
-`--target` 目录，因此结果聚焦在对同一个有名包本体的多次安装，而不是依赖树。
-Benchmark GitHub Actions workflow 会在 `main` 的相关变更、每周定时任务或手动
-触发时运行。它会把最新
-`benchmark.json` 发布到远端 `benchmark-data` 分支，官网再从这份数据中渲染
-`x1.0742` 这样的 median ratio。benchmark 更新不会推进 `main`。
+文档页使用的 package-manager benchmark 可以这样运行：
+
+```bash
+python scripts/benchmark_package_managers.py --runs 10
+```
+
+默认 install benchmark 会比较 `pip install requests` 和
+`spip install requests`，下载和安装全过程都会计时。它会使用本地
+wheelhouse、`--no-index`、`--no-deps`，以及每次测量新建的 `--target`
+目录，因此结果聚焦在对同一个有名包本体的多次安装，而不是依赖树。另有一组
+package-manager benchmark 会记录受保护的 `uv`、`pipx` 和 `poetry`
+路由启动/预检查开销，只在 docs 页面展示。Benchmark GitHub Actions
+workflow 会在 `main` 的相关变更、每周定时任务或手动触发时运行。它会把最新
+`benchmark.json` 和 `manager-benchmark.json` 发布到远端
+`benchmark-data` 分支。benchmark 更新不会推进 `main`。
 
 当 `secpipw` 检测到潜在风险时，会根据风险严重程度发出对应级别的警告。
 
