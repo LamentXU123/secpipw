@@ -1637,6 +1637,8 @@ def _input_uses_direct_url(value: str) -> bool:
 
     if value.startswith(VCS_URL_PREFIXES):
         return True
+    if not _may_include_direct_reference(value):
+        return False
     if _requirement_uses_direct_url(value):
         return True
     parsed = urlparse(value)
@@ -1644,6 +1646,9 @@ def _input_uses_direct_url(value: str) -> bool:
 
 
 def _requirement_uses_direct_url(requirement: str) -> bool:
+    if not _may_include_direct_reference(requirement):
+        return False
+
     from packaging.requirements import InvalidRequirement, Requirement
 
     try:
@@ -1666,6 +1671,15 @@ def _starts_with_known_option_prefix(arg: str) -> bool:
     if not arg.startswith("--") or "=" not in arg:
         return False
     return arg.split("=", 1)[0] in PIP_OPTIONS_WITH_VALUE
+
+
+def _may_include_direct_reference(value: str) -> bool:
+    return (
+        "@" in value
+        or "://" in value
+        or value.startswith("file:")
+        or value.startswith(VCS_URL_PREFIXES)
+    )
 
 
 def _package_report_metadata(package: PackageLike) -> dict | None:
@@ -1839,9 +1853,18 @@ def _official_pypi_client_class():
 
 
 def _canonicalize_name(value: str) -> str:
-    from packaging.utils import canonicalize_name
-
-    return canonicalize_name(value)
+    normalized: list[str] = []
+    previous_was_separator = False
+    for char in value.strip().lower():
+        is_separator = char in "-_."
+        if is_separator:
+            if previous_was_separator:
+                continue
+            normalized.append("-")
+        else:
+            normalized.append(char)
+        previous_was_separator = is_separator
+    return "".join(normalized)
 
 
 def _colorize(text: str, severity: Severity) -> str:

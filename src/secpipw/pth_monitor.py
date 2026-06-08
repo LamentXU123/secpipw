@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Iterable, Iterator, TextIO
@@ -174,7 +175,7 @@ def inspect_install_artifacts(
         ):
             if not local_file_path:
                 continue
-            artifact_path = Path(local_file_path).resolve()
+            artifact_path = _absolute_path(Path(local_file_path))
             if artifact_path in seen_paths:
                 continue
             seen_paths.add(artifact_path)
@@ -496,7 +497,7 @@ def collect_package_artifact_records(
             site_dir,
             requested,
         ):
-            resolved_dist_info = dist_info.resolve()
+            resolved_dist_info = _absolute_path(dist_info)
             if resolved_dist_info in visited:
                 continue
             visited.add(resolved_dist_info)
@@ -520,7 +521,7 @@ def collect_package_artifact_records(
             continue
 
         for dist_info in site_dir.glob("*.dist-info"):
-            resolved_dist_info = dist_info.resolve()
+            resolved_dist_info = _absolute_path(dist_info)
             if resolved_dist_info in visited:
                 continue
             collected = _collect_package_artifact_record_from_dist_info(
@@ -706,7 +707,7 @@ def store_package_artifact_history(payload: dict, path: Path) -> None:
 def resolve_watch_directories(pip_args: list[str]) -> list[Path]:
     target = _option_value(pip_args, "-t", "--target")
     if target is not None:
-        return [Path(target).resolve()]
+        return [_absolute_path(Path(target))]
 
     python_executable = _option_value(pip_args, "--python")
     root = _option_value(pip_args, "--root")
@@ -720,13 +721,13 @@ def resolve_watch_directories(pip_args: list[str]) -> list[Path]:
     )
     if root is None:
         return install_dirs
-    return [_apply_root(Path(root).resolve(), path) for path in install_dirs]
+    return [_apply_root(_absolute_path(Path(root)), path) for path in install_dirs]
 
 
 def resolve_script_directories(pip_args: list[str]) -> list[Path]:
     target = _option_value(pip_args, "-t", "--target")
     if target is not None:
-        target_path = Path(target).resolve()
+        target_path = _absolute_path(Path(target))
         return _dedupe_paths([target_path / "bin", target_path / "Scripts"])
 
     python_executable = _option_value(pip_args, "--python")
@@ -741,7 +742,7 @@ def resolve_script_directories(pip_args: list[str]) -> list[Path]:
     )
     if root is None:
         return script_dirs
-    return [_apply_root(Path(root).resolve(), path) for path in script_dirs]
+    return [_apply_root(_absolute_path(Path(root)), path) for path in script_dirs]
 
 
 def snapshot_pth_files(
@@ -754,7 +755,7 @@ def snapshot_pth_files(
         if not directory.exists() or not directory.is_dir():
             continue
         for path in directory.glob("*.pth"):
-            resolved = path.resolve()
+            resolved = _absolute_path(path)
             try:
                 stat = path.stat()
             except OSError:
@@ -1032,9 +1033,9 @@ def _installed_path_from_record(dist_info: Path, value: str) -> Path | None:
         return None
     path = Path(value)
     if path.is_absolute():
-        return path.resolve()
+        return _absolute_path(path)
     parts = PurePosixPath(value).parts
-    return dist_info.parent.joinpath(*parts).resolve()
+    return _absolute_path(dist_info.parent.joinpath(*parts))
 
 
 def _entry_points_from_dist_info(dist_info: Path) -> list[str]:
@@ -1202,12 +1203,16 @@ def _dedupe_paths(paths: Iterable[Path]) -> list[Path]:
     result: list[Path] = []
     seen: set[Path] = set()
     for path in paths:
-        resolved = path.resolve()
+        resolved = _absolute_path(path)
         if resolved in seen:
             continue
         seen.add(resolved)
         result.append(resolved)
     return result
+
+
+def _absolute_path(path: Path) -> Path:
+    return Path(os.path.abspath(str(path)))
 
 
 def _import_lines_from_text(text: str) -> Iterator[str]:

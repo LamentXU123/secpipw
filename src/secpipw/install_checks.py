@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+from functools import lru_cache
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Protocol
 
@@ -57,6 +58,7 @@ def client_from_pip_args(*args, **kwargs):
     return impl(*args, **kwargs)
 
 
+@lru_cache(maxsize=1)
 def _release_checks_module():
     from secpipw import release_checks
 
@@ -531,16 +533,24 @@ def _bootstrap_project_name_set() -> frozenset[str]:
     if _BOOTSTRAP_PROJECT_NAME_SET is None:
         from secpipw.pypi_api import BOOTSTRAP_PROJECT_NAMES
 
-        _BOOTSTRAP_PROJECT_NAME_SET = frozenset(
-            _canonicalize_name(name) for name in BOOTSTRAP_PROJECT_NAMES
-        )
+        # BOOTSTRAP_PROJECT_NAMES is already stored in canonical normalized form.
+        _BOOTSTRAP_PROJECT_NAME_SET = frozenset(BOOTSTRAP_PROJECT_NAMES)
     return _BOOTSTRAP_PROJECT_NAME_SET
 
 
 def _canonicalize_name(name: str) -> str:
-    from packaging.utils import canonicalize_name
-
-    return canonicalize_name(name)
+    normalized: list[str] = []
+    previous_was_separator = False
+    for char in name.strip().lower():
+        is_separator = char in "-_."
+        if is_separator:
+            if previous_was_separator:
+                continue
+            normalized.append("-")
+        else:
+            normalized.append(char)
+        previous_was_separator = is_separator
+    return "".join(normalized)
 
 
 def _install_alerts_from_mapping(alerts: dict[str, Iterable]) -> InstallAlerts:
