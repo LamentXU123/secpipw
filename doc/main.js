@@ -29,17 +29,11 @@ const benchmarkSpipMedianNodes = document.querySelectorAll('[data-benchmark-spip
 const benchmarkRunsNodes = document.querySelectorAll('[data-benchmark-runs]')
 const benchmarkGeneratedNodes = document.querySelectorAll('[data-benchmark-generated]')
 const benchmarkTableBodies = document.querySelectorAll('[data-benchmark-table]')
-const combinedBenchmarkTableBodies = document.querySelectorAll('[data-benchmark-combined-table]')
 const benchmarkSourceLinks = document.querySelectorAll('[data-benchmark-source-link]')
 const benchmarkSources = [
   'https://raw.githubusercontent.com/LamentXU123/secpipw/benchmark-data/benchmark.json',
   'https://raw.githubusercontent.com/LamentXU123/spip/benchmark-data/benchmark.json',
   '/benchmark.json',
-]
-const managerBenchmarkSources = [
-  'https://raw.githubusercontent.com/LamentXU123/secpipw/benchmark-data/manager-benchmark.json',
-  'https://raw.githubusercontent.com/LamentXU123/spip/benchmark-data/manager-benchmark.json',
-  '/manager-benchmark.json',
 ]
 
 const setNodeText = (nodes, value) => {
@@ -59,20 +53,20 @@ const formatSeconds = (value) => {
 }
 
 const formatBenchmarkRatio = (payload) => {
-  const label = payload?.summary?.ratio?.avg_label
+  const label = payload?.summary?.ratio?.median_label
   if (typeof label === 'string' && label.startsWith('x')) {
     return label
   }
 
-  const explicit = finiteNumber(payload?.summary?.ratio?.avg)
+  const explicit = finiteNumber(payload?.summary?.ratio?.median)
   if (explicit !== null) {
     return `x${explicit.toFixed(4)}`
   }
 
-  const pipAvg = finiteNumber(payload?.summary?.pip?.avg)
-  const spipAvg = finiteNumber(payload?.summary?.spip?.avg)
-  if (pipAvg !== null && pipAvg > 0 && spipAvg !== null) {
-    return `x${(spipAvg / pipAvg).toFixed(4)}`
+  const pipMedian = finiteNumber(payload?.summary?.pip?.median)
+  const spipMedian = finiteNumber(payload?.summary?.spip?.median)
+  if (pipMedian !== null && pipMedian > 0 && spipMedian !== null) {
+    return `x${(spipMedian / pipMedian).toFixed(4)}`
   }
 
   return 'x--'
@@ -145,57 +139,20 @@ const renderBenchmarkTables = (payload) => {
       .map((scenario) => {
         const overhead = scenario?.overhead || {}
         const overheadLabel = `${formatSignedSeconds(
-          overhead.avg_seconds
-        )} (${formatPercent(overhead.avg_percent)})`
+          overhead.median_seconds
+        )} (${formatPercent(overhead.median_percent)})`
         return `
           <tr>
             <td>${escapeHtml(benchmarkModeLabel(scenario))}</td>
-            <td><code>${escapeHtml(formatSeconds(scenario?.pip?.avg))}</code></td>
-            <td><code>${escapeHtml(formatSeconds(scenario?.spip?.avg))}</code></td>
+            <td><code>${escapeHtml(formatSeconds(scenario?.pip?.median))}</code></td>
+            <td><code>${escapeHtml(formatSeconds(scenario?.spip?.median))}</code></td>
             <td><code>${escapeHtml(
-              scenario?.ratio?.avg_label || formatBenchmarkRatio({ summary: scenario })
+              scenario?.ratio?.median_label || formatBenchmarkRatio({ summary: scenario })
             )}</code></td>
             <td><code>${escapeHtml(overheadLabel)}</code></td>
           </tr>
         `
       })
-      .join('')
-  }
-}
-
-const benchmarkCombinedRows = (managerPayload) => {
-  const rows = Array.isArray(managerPayload?.summaries)
-    ? managerPayload.summaries.map((summary) => ({
-        wrapper: summary?.wrapper || '--',
-        guardedEntry: summary?.guarded_entry || '--',
-        packages: Array.isArray(summary?.packages) ? summary.packages.join(', ') : '--',
-        originalAvg: finiteNumber(summary?.original?.avg),
-        guardedAvg: finiteNumber(summary?.guarded?.avg),
-        ratio: summary?.ratio?.avg_label || 'x--',
-      }))
-    : []
-  const routeOrder = { pip: 0, uv: 1, pipx: 2, poetry: 3 }
-  return rows.sort(
-    (left, right) => (routeOrder[left.wrapper] ?? 99) - (routeOrder[right.wrapper] ?? 99),
-  )
-}
-
-const renderCombinedBenchmarkTables = (managerPayload) => {
-  const rows = benchmarkCombinedRows(managerPayload)
-  for (const body of combinedBenchmarkTableBodies) {
-    body.innerHTML = rows
-      .map(
-        (scenario) => `
-          <tr>
-            <td>${escapeHtml(scenario?.wrapper || '--')}</td>
-            <td>${escapeHtml(scenario?.guardedEntry || '--')}</td>
-            <td>${escapeHtml(scenario?.packages || '--')}</td>
-            <td><code>${escapeHtml(formatSeconds(scenario?.originalAvg))}</code></td>
-            <td><code>${escapeHtml(formatSeconds(scenario?.guardedAvg))}</code></td>
-            <td><code>${escapeHtml(scenario?.ratio || 'x--')}</code></td>
-          </tr>
-        `,
-      )
       .join('')
   }
 }
@@ -228,23 +185,6 @@ const loadBenchmarkPayload = async () => {
   return null
 }
 
-const loadManagerBenchmarkPayload = async () => {
-  for (const source of managerBenchmarkSources) {
-    try {
-      const url = source.startsWith('http')
-        ? `${source}?t=${Date.now()}`
-        : source
-      const response = await fetch(url, { cache: 'no-store' })
-      if (response.ok) {
-        return response.json()
-      }
-    } catch {
-      // Try the next benchmark source.
-    }
-  }
-  return null
-}
-
 const loadBenchmark = async () => {
   const hasBenchmarkNodes =
     benchmarkRatioNodes.length > 0 ||
@@ -252,8 +192,7 @@ const loadBenchmark = async () => {
     benchmarkSpipMedianNodes.length > 0 ||
     benchmarkRunsNodes.length > 0 ||
     benchmarkGeneratedNodes.length > 0 ||
-    benchmarkTableBodies.length > 0 ||
-    combinedBenchmarkTableBodies.length > 0
+    benchmarkTableBodies.length > 0
 
   if (!hasBenchmarkNodes) {
     return
@@ -265,22 +204,12 @@ const loadBenchmark = async () => {
   }
 
   setNodeText(benchmarkRatioNodes, formatBenchmarkRatio(payload))
-  setNodeText(benchmarkPipMedianNodes, formatSeconds(payload?.summary?.pip?.avg))
-  setNodeText(benchmarkSpipMedianNodes, formatSeconds(payload?.summary?.spip?.avg))
+  setNodeText(benchmarkPipMedianNodes, formatSeconds(payload?.summary?.pip?.median))
+  setNodeText(benchmarkSpipMedianNodes, formatSeconds(payload?.summary?.spip?.median))
   setNodeText(benchmarkRunsNodes, String(payload?.runs ?? '--'))
   setNodeText(benchmarkGeneratedNodes, formatBenchmarkDate(payload?.generated_at))
   updateBenchmarkSourceLinks(payload)
   renderBenchmarkTables(payload)
-
-  if (combinedBenchmarkTableBodies.length > 0) {
-    const managerPayload = await loadManagerBenchmarkPayload()
-    if (managerPayload) {
-      setNodeText(benchmarkRunsNodes, String(managerPayload?.runs ?? '--'))
-      setNodeText(benchmarkGeneratedNodes, formatBenchmarkDate(managerPayload?.generated_at))
-      updateBenchmarkSourceLinks(managerPayload)
-    }
-    renderCombinedBenchmarkTables(managerPayload)
-  }
 }
 
 loadBenchmark()

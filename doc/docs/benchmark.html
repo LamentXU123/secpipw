@@ -6,7 +6,7 @@
     <title>secpipw benchmark</title>
     <meta
       name="description"
-      content="GitHub Actions benchmark results for secpipw."
+      content="GitHub Actions install benchmark results for secpipw."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -29,7 +29,7 @@
       <header class="site-header docs-topbar">
         <a class="brand brand-mark" href="/" aria-label="secpipw home">
           <img class="brand-logo" src="/assets/logo.png" alt="secpipw" />
-          <span class="brand-version" data-project-version>v1.0.3</span>
+          <span class="brand-version" data-project-version>v1.0.0</span>
         </a>
         <nav class="site-nav">
           <a href="/docs/">Docs</a>
@@ -58,7 +58,8 @@
           <p class="docs-kicker">Performance</p>
           <h1>Benchmark</h1>
           <p class="docs-lead">
-            This page compares each wrapper with its guarded entrypoint counterpart using average times and average ratio.
+            The latest GitHub Actions benchmark compares default <code>spip install</code> with
+            <code>pip install</code> across multiple target packages.
           </p>
 
           <hr />
@@ -66,29 +67,42 @@
           <section id="benchmark-results">
             <h2><span class="title-accent">Benchmark</span> results</h2>
             <p>
-              All rows below use the same three package targets:
-              <code>ruff</code>, <code>httpie</code>, and <code>uvicorn</code>.
+              The benchmark prepares a local wheelhouse first, then measures only
+              <code>--no-index</code>, <code>--find-links</code>, <code>--no-deps</code>,
+              and a fresh <code>--target</code> per run.
             </p>
             <div class="benchmark-table-wrap">
               <table class="benchmark-table">
                 <thead>
                   <tr>
-                    <th>Wrapper</th>
-                    <th>Guarded entry</th>
-                    <th>Target set</th>
-                    <th>Wrapper avg</th>
-                    <th>Guarded avg</th>
-                    <th>Avg ratio</th>
+                    <th>Package</th>
+                    <th>pip median</th>
+                    <th>spip median</th>
+                    <th>Ratio</th>
+                    <th>Median overhead</th>
                   </tr>
                 </thead>
-                <tbody data-benchmark-combined-table>
+                <tbody data-benchmark-table>
                   <tr>
-                    <td>pip</td>
-                    <td>spip</td>
-                    <td>ruff, httpie, uvicorn</td>
+                    <td>opencv-python</td>
                     <td><code>--</code></td>
                     <td><code>--</code></td>
                     <td><code>x--</code></td>
+                    <td><code>--</code></td>
+                  </tr>
+                  <tr>
+                    <td>scipy</td>
+                    <td><code>--</code></td>
+                    <td><code>--</code></td>
+                    <td><code>x--</code></td>
+                    <td><code>--</code></td>
+                  </tr>
+                  <tr>
+                    <td>uv</td>
+                    <td><code>--</code></td>
+                    <td><code>--</code></td>
+                    <td><code>x--</code></td>
+                    <td><code>--</code></td>
                   </tr>
                 </tbody>
               </table>

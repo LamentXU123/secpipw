@@ -1,7 +1,8 @@
+# secpipw
+
 <p align="center">
   <img src="doc/assets/logo.png" alt="secpipw logo" width="160">
 </p>
-
 English | [简体中文](./README.zh-CN.md)
 
 [![Test](https://github.com/LamentXU123/spip/actions/workflows/test.yml/badge.svg)](https://github.com/LamentXU123/spip/actions/workflows/test.yml)
@@ -171,29 +172,21 @@ python scripts/benchmark_install.py --runs 5 --warmups 0
 Add `--viztracer --viztracer-dir .tmp-perf/install-benchmark` to generate
 per-run flame graphs for the measured install commands.
 
-Run the package-manager benchmark used by the docs with:
-
-```bash
-python scripts/benchmark_package_managers.py --runs 10
-```
-
 Run the local VizTracer hot-path benchmark with:
 
 ```bash
 python scripts/benchmark_viztracer.py --runs 3
 ```
 
-The default install benchmark compares `pip install requests` and
-`spip install requests`, timing package download and installation together.
-It uses a local wheelhouse, `--no-index`, `--no-deps`, and a fresh `--target`
-directory for each measured run, so the result focuses on repeated installs of
-one well-known package body rather than a dependency tree. A separate
-package-manager benchmark records guarded `uv`, `pipx`, and `poetry` route
-startup/preflight cost for the docs page only. The Benchmark GitHub Actions
-workflow runs on relevant `main` changes, on a weekly schedule, or by manual
-dispatch. It publishes the latest `benchmark.json` and
-`manager-benchmark.json` to the remote `benchmark-data` branch. Benchmark
-updates do not advance `main`.
+The default benchmark compares `pip install ruff` and `spip install ruff`,
+timing package download and installation together. It uses `--no-cache-dir`,
+`--no-deps`, and a fresh `--target` directory for each measured run, so the
+result focuses on repeated installs of one well-known package body rather than a
+dependency tree. The Benchmark GitHub Actions workflow runs on relevant `main` changes, on a
+weekly schedule, or by manual dispatch. It publishes the latest
+`benchmark.json` to the remote `benchmark-data` branch, and the website renders
+`x1.0742`-style median ratios from that data. Benchmark updates do not advance
+`main`.
 
 When `secpipw` detects a potential risk, a warning will be raised, with the level depending on the severity the risk is.
 
