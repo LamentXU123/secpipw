@@ -115,6 +115,45 @@ class PthMonitorTests(unittest.TestCase):
 
         self.assertFalse(contains_pth)
 
+    def test_remote_zip_detector_reuses_cached_result(self) -> None:
+        with temporary_workspace_dir() as tmp:
+            path = tmp / "demo.whl"
+            cache_root = tmp / "cache"
+            _write_zip_archive(path, {"pkg/__init__.py": ""})
+            payload = path.read_bytes()
+            response = pth_monitor._SuffixRangeResponse(
+                payload=payload,
+                partial=False,
+                total_size=len(payload),
+            )
+
+            with patch.object(
+                pth_monitor,
+                "_remote_zip_pth_cache_root",
+                return_value=cache_root,
+            ):
+                with patch.object(
+                    pth_monitor,
+                    "_fetch_http_suffix_range",
+                    return_value=response,
+                ) as fetch_range:
+                    first = pth_monitor.remote_zip_artifact_contains_pth(
+                        "https://example.test/demo.whl"
+                    )
+
+                with patch.object(
+                    pth_monitor,
+                    "_fetch_http_suffix_range",
+                    side_effect=AssertionError("cached result should avoid network"),
+                ):
+                    second = pth_monitor.remote_zip_artifact_contains_pth(
+                        "https://example.test/demo.whl"
+                    )
+
+        self.assertFalse(first)
+        self.assertFalse(second)
+        fetch_range.assert_called_once()
+
     def test_inspect_install_artifacts_scans_local_file_paths(self) -> None:
         with temporary_workspace_dir() as tmp:
             sdist_path = tmp / "demo.tar.gz"

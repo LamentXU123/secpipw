@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import hashlib
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Iterable, Iterator, TextIO
 
@@ -11,6 +12,7 @@ if TYPE_CHECKING:
     from secpipw.warning_gate import GateDecision
 
 PYTHON_DIRECTORY_QUERY_TIMEOUT_SECONDS = 10
+DEFAULT_REMOTE_ZIP_PTH_CACHE_TTL_SECONDS = 86400
 PIP_OPTIONS_WITH_VALUE = {
     "-t",
     "--target",
@@ -252,6 +254,9 @@ def remote_zip_artifact_contains_pth(
     parsed = urlparse(download_url)
     if parsed.scheme not in {"http", "https"}:
         return None
+    cached = _load_cached_remote_zip_pth_result(download_url)
+    if cached is not None:
+        return cached
 
     tail_bytes = max(initial_tail_bytes, 4096)
     while tail_bytes <= max_tail_bytes:
@@ -267,16 +272,21 @@ def remote_zip_artifact_contains_pth(
             return None
 
         if not response.partial:
-            return _zip_bytes_contain_pth(response.payload)
+            result = _zip_bytes_contain_pth(response.payload)
+            _store_cached_remote_zip_pth_result(download_url, result)
+            return result
 
         contains_pth = _zip_tail_contains_pth(
             response.payload,
             total_size=response.total_size,
         )
         if contains_pth is not None:
+            _store_cached_remote_zip_pth_result(download_url, contains_pth)
             return contains_pth
         if response.total_size <= len(response.payload):
-            return _zip_bytes_contain_pth(response.payload)
+            result = _zip_bytes_contain_pth(response.payload)
+            _store_cached_remote_zip_pth_result(download_url, result)
+            return result
         tail_bytes *= 2
     return None
 
@@ -293,6 +303,84 @@ class _SuffixRangeResponse(_FrozenRecord):
     payload: bytes
     partial: bool
     total_size: int
+
+
+def _remote_zip_pth_cache_root() -> Path:
+    configured = os.environ.get("SPIP_CACHE_DIR")
+    if configured:
+        return Path(configured).expanduser() / "remote-zip-pth"
+
+    if os.name == "nt":
+        local_app_data = os.environ.get("LOCALAPPDATA") or os.environ.get("APPDATA")
+        if local_app_data:
+            return Path(local_app_data) / "spip" / "cache" / "remote-zip-pth"
+
+    xdg_cache_home = os.environ.get("XDG_CACHE_HOME")
+    if xdg_cache_home:
+        return Path(xdg_cache_home) / "spip" / "remote-zip-pth"
+    return Path.home() / ".cache" / "spip" / "remote-zip-pth"
+
+
+def _remote_zip_pth_cache_ttl_seconds() -> int:
+    configured = os.environ.get("SPIP_REMOTE_ZIP_PTH_CACHE_TTL_SECONDS")
+    if configured is None:
+        return DEFAULT_REMOTE_ZIP_PTH_CACHE_TTL_SECONDS
+    try:
+        return max(0, int(configured))
+    except ValueError:
+        return DEFAULT_REMOTE_ZIP_PTH_CACHE_TTL_SECONDS
+
+
+def _remote_zip_pth_cache_path(download_url: str) -> Path:
+    digest = hashlib.sha256(download_url.encode("utf-8")).hexdigest()
+    return _remote_zip_pth_cache_root() / digest[:2] / f"{digest}.json"
+
+
+def _load_cached_remote_zip_pth_result(download_url: str) -> bool | None:
+    cache_path = _remote_zip_pth_cache_path(download_url)
+    if not cache_path.exists():
+        return None
+    ttl_seconds = _remote_zip_pth_cache_ttl_seconds()
+    if ttl_seconds > 0:
+        try:
+            age_seconds = _now_timestamp() - cache_path.stat().st_mtime
+        except OSError:
+            return None
+        if age_seconds > ttl_seconds:
+            return None
+    try:
+        payload = json.loads(cache_path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    value = payload.get("contains_pth")
+    return value if isinstance(value, bool) else None
+
+
+def _store_cached_remote_zip_pth_result(
+    download_url: str,
+    result: bool | None,
+) -> None:
+    if result is None:
+        return
+    cache_path = _remote_zip_pth_cache_path(download_url)
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path = cache_path.with_name(
+        f".{cache_path.name}.{os.getpid()}.tmp"
+    )
+    try:
+        temporary_path.write_text(
+            json.dumps({"contains_pth": result}, separators=(",", ":"), sort_keys=True),
+            encoding="utf-8",
+        )
+        os.replace(temporary_path, cache_path)
+    finally:
+        temporary_path.unlink(missing_ok=True)
+
+
+def _now_timestamp() -> float:
+    import time
+
+    return time.time()
 
 
 def inspect_sdist_for_suspicious_pth(path: Path) -> list[SuspiciousPthAlert]:

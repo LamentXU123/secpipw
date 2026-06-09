@@ -160,7 +160,6 @@ _UV_SYNTHETIC_SUPPORTED_VALUE_OPTIONS = {
     "--target",
 }
 _UV_SYNTHETIC_SUPPORTED_FLAGS = {
-    "--ignore-installed",
     "--no-deps",
     "--no-index",
     "--require-hashes",
@@ -421,6 +420,9 @@ def _uv_dry_run_command_args_from_pip_args(pip_args: list[str]) -> list[str] | N
             break
         if arg == "--pre":
             forwarded.extend(["--prerelease", "allow"])
+            i += 1
+            continue
+        if arg == "--ignore-installed":
             i += 1
             continue
         if option_name in {"--target", "--prefix"}:

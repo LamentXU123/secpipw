@@ -473,6 +473,7 @@ class InstallPlanTests(unittest.TestCase):
         command = run.call_args.args[0]
         self.assertEqual(command[:6], ["uv", "pip", "install", "--dry-run", "-v", "--no-progress"])
         self.assertIn("--no-config", command)
+        self.assertNotIn("--ignore-installed", command)
 
     def test_resolve_install_plan_can_use_uv_fast_path_for_poetry(self) -> None:
         completed = type(
