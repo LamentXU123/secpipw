@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -130,6 +131,15 @@ _CACHE_KEY_IGNORED_VALUE_OPTIONS = {
     "--timeout",
 }
 _CACHE_KEY_IGNORED_FLAGS = {"--disable-pip-version-check"}
+_UV_SELECT_RE = re.compile(
+    r"^DEBUG Selecting: (?P<name>[^=\s]+)==(?P<version>\S+) .* \((?P<filename>[^)]+)\)$"
+)
+_UV_DIRECT_DEP_RE = re.compile(r"^DEBUG Adding direct dependency: (?P<name>[^*<>=!\s\[]+)")
+_UV_TRANSITIVE_DEP_RE = re.compile(
+    r"^DEBUG Adding transitive dependency for "
+    r"(?P<parent>[^=\s]+)==\S+: (?P<requirement>.+)$"
+)
+_UV_WOULD_INSTALL_RE = re.compile(r"^\s+\+\s+(?P<name>[^=\s]+)==(?P<version>\S+)$")
 
 
 def resolve_install_plan(
@@ -137,6 +147,8 @@ def resolve_install_plan(
     *,
     ignore_installed: bool = False,
     use_cache: bool = False,
+    tool: str | None = None,
+    tool_args: list[str] | None = None,
 ) -> InstallPlan:
     effective_args = _normalized_plan_args(
         pip_args,
@@ -146,6 +158,16 @@ def resolve_install_plan(
         cached_report = _load_cached_install_plan_report(effective_args)
         if cached_report is not None:
             return install_plan_from_report(cached_report)
+
+    if tool == "uv":
+        uv_plan = _resolve_install_plan_via_uv(
+            effective_args,
+            tool_args=tool_args,
+        )
+        if uv_plan is not None:
+            if use_cache:
+                _store_cached_install_plan_report(effective_args, uv_plan.raw_report)
+            return uv_plan
 
     command = _build_pip_command(
         [
@@ -308,6 +330,116 @@ def _pip_report_env() -> dict[str, str]:
 
 def _build_pip_command(argv: list[str]) -> list[str]:
     return [sys.executable, "-m", "pip", *argv]
+
+
+def _resolve_install_plan_via_uv(
+    pip_args: list[str],
+    *,
+    tool_args: list[str] | None,
+) -> InstallPlan | None:
+    if tool_args is None:
+        return None
+    command_args = _uv_install_dry_run_command_args(tool_args)
+    if command_args is None:
+        return None
+
+    completed = subprocess.run(
+        ["uv", *command_args],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=False,
+        env=_pip_report_env(),
+    )
+    if completed.returncode != 0:
+        return None
+    return _uv_install_plan_from_dry_run_output(
+        completed.stdout,
+        completed.stderr,
+    )
+
+
+def _uv_install_dry_run_command_args(tool_args: list[str]) -> list[str] | None:
+    if len(tool_args) < 2 or tool_args[:2] != ["pip", "install"]:
+        return None
+    return [
+        "pip",
+        "install",
+        "--dry-run",
+        "-v",
+        "--no-progress",
+        *tool_args[2:],
+    ]
+
+
+def _uv_install_plan_from_dry_run_output(
+    stdout: str,
+    stderr: str,
+) -> InstallPlan | None:
+    package_meta_by_name: dict[str, tuple[str, str | None]] = {}
+    direct_names: set[str] = set()
+    requires_by_parent: dict[str, list[str]] = {}
+    would_install_order: list[tuple[str, str]] = []
+
+    for line in stderr.splitlines():
+        if match := _UV_SELECT_RE.match(line):
+            name = match.group("name")
+            version = match.group("version")
+            filename = match.group("filename")
+            package_meta_by_name[name.lower()] = (version, filename)
+            continue
+        if match := _UV_DIRECT_DEP_RE.match(line):
+            direct_names.add(match.group("name").lower())
+            continue
+        if match := _UV_TRANSITIVE_DEP_RE.match(line):
+            parent = match.group("parent").lower()
+            requires_by_parent.setdefault(parent, []).append(match.group("requirement"))
+
+    combined_output = "\n".join((stderr, stdout))
+    for line in combined_output.splitlines():
+        if match := _UV_WOULD_INSTALL_RE.match(line):
+            would_install_order.append((match.group("name"), match.group("version")))
+
+    if not would_install_order:
+        return None
+
+    packages: list[ResolvedPackage] = []
+    for name, version in would_install_order:
+        meta = package_meta_by_name.get(name.lower())
+        if meta is None:
+            return None
+        selected_version, filename = meta
+        if selected_version != version:
+            return None
+        packages.append(
+            ResolvedPackage(
+                name=name,
+                version=version,
+                requested=name.lower() in direct_names,
+                is_direct=False,
+                download_url=None,
+                artifact_name=filename,
+                archive_hash=None,
+                requires_dist=tuple(requires_by_parent.get(name.lower(), ())),
+                metadata={"name": name, "version": version},
+                yanked=False,
+                yanked_reason=None,
+            )
+        )
+
+    raw_report = {
+        "version": "uv-dry-run-v1",
+        "install": [
+            {
+                "requested": package.requested,
+                "is_direct": package.is_direct,
+                "metadata": dict(package.metadata),
+                "download_info": {},
+            }
+            for package in packages
+        ],
+    }
+    return InstallPlan(packages=tuple(packages), raw_report=raw_report)
 
 
 def _load_cached_install_plan_report(pip_args: list[str]) -> dict | None:

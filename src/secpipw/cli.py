@@ -492,6 +492,8 @@ def _preflight_external_install(
             pip_args,
             ignore_installed=True,
             use_cache=True,
+            tool=tool,
+            tool_args=tool_args,
         )
     except Exception as exc:
         if _install_plan_error_has_returncode(exc):

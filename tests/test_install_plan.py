@@ -337,6 +337,89 @@ class InstallPlanTests(unittest.TestCase):
         command = run.call_args.args[0]
         self.assertIn("--ignore-installed", command)
 
+    def test_resolve_install_plan_can_parse_uv_dry_run_output(self) -> None:
+        completed = type(
+            "Completed",
+            (),
+            {
+                "returncode": 0,
+                "stdout": "Would install 2 packages\n + requests==2.34.2\n + urllib3==2.7.0\n",
+                "stderr": "\n".join(
+                    [
+                        "DEBUG Adding direct dependency: requests*",
+                        "DEBUG Selecting: requests==2.34.2 [compatible] (requests-2.34.2-py3-none-any.whl)",
+                        "DEBUG Adding transitive dependency for requests==2.34.2: urllib3>=1.26, <3",
+                        "DEBUG Selecting: urllib3==2.7.0 [compatible] (urllib3-2.7.0-py3-none-any.whl)",
+                    ]
+                ),
+            },
+        )()
+
+        with patch("secpipw.install_plan.subprocess.run", return_value=completed) as run:
+            plan = resolve_install_plan(
+                ["requests"],
+                ignore_installed=True,
+                use_cache=False,
+                tool="uv",
+                tool_args=["pip", "install", "requests"],
+            )
+
+        self.assertEqual([package.name for package in plan.packages], ["requests", "urllib3"])
+        self.assertTrue(plan.packages[0].requested)
+        self.assertFalse(plan.packages[1].requested)
+        self.assertEqual(plan.packages[0].requires_dist, ("urllib3>=1.26, <3",))
+        self.assertIsNone(plan.packages[0].download_url)
+        self.assertEqual(
+            run.call_args.args[0],
+            ["uv", "pip", "install", "--dry-run", "-v", "--no-progress", "requests"],
+        )
+
+    def test_resolve_install_plan_falls_back_when_uv_dry_run_is_incomplete(self) -> None:
+        uv_completed = type(
+            "Completed",
+            (),
+            {
+                "returncode": 0,
+                "stdout": "Would install 1 package\n + requests==2.34.2\n",
+                "stderr": "",
+            },
+        )()
+        pip_report = {
+            "version": "1",
+            "install": [
+                {
+                    "requested": True,
+                    "is_direct": False,
+                    "metadata": {"name": "requests", "version": "2.34.2"},
+                    "download_info": {"url": "https://example.com/requests.whl"},
+                }
+            ],
+        }
+        pip_completed = type(
+            "Completed",
+            (),
+            {
+                "returncode": 0,
+                "stdout": json.dumps(pip_report),
+                "stderr": "",
+            },
+        )()
+
+        with patch(
+            "secpipw.install_plan.subprocess.run",
+            side_effect=[uv_completed, pip_completed],
+        ) as run:
+            plan = resolve_install_plan(
+                ["requests"],
+                ignore_installed=True,
+                use_cache=False,
+                tool="uv",
+                tool_args=["pip", "install", "requests"],
+            )
+
+        self.assertEqual([package.name for package in plan.packages], ["requests"])
+        self.assertEqual(run.call_count, 2)
+
 
 if __name__ == "__main__":
     unittest.main()

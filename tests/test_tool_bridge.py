@@ -245,6 +245,8 @@ class ToolBridgeTests(unittest.TestCase):
             ["black"],
             ignore_installed=True,
             use_cache=True,
+            tool="pipx",
+            tool_args=["install", "black"],
         )
         checks.assert_called_once()
         self.assertEqual(checks.call_args.args[1], ["black"])
@@ -480,6 +482,8 @@ print("\\n".join(name for name in blocked if name in sys.modules))
             ["requests"],
             ignore_installed=True,
             use_cache=True,
+            tool="uv",
+            tool_args=["pip", "install", "requests"],
         )
         checks.assert_called_once()
         tool.assert_called_once_with("uv", ["pip", "install", "requests"])
