@@ -3,6 +3,7 @@
 <p align="center">
   <img src="doc/assets/logo.png" alt="secpipw logo" width="160">
 </p>
+
 [English](./README.md) | 简体中文
 
 [![Test](https://github.com/LamentXU123/spip/actions/workflows/test.yml/badge.svg)](https://github.com/LamentXU123/spip/actions/workflows/test.yml)
