@@ -16,6 +16,7 @@ from secpipw import pypi_api
 from secpipw.pypi_api import (
     BOOTSTRAP_PROJECT_NAMES,
     DEFAULT_PYPI_BASE_URL,
+    DEFAULT_FILE_HEADER_TIMEOUT_SECONDS,
     DEFAULT_JSON_API_TIMEOUT_SECONDS,
     DEFAULT_RELEASE_METADATA_CACHE_TTL_SECONDS,
     OfficialPyPIClient,
@@ -384,6 +385,39 @@ class OfficialPyPIClientTests(unittest.TestCase):
         self.assertEqual(
             upload_time,
             datetime(2026, 5, 18, 10, 0, tzinfo=timezone.utc),
+        )
+
+    def test_fetch_release_upload_time_uses_files_pythonhosted_head_first(self) -> None:
+        client = OfficialPyPIClient()
+
+        response = FakeHTTPResponse()
+        response.headers = {"Last-Modified": "Thu, 04 Jun 2026 16:32:39 GMT"}
+
+        with patch("secpipw.pypi_api.urlopen", return_value=response) as open_url:
+            with patch.object(
+                OfficialPyPIClient,
+                "fetch_release_metadata",
+                side_effect=AssertionError("json api should not be used"),
+            ):
+                upload_time = client.fetch_release_upload_time(
+                    "ruff",
+                    "0.15.16",
+                    download_url=(
+                        "https://files.pythonhosted.org/packages/8b/9e/demo/"
+                        "ruff-0.15.16-py3-none-win_amd64.whl"
+                    ),
+                    filename="ruff-0.15.16-py3-none-win_amd64.whl",
+                )
+
+        self.assertEqual(
+            upload_time,
+            datetime(2026, 6, 4, 16, 32, 39, tzinfo=timezone.utc),
+        )
+        request = open_url.call_args.args[0]
+        self.assertEqual(request.get_method(), "HEAD")
+        self.assertEqual(
+            open_url.call_args.kwargs["timeout"],
+            DEFAULT_FILE_HEADER_TIMEOUT_SECONDS,
         )
 
     def test_fetch_release_upload_time_prefers_filename_match(self) -> None:

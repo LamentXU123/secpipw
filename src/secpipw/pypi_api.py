@@ -4,11 +4,13 @@ import json
 import os
 import threading
 from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Iterable
 
 DEFAULT_PYPI_BASE_URL = "https://pypi.org"
 DEFAULT_JSON_API_TIMEOUT_SECONDS = 2.5
+DEFAULT_FILE_HEADER_TIMEOUT_SECONDS = 1.25
 DEFAULT_RELEASE_METADATA_CACHE_TTL_SECONDS = 86400
 _RELEASE_CACHE_LOCK = threading.RLock()
 _EMAIL_DOMAIN_HISTORY_LOCK = threading.RLock()
@@ -287,6 +289,11 @@ class OfficialPyPIClient:
         download_url: str | None = None,
         filename: str | None = None,
     ) -> datetime | None:
+        if download_url:
+            direct_timestamp = self.fetch_release_file_upload_time(download_url)
+            if direct_timestamp is not None:
+                return direct_timestamp
+
         payload = self.fetch_release_metadata(name, version)
         urls = payload.get("urls", [])
         selected = None
@@ -309,6 +316,24 @@ class OfficialPyPIClient:
         if selected is None:
             return None
         return _parse_upload_time(selected.get("upload_time_iso_8601"))
+
+    def fetch_release_file_upload_time(self, download_url: str) -> datetime | None:
+        from urllib.parse import urlparse
+
+        parsed = urlparse(download_url)
+        hostname = (parsed.hostname or "").lower()
+        if hostname not in {"files.pythonhosted.org", "files.pythonhosted.com"}:
+            return None
+
+        request = Request(download_url, method="HEAD")
+        with urlopen(request, timeout=DEFAULT_FILE_HEADER_TIMEOUT_SECONDS) as response:
+            last_modified = response.headers.get("Last-Modified")
+        if not last_modified:
+            return None
+        parsed_value = parsedate_to_datetime(last_modified)
+        if parsed_value.tzinfo is None:
+            parsed_value = parsed_value.replace(tzinfo=timezone.utc)
+        return parsed_value.astimezone(timezone.utc)
 
     def fetch_release_contact_emails(self, name: str, version: str) -> tuple[str, ...]:
         from email.utils import getaddresses

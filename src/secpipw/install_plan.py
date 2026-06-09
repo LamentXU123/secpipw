@@ -140,6 +140,9 @@ _UV_TRANSITIVE_DEP_RE = re.compile(
     r"^DEBUG Adding transitive dependency for "
     r"(?P<parent>[^=\s]+)==\S+: (?P<requirement>.+)$"
 )
+_UV_METADATA_URL_RE = re.compile(
+    r"^DEBUG .*response for: (?P<metadata_url>https?://\S+?/(?P<filename>[^/\s]+)\.metadata)$"
+)
 _UV_WOULD_INSTALL_RE = re.compile(r"^\s+\+\s+(?P<name>[^=\s]+)==(?P<version>\S+)$")
 _UV_SYNTHETIC_SUPPORTED_VALUE_OPTIONS = {
     "-c",
@@ -485,11 +488,17 @@ def _uv_install_plan_from_dry_run_output(
     stderr: str,
 ) -> InstallPlan | None:
     package_meta_by_name: dict[str, tuple[str, str | None]] = {}
+    download_url_by_filename: dict[str, str] = {}
     direct_names: set[str] = set()
     requires_by_parent: dict[str, list[str]] = {}
     would_install_order: list[tuple[str, str]] = []
 
     for line in stderr.splitlines():
+        if match := _UV_METADATA_URL_RE.match(line):
+            metadata_url = match.group("metadata_url")
+            filename = match.group("filename")
+            download_url_by_filename[filename] = metadata_url[: -len(".metadata")]
+            continue
         if match := _UV_SELECT_RE.match(line):
             name = match.group("name")
             version = match.group("version")
@@ -525,7 +534,9 @@ def _uv_install_plan_from_dry_run_output(
                 version=version,
                 requested=name.lower() in direct_names,
                 is_direct=False,
-                download_url=None,
+                download_url=(
+                    download_url_by_filename.get(filename) if filename else None
+                ),
                 artifact_name=filename,
                 archive_hash=None,
                 requires_dist=tuple(requires_by_parent.get(name.lower(), ())),
@@ -543,7 +554,9 @@ def _uv_install_plan_from_dry_run_output(
                 "is_direct": package.is_direct,
                 "artifact_name": package.artifact_name,
                 "metadata": dict(package.metadata),
-                "download_info": {},
+                "download_info": (
+                    {"url": package.download_url} if package.download_url else {}
+                ),
             }
             for package in packages
         ],

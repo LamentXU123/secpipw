@@ -242,6 +242,37 @@ def inspect_source_artifact_for_suspicious_pth(path: Path) -> list[SuspiciousPth
     return inspect_sdist_for_suspicious_pth(path)
 
 
+def inspect_uv_cached_wheel_for_suspicious_pth(
+    package_name: str,
+    artifact_name: str | None,
+) -> list[SuspiciousPthAlert] | None:
+    archive_dir = _uv_cached_wheel_archive_dir(package_name, artifact_name)
+    if archive_dir is None:
+        return None
+
+    alerts: list[SuspiciousPthAlert] = []
+    for path in archive_dir.rglob("*.pth"):
+        import_lines = tuple(find_import_lines(path))
+        if not import_lines:
+            continue
+        alerts.append(
+            SuspiciousPthAlert(
+                severity=_severity_medium(),
+                path=path,
+                import_lines=import_lines,
+                message=(
+                    f"'{path.name}' inside cached wheel '{artifact_name}' contains "
+                    "executable import statements in a .pth file"
+                ),
+                remediation=(
+                    "review the cached wheel contents before installation, or rerun "
+                    "with --spip-ignore-warning if this .pth file is expected"
+                ),
+            )
+        )
+    return alerts
+
+
 def remote_zip_artifact_contains_pth(
     download_url: str,
     *,
@@ -381,6 +412,71 @@ def _now_timestamp() -> float:
     import time
 
     return time.time()
+
+
+def _uv_cache_root() -> Path:
+    configured = os.environ.get("UV_CACHE_DIR")
+    if configured:
+        return Path(configured).expanduser()
+
+    if os.name == "nt":
+        local_app_data = os.environ.get("LOCALAPPDATA") or os.environ.get("APPDATA")
+        if local_app_data:
+            return Path(local_app_data) / "uv" / "cache"
+
+    xdg_cache_home = os.environ.get("XDG_CACHE_HOME")
+    if xdg_cache_home:
+        return Path(xdg_cache_home) / "uv"
+    return Path.home() / ".cache" / "uv"
+
+
+def _uv_cached_wheel_archive_dir(
+    package_name: str,
+    artifact_name: str | None,
+) -> Path | None:
+    if not artifact_name or not artifact_name.lower().endswith(".whl"):
+        return None
+    package_dir = _uv_cache_root() / "wheels-v6" / "pypi" / _canonicalize_name(
+        package_name
+    )
+    if not package_dir.exists():
+        return None
+
+    wheel_stem = artifact_name[:-4]
+    prefix = f"{package_name}-"
+    if wheel_stem.lower().startswith(prefix.lower()):
+        pointer_name = wheel_stem[len(prefix) :]
+    else:
+        pointer_name = wheel_stem
+    pointer_path = package_dir / pointer_name
+    if not pointer_path.is_file():
+        return None
+
+    try:
+        relative_archive = pointer_path.read_text(encoding="utf-8").strip()
+    except Exception:
+        return None
+    if not relative_archive:
+        return None
+    archive_dir = (_uv_cache_root() / relative_archive).resolve()
+    if not archive_dir.exists() or not archive_dir.is_dir():
+        return None
+    return archive_dir
+
+
+def _canonicalize_name(value: str) -> str:
+    normalized: list[str] = []
+    previous_was_separator = False
+    for char in value.strip().lower():
+        is_separator = char in "-_."
+        if is_separator:
+            if previous_was_separator:
+                continue
+            normalized.append("-")
+        else:
+            normalized.append(char)
+        previous_was_separator = is_separator
+    return "".join(normalized)
 
 
 def inspect_sdist_for_suspicious_pth(path: Path) -> list[SuspiciousPthAlert]:

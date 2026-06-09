@@ -645,6 +645,7 @@ def inspect_install_plan_artifacts(plan: InstallPlan) -> list[object]:
 
     from secpipw.package_install import download_artifact, temporary_artifact_directory
     from secpipw.pth_monitor import (
+        inspect_uv_cached_wheel_for_suspicious_pth,
         inspect_source_artifact_for_suspicious_pth,
         inspect_wheel_for_suspicious_pth,
         remote_zip_artifact_contains_pth,
@@ -655,6 +656,15 @@ def inspect_install_plan_artifacts(plan: InstallPlan) -> list[object]:
         destination = Path(directory)
         for package in plan.packages:
             if not package.download_url:
+                continue
+            cached_wheel_alerts = inspect_uv_cached_wheel_for_suspicious_pth(
+                package.name,
+                package.artifact_name,
+            )
+            if cached_wheel_alerts is not None:
+                alerts.extend(cached_wheel_alerts)
+                if not cached_wheel_alerts:
+                    continue
                 continue
             artifact_name = (
                 package.artifact_name

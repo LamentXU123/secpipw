@@ -347,8 +347,10 @@ class InstallPlanTests(unittest.TestCase):
                 "stderr": "\n".join(
                     [
                         "DEBUG Adding direct dependency: requests*",
+                        "DEBUG Found fresh response for: https://files.pythonhosted.org/packages/a0/f4/c67b0b3f1b9245e8d266f0f112c500d50e5b4e83cb6f3b71b6528104182a/requests-2.34.2-py3-none-any.whl.metadata",
                         "DEBUG Selecting: requests==2.34.2 [compatible] (requests-2.34.2-py3-none-any.whl)",
                         "DEBUG Adding transitive dependency for requests==2.34.2: urllib3>=1.26, <3",
+                        "DEBUG Found fresh response for: https://files.pythonhosted.org/packages/7f/3e/5db95bcf282c52709639744ca2a8b149baccf648e39c8cc87553df9eae0c/urllib3-2.7.0-py3-none-any.whl.metadata",
                         "DEBUG Selecting: urllib3==2.7.0 [compatible] (urllib3-2.7.0-py3-none-any.whl)",
                     ]
                 ),
@@ -368,7 +370,10 @@ class InstallPlanTests(unittest.TestCase):
         self.assertTrue(plan.packages[0].requested)
         self.assertFalse(plan.packages[1].requested)
         self.assertEqual(plan.packages[0].requires_dist, ("urllib3>=1.26, <3",))
-        self.assertIsNone(plan.packages[0].download_url)
+        self.assertEqual(
+            plan.packages[0].download_url,
+            "https://files.pythonhosted.org/packages/a0/f4/c67b0b3f1b9245e8d266f0f112c500d50e5b4e83cb6f3b71b6528104182a/requests-2.34.2-py3-none-any.whl",
+        )
         self.assertEqual(
             plan.packages[0].artifact_name,
             "requests-2.34.2-py3-none-any.whl",
@@ -504,6 +509,60 @@ class InstallPlanTests(unittest.TestCase):
         command = run.call_args.args[0]
         self.assertEqual(command[:6], ["uv", "pip", "install", "--dry-run", "-v", "--no-progress"])
         self.assertIn("--no-config", command)
+
+    def test_uv_fast_path_cached_plan_preserves_download_url(self) -> None:
+        completed = type(
+            "Completed",
+            (),
+            {
+                "returncode": 0,
+                "stdout": "Would install 1 package\n + ruff==0.15.16\n",
+                "stderr": "\n".join(
+                    [
+                        "DEBUG Adding direct dependency: ruff*",
+                        "DEBUG Found fresh response for: https://files.pythonhosted.org/packages/8b/9e/demo/ruff-0.15.16-py3-none-win_amd64.whl.metadata",
+                        "DEBUG Selecting: ruff==0.15.16 [compatible] (ruff-0.15.16-py3-none-win_amd64.whl)",
+                    ]
+                ),
+            },
+        )()
+        cache_root = Path(".tmp-tests") / f"install-plan-cache-{uuid4().hex}"
+        cache_root.mkdir(parents=True, exist_ok=True)
+        try:
+            with patch(
+                "secpipw.install_plan._install_plan_cache_root",
+                return_value=cache_root,
+            ):
+                with patch(
+                    "secpipw.install_plan.subprocess.run",
+                    return_value=completed,
+                ):
+                    first = resolve_install_plan(
+                        ["ruff"],
+                        ignore_installed=True,
+                        use_cache=True,
+                        tool="uv",
+                        tool_args=["pip", "install", "ruff"],
+                    )
+                with patch(
+                    "secpipw.install_plan.subprocess.run",
+                    side_effect=AssertionError("cache should satisfy second resolve"),
+                ):
+                    second = resolve_install_plan(
+                        ["ruff"],
+                        ignore_installed=True,
+                        use_cache=True,
+                        tool="uv",
+                        tool_args=["pip", "install", "ruff"],
+                    )
+
+            self.assertEqual(
+                first.packages[0].download_url,
+                "https://files.pythonhosted.org/packages/8b/9e/demo/ruff-0.15.16-py3-none-win_amd64.whl",
+            )
+            self.assertEqual(second.packages[0].download_url, first.packages[0].download_url)
+        finally:
+            shutil.rmtree(cache_root, ignore_errors=True)
 
 
 if __name__ == "__main__":

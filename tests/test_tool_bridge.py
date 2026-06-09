@@ -378,6 +378,46 @@ print("\\n".join(name for name in blocked if name in sys.modules))
         )
         download.assert_not_called()
 
+    def test_artifact_inspection_prefers_uv_cached_wheel_contents(self) -> None:
+        plan = InstallPlan(
+            packages=(
+                SimpleNamespace(
+                    name="demo-package",
+                    version="1.0.0",
+                    requested=True,
+                    is_direct=False,
+                    download_url="https://example.test/demo-package-1.0.0-py3-none-any.whl",
+                    artifact_name="demo-package-1.0.0-py3-none-any.whl",
+                    archive_hash="sha256=abc123",
+                    requires_dist=(),
+                    metadata={},
+                    yanked=False,
+                    yanked_reason=None,
+                ),
+            ),
+            raw_report={"install": []},
+        )
+
+        with patch(
+            "secpipw.pth_monitor.inspect_uv_cached_wheel_for_suspicious_pth",
+            return_value=[],
+        ) as inspect_cached:
+            with patch(
+                "secpipw.pth_monitor.remote_zip_artifact_contains_pth",
+                side_effect=AssertionError("remote scan should not be used"),
+            ):
+                with patch(
+                    "secpipw.package_install.download_artifact",
+                    side_effect=AssertionError("download should not be used"),
+                ):
+                    alerts = inspect_install_plan_artifacts(plan)
+
+        self.assertEqual(alerts, [])
+        inspect_cached.assert_called_once_with(
+            "demo-package",
+            "demo-package-1.0.0-py3-none-any.whl",
+        )
+
     def test_spipx_entrypoint_uses_pipx_tool(self) -> None:
         with patch("secpipw.cli._tool_with_guard", return_value=6) as guarded:
             rc = cli.pipx_main(["list"])

@@ -154,6 +154,36 @@ class PthMonitorTests(unittest.TestCase):
         self.assertFalse(second)
         fetch_range.assert_called_once()
 
+    def test_inspect_uv_cached_wheel_uses_extracted_uv_cache(self) -> None:
+        with temporary_workspace_dir() as tmp:
+            uv_cache = tmp / "uv-cache"
+            package_dir = uv_cache / "wheels-v6" / "pypi" / "demo-package"
+            package_dir.mkdir(parents=True, exist_ok=True)
+            archive_dir = uv_cache / "archive-v0" / "cachekey"
+            archive_dir.mkdir(parents=True, exist_ok=True)
+            (package_dir / "1.0.0-py3-none-any").write_text(
+                "archive-v0/cachekey",
+                encoding="utf-8",
+            )
+            (archive_dir / "demo_package.pth").write_text(
+                "import demo_bootstrap\n",
+                encoding="utf-8",
+            )
+
+            with patch.object(
+                pth_monitor,
+                "_uv_cache_root",
+                return_value=uv_cache,
+            ):
+                alerts = pth_monitor.inspect_uv_cached_wheel_for_suspicious_pth(
+                    "demo_package",
+                    "demo_package-1.0.0-py3-none-any.whl",
+                )
+
+        self.assertIsNotNone(alerts)
+        self.assertEqual(len(alerts), 1)
+        self.assertIn("demo_package.pth", str(alerts[0].path))
+
     def test_inspect_install_artifacts_scans_local_file_paths(self) -> None:
         with temporary_workspace_dir() as tmp:
             sdist_path = tmp / "demo.tar.gz"
