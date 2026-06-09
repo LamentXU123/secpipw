@@ -1,6 +1,9 @@
 import json
+import shutil
 import unittest
+from pathlib import Path
 from unittest.mock import patch
+from uuid import uuid4
 
 from secpipw.install_plan import (
     InstallPlanError,
@@ -10,6 +13,109 @@ from secpipw.install_plan import (
 
 
 class InstallPlanTests(unittest.TestCase):
+    def test_resolve_install_plan_can_cache_reports(self) -> None:
+        report = {
+            "version": "1",
+            "install": [
+                {
+                    "requested": True,
+                    "is_direct": False,
+                    "metadata": {"name": "requests", "version": "2.31.0"},
+                    "download_info": {"url": "https://example.com/requests.whl"},
+                }
+            ],
+        }
+        completed = type(
+            "Completed",
+            (),
+            {
+                "returncode": 0,
+                "stdout": json.dumps(report),
+                "stderr": "",
+            },
+        )()
+        cache_root = Path(".tmp-tests") / f"install-plan-cache-{uuid4().hex}"
+        cache_root.mkdir(parents=True, exist_ok=True)
+        try:
+            with patch(
+                "secpipw.install_plan._install_plan_cache_root",
+                return_value=cache_root,
+            ):
+                with patch(
+                    "secpipw.install_plan.subprocess.run",
+                    return_value=completed,
+                ) as run:
+                    first = resolve_install_plan(
+                        ["requests==2.31.0"],
+                        use_cache=True,
+                    )
+
+                with patch(
+                    "secpipw.install_plan.subprocess.run",
+                    side_effect=AssertionError("cache should avoid a second pip call"),
+                ):
+                    second = resolve_install_plan(
+                        ["requests==2.31.0"],
+                        use_cache=True,
+                    )
+
+            self.assertEqual(first.packages, second.packages)
+            run.assert_called_once()
+        finally:
+            shutil.rmtree(cache_root, ignore_errors=True)
+
+    def test_resolve_install_plan_cache_ignores_target_directory(self) -> None:
+        report = {
+            "version": "1",
+            "install": [
+                {
+                    "requested": True,
+                    "is_direct": False,
+                    "metadata": {"name": "requests", "version": "2.31.0"},
+                    "download_info": {"url": "https://example.com/requests.whl"},
+                }
+            ],
+        }
+        completed = type(
+            "Completed",
+            (),
+            {
+                "returncode": 0,
+                "stdout": json.dumps(report),
+                "stderr": "",
+            },
+        )()
+        cache_root = Path(".tmp-tests") / f"install-plan-cache-{uuid4().hex}"
+        cache_root.mkdir(parents=True, exist_ok=True)
+        try:
+            with patch(
+                "secpipw.install_plan._install_plan_cache_root",
+                return_value=cache_root,
+            ):
+                with patch(
+                    "secpipw.install_plan.subprocess.run",
+                    return_value=completed,
+                ) as run:
+                    resolve_install_plan(
+                        ["--target", "vendor-a", "requests==2.31.0"],
+                        use_cache=True,
+                    )
+
+                with patch(
+                    "secpipw.install_plan.subprocess.run",
+                    side_effect=AssertionError(
+                        "cache key should ignore target-only output paths"
+                    ),
+                ):
+                    resolve_install_plan(
+                        ["--target", "vendor-b", "requests==2.31.0"],
+                        use_cache=True,
+                    )
+
+            run.assert_called_once()
+        finally:
+            shutil.rmtree(cache_root, ignore_errors=True)
+
     def test_resolve_install_plan_parses_report(self) -> None:
         report = {
             "version": "1",
@@ -141,6 +247,30 @@ class InstallPlanTests(unittest.TestCase):
         self.assertEqual(env["PYTHONIOENCODING"], "utf-8")
         self.assertEqual(env["PYTHONUTF8"], "1")
         self.assertEqual(run.call_args.kwargs["encoding"], "utf-8")
+
+    def test_resolve_install_plan_can_ignore_installed_packages(self) -> None:
+        report = {"version": "1", "install": []}
+        completed = type(
+            "Completed",
+            (),
+            {
+                "returncode": 0,
+                "stdout": json.dumps(report),
+                "stderr": "",
+            },
+        )()
+
+        with patch(
+            "secpipw.install_plan.subprocess.run",
+            return_value=completed,
+        ) as run:
+            resolve_install_plan(
+                ["requests==2.31.0"],
+                ignore_installed=True,
+            )
+
+        command = run.call_args.args[0]
+        self.assertIn("--ignore-installed", command)
 
 
 if __name__ == "__main__":

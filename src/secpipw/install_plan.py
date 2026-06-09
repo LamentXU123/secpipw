@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
 import sys
+import time
+from pathlib import Path
 
 class _FrozenRecord:
     __slots__ = ()
@@ -108,15 +111,51 @@ class InstallPlanError(RuntimeError):
         self.stdout = stdout
 
 
-def resolve_install_plan(pip_args: list[str]) -> InstallPlan:
+DEFAULT_INSTALL_PLAN_CACHE_TTL_SECONDS = 900
+INSTALL_PLAN_CACHE_VERSION = 1
+_PLAN_CACHE_ENV_KEYS = (
+    "PIP_CONFIG_FILE",
+    "PIP_EXTRA_INDEX_URL",
+    "PIP_FIND_LINKS",
+    "PIP_INDEX_URL",
+    "PIP_NO_INDEX",
+    "PIP_TRUSTED_HOST",
+)
+_CACHE_KEY_IGNORED_VALUE_OPTIONS = {
+    "-t",
+    "--target",
+    "--prefix",
+    "--progress-bar",
+    "--root",
+    "--timeout",
+}
+_CACHE_KEY_IGNORED_FLAGS = {"--disable-pip-version-check"}
+
+
+def resolve_install_plan(
+    pip_args: list[str],
+    *,
+    ignore_installed: bool = False,
+    use_cache: bool = False,
+) -> InstallPlan:
+    effective_args = _normalized_plan_args(
+        pip_args,
+        ignore_installed=ignore_installed,
+    )
+    if use_cache:
+        cached_report = _load_cached_install_plan_report(effective_args)
+        if cached_report is not None:
+            return install_plan_from_report(cached_report)
+
     command = _build_pip_command(
         [
             "install",
+            "--disable-pip-version-check",
             "--dry-run",
             "--quiet",
             "--report",
             "-",
-            *_strip_conflicting_report_args(pip_args),
+            *effective_args,
         ]
     )
     completed = subprocess.run(
@@ -134,7 +173,10 @@ def resolve_install_plan(pip_args: list[str]) -> InstallPlan:
             stdout=completed.stdout,
         )
 
-    return install_plan_from_report(json.loads(completed.stdout))
+    report = json.loads(completed.stdout)
+    if use_cache:
+        _store_cached_install_plan_report(effective_args, report)
+    return install_plan_from_report(report)
 
 
 def install_plan_from_report(report: dict) -> InstallPlan:
@@ -245,6 +287,17 @@ def _strip_conflicting_report_args(args: list[str]) -> list[str]:
     return result
 
 
+def _normalized_plan_args(
+    pip_args: list[str],
+    *,
+    ignore_installed: bool,
+) -> list[str]:
+    normalized = _strip_conflicting_report_args(pip_args)
+    if ignore_installed and "--ignore-installed" not in normalized:
+        normalized = ["--ignore-installed", *normalized]
+    return normalized
+
+
 def _pip_report_env() -> dict[str, str]:
     env = os.environ.copy()
     env["PYTHONIOENCODING"] = "utf-8"
@@ -255,3 +308,264 @@ def _pip_report_env() -> dict[str, str]:
 
 def _build_pip_command(argv: list[str]) -> list[str]:
     return [sys.executable, "-m", "pip", *argv]
+
+
+def _load_cached_install_plan_report(pip_args: list[str]) -> dict | None:
+    ttl_seconds = _install_plan_cache_ttl_seconds()
+    if ttl_seconds <= 0 or not _install_plan_cacheable(pip_args):
+        return None
+
+    cache_path = _install_plan_cache_path(pip_args)
+    if not cache_path.exists():
+        return None
+
+    try:
+        payload = json.loads(cache_path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+    if payload.get("version") != INSTALL_PLAN_CACHE_VERSION:
+        return None
+
+    created_at = payload.get("created_at")
+    if not isinstance(created_at, (int, float)):
+        return None
+    if (time.time() - float(created_at)) > ttl_seconds:
+        return None
+
+    report = payload.get("report")
+    return report if isinstance(report, dict) else None
+
+
+def _store_cached_install_plan_report(pip_args: list[str], report: dict) -> None:
+    ttl_seconds = _install_plan_cache_ttl_seconds()
+    if ttl_seconds <= 0 or not _install_plan_cacheable(pip_args):
+        return
+
+    cache_path = _install_plan_cache_path(pip_args)
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path = cache_path.with_name(
+        f".{cache_path.name}.{os.getpid()}.{time.time_ns()}.tmp"
+    )
+    payload = {
+        "version": INSTALL_PLAN_CACHE_VERSION,
+        "created_at": time.time(),
+        "report": report,
+    }
+    try:
+        temporary_path.write_text(
+            json.dumps(payload, separators=(",", ":"), sort_keys=True),
+            encoding="utf-8",
+        )
+        os.replace(temporary_path, cache_path)
+    finally:
+        temporary_path.unlink(missing_ok=True)
+
+
+def _install_plan_cacheable(pip_args: list[str]) -> bool:
+    value_options = {
+        "-c",
+        "--constraint",
+        "-e",
+        "--editable",
+        "-f",
+        "--find-links",
+        "-r",
+        "--requirement",
+        "--report",
+    }
+    i = 0
+    while i < len(pip_args):
+        arg = pip_args[i]
+        option_name = arg.split("=", 1)[0]
+        if arg == "--":
+            return all(not _is_direct_or_local_target(value) for value in pip_args[i + 1 :])
+        if option_name in value_options:
+            return False
+        if arg.startswith("-"):
+            i += 2 if "=" not in arg and _option_expects_value(option_name) else 1
+            continue
+        if _is_direct_or_local_target(arg):
+            return False
+        i += 1
+    return True
+
+
+def _option_expects_value(option_name: str) -> bool:
+    return option_name in {
+        "-c",
+        "--constraint",
+        "-e",
+        "--editable",
+        "-f",
+        "--find-links",
+        "-r",
+        "--requirement",
+        "-t",
+        "--target",
+        "--prefix",
+        "--python",
+        "--index-url",
+        "--extra-index-url",
+        "--progress-bar",
+        "--root",
+        "--timeout",
+        "--trusted-host",
+    }
+
+
+def _is_direct_or_local_target(value: str) -> bool:
+    from packaging.requirements import InvalidRequirement, Requirement
+    from urllib.parse import urlparse
+
+    try:
+        requirement = Requirement(value)
+    except InvalidRequirement:
+        requirement = None
+
+    if requirement is not None:
+        if requirement.url:
+            return True
+        return False
+
+    parsed = urlparse(value)
+    if parsed.scheme:
+        return parsed.scheme != "https" and parsed.scheme != "http"
+
+    if value in {".", ".."}:
+        return True
+    if value.startswith(("./", "../", ".\\", "..\\")):
+        return True
+
+    path = Path(value)
+    if path.is_absolute() or path.exists():
+        return True
+
+    suffixes = path.suffixes
+    if suffixes[-1:] == [".whl"]:
+        return True
+    if suffixes[-2:] == [".tar", ".gz"] or suffixes[-1:] == [".zip"]:
+        return True
+    return False
+
+
+def _install_plan_cache_path(pip_args: list[str]) -> Path:
+    payload = {
+        "argv": _cache_key_plan_args(pip_args),
+        "config_signatures": _pip_config_signatures(os.environ),
+        "cwd": str(Path.cwd()),
+        "env": {
+            key: value
+            for key in _PLAN_CACHE_ENV_KEYS
+            if (value := os.environ.get(key))
+        },
+        "python": {
+            "executable": sys.executable,
+            "version": list(sys.version_info[:3]),
+        },
+        "version": INSTALL_PLAN_CACHE_VERSION,
+    }
+    digest = hashlib.sha256(
+        json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    ).hexdigest()
+    return _install_plan_cache_root() / digest[:2] / f"{digest}.json"
+
+
+def _cache_key_plan_args(pip_args: list[str]) -> list[str]:
+    normalized: list[str] = []
+    i = 0
+    while i < len(pip_args):
+        arg = pip_args[i]
+        option_name = arg.split("=", 1)[0]
+        if option_name in _CACHE_KEY_IGNORED_VALUE_OPTIONS:
+            i += 1 if "=" in arg else 2
+            continue
+        if arg in _CACHE_KEY_IGNORED_FLAGS:
+            i += 1
+            continue
+        normalized.append(arg)
+        if (
+            "=" not in arg
+            and arg.startswith("-")
+            and _option_expects_value(option_name)
+            and i + 1 < len(pip_args)
+        ):
+            normalized.append(pip_args[i + 1])
+            i += 2
+            continue
+        i += 1
+    return normalized
+
+
+def _install_plan_cache_root() -> Path:
+    configured = os.environ.get("SPIP_CACHE_DIR")
+    if configured:
+        return Path(configured).expanduser() / "install-plans"
+
+    if os.name == "nt":
+        local_app_data = os.environ.get("LOCALAPPDATA") or os.environ.get("APPDATA")
+        if local_app_data:
+            return Path(local_app_data) / "spip" / "cache" / "install-plans"
+
+    xdg_cache_home = os.environ.get("XDG_CACHE_HOME")
+    if xdg_cache_home:
+        return Path(xdg_cache_home) / "spip" / "install-plans"
+    return Path.home() / ".cache" / "spip" / "install-plans"
+
+
+def _install_plan_cache_ttl_seconds() -> int:
+    configured = os.environ.get("SPIP_INSTALL_PLAN_CACHE_TTL_SECONDS")
+    if configured is None:
+        return DEFAULT_INSTALL_PLAN_CACHE_TTL_SECONDS
+    try:
+        return max(0, int(configured))
+    except ValueError:
+        return DEFAULT_INSTALL_PLAN_CACHE_TTL_SECONDS
+
+
+def _pip_config_signatures(env: dict[str, str]) -> list[tuple[str, int, int]]:
+    signatures: list[tuple[str, int, int]] = []
+    for path in _pip_config_paths(env):
+        try:
+            stat = path.stat()
+        except OSError:
+            continue
+        signatures.append((str(path.resolve()), stat.st_mtime_ns, stat.st_size))
+    return signatures
+
+
+def _pip_config_paths(env: dict[str, str]) -> list[Path]:
+    paths: list[Path] = []
+    home = Path(env.get("HOME") or env.get("USERPROFILE") or Path.home())
+    virtual_env = env.get("VIRTUAL_ENV")
+    appdata = env.get("APPDATA")
+    programdata = env.get("PROGRAMDATA")
+    xdg_config_home = env.get("XDG_CONFIG_HOME")
+    configured = env.get("PIP_CONFIG_FILE")
+
+    if configured:
+        paths.append(Path(configured))
+    if programdata:
+        paths.append(Path(programdata) / "pip" / "pip.ini")
+    paths.append(Path("/etc/pip.conf"))
+    if appdata:
+        paths.append(Path(appdata) / "pip" / "pip.ini")
+    if xdg_config_home:
+        paths.append(Path(xdg_config_home) / "pip" / "pip.conf")
+    else:
+        paths.append(home / ".config" / "pip" / "pip.conf")
+    paths.append(home / "pip" / "pip.ini")
+    paths.append(home / ".pip" / "pip.conf")
+    if virtual_env:
+        paths.append(Path(virtual_env) / "pip.ini")
+        paths.append(Path(virtual_env) / "pip.conf")
+
+    deduped: list[Path] = []
+    seen: set[str] = set()
+    for path in paths:
+        key = str(path)
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(path)
+    return deduped

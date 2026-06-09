@@ -241,7 +241,11 @@ class ToolBridgeTests(unittest.TestCase):
                         rc = cli.pipx_main(["install", "black"])
 
         self.assertEqual(rc, 9)
-        resolve.assert_called_once_with(["black"])
+        resolve.assert_called_once_with(
+            ["black"],
+            ignore_installed=True,
+            use_cache=True,
+        )
         checks.assert_called_once()
         self.assertEqual(checks.call_args.args[1], ["black"])
         artifacts.assert_called_once()
@@ -472,7 +476,11 @@ print("\\n".join(name for name in blocked if name in sys.modules))
                         rc = cli.uv_main(["pip", "install", "requests"])
 
         self.assertEqual(rc, 8)
-        resolve.assert_called_once_with(["requests"])
+        resolve.assert_called_once_with(
+            ["requests"],
+            ignore_installed=True,
+            use_cache=True,
+        )
         checks.assert_called_once()
         tool.assert_called_once_with("uv", ["pip", "install", "requests"])
 

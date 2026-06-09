@@ -488,7 +488,11 @@ def _preflight_external_install(
     from secpipw.warning_gate import GateDecision
 
     try:
-        plan = resolve_install_plan(pip_args)
+        plan = resolve_install_plan(
+            pip_args,
+            ignore_installed=True,
+            use_cache=True,
+        )
     except Exception as exc:
         if _install_plan_error_has_returncode(exc):
             stderr = getattr(exc, "stderr", "")
