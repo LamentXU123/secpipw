@@ -6,6 +6,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -113,7 +114,7 @@ class InstallPlanError(RuntimeError):
 
 
 DEFAULT_INSTALL_PLAN_CACHE_TTL_SECONDS = 900
-INSTALL_PLAN_CACHE_VERSION = 1
+INSTALL_PLAN_CACHE_VERSION = 2
 _PLAN_CACHE_ENV_KEYS = (
     "PIP_CONFIG_FILE",
     "PIP_EXTRA_INDEX_URL",
@@ -140,6 +141,31 @@ _UV_TRANSITIVE_DEP_RE = re.compile(
     r"(?P<parent>[^=\s]+)==\S+: (?P<requirement>.+)$"
 )
 _UV_WOULD_INSTALL_RE = re.compile(r"^\s+\+\s+(?P<name>[^=\s]+)==(?P<version>\S+)$")
+_UV_SYNTHETIC_SUPPORTED_VALUE_OPTIONS = {
+    "-c",
+    "--constraint",
+    "-e",
+    "--editable",
+    "-f",
+    "--find-links",
+    "-i",
+    "-r",
+    "--extra-index-url",
+    "--index-url",
+    "--no-binary",
+    "--only-binary",
+    "--prefix",
+    "--python",
+    "--requirement",
+    "--target",
+}
+_UV_SYNTHETIC_SUPPORTED_FLAGS = {
+    "--ignore-installed",
+    "--no-deps",
+    "--no-index",
+    "--require-hashes",
+    "--upgrade",
+}
 
 
 def resolve_install_plan(
@@ -159,9 +185,10 @@ def resolve_install_plan(
         if cached_report is not None:
             return install_plan_from_report(cached_report)
 
-    if tool == "uv":
+    if tool in {"uv", "pipx", "poetry"}:
         uv_plan = _resolve_install_plan_via_uv(
             effective_args,
+            tool=tool,
             tool_args=tool_args,
         )
         if uv_plan is not None:
@@ -237,6 +264,11 @@ def _package_from_report_item(item: dict) -> ResolvedPackage | None:
 
     download_info = item.get("download_info") or {}
     download_url = download_info.get("url")
+    artifact_name = (
+        item.get("artifact_name")
+        or download_info.get("filename")
+        or _artifact_name_from_url(download_url)
+    )
     archive_hash = _archive_hash_from_download_info(download_info)
     requires_dist = tuple(metadata.get("requires_dist") or ())
     return ResolvedPackage(
@@ -245,7 +277,7 @@ def _package_from_report_item(item: dict) -> ResolvedPackage | None:
         requested=bool(item.get("requested")),
         is_direct=bool(item.get("is_direct")),
         download_url=download_url,
-        artifact_name=_artifact_name_from_url(download_url),
+        artifact_name=artifact_name,
         archive_hash=archive_hash,
         requires_dist=requires_dist,
         metadata=dict(metadata),
@@ -335,11 +367,15 @@ def _build_pip_command(argv: list[str]) -> list[str]:
 def _resolve_install_plan_via_uv(
     pip_args: list[str],
     *,
+    tool: str,
     tool_args: list[str] | None,
 ) -> InstallPlan | None:
-    if tool_args is None:
-        return None
-    command_args = _uv_install_dry_run_command_args(tool_args)
+    if tool == "uv":
+        if tool_args is None:
+            return None
+        command_args = _uv_install_dry_run_command_args(tool_args)
+    else:
+        command_args = _uv_dry_run_command_args_from_pip_args(pip_args)
     if command_args is None:
         return None
 
@@ -370,6 +406,76 @@ def _uv_install_dry_run_command_args(tool_args: list[str]) -> list[str] | None:
         "--no-progress",
         *tool_args[2:],
     ]
+
+
+def _uv_dry_run_command_args_from_pip_args(pip_args: list[str]) -> list[str] | None:
+    forwarded: list[str] = []
+    has_target = False
+    has_prefix = False
+    i = 0
+    while i < len(pip_args):
+        arg = pip_args[i]
+        option_name = arg.split("=", 1)[0]
+        if arg == "--":
+            forwarded.extend(pip_args[i + 1 :])
+            break
+        if arg == "--pre":
+            forwarded.extend(["--prerelease", "allow"])
+            i += 1
+            continue
+        if option_name in {"--target", "--prefix"}:
+            if option_name == "--target":
+                has_target = True
+            else:
+                has_prefix = True
+        if option_name in _UV_SYNTHETIC_SUPPORTED_VALUE_OPTIONS:
+            forwarded.append(arg)
+            if "=" not in arg:
+                if i + 1 >= len(pip_args):
+                    return None
+                forwarded.append(pip_args[i + 1])
+                i += 2
+                continue
+            i += 1
+            continue
+        if arg in _UV_SYNTHETIC_SUPPORTED_FLAGS:
+            forwarded.append(arg)
+            i += 1
+            continue
+        if arg.startswith("-"):
+            return None
+        forwarded.append(arg)
+        i += 1
+
+    if not forwarded:
+        return None
+    if not has_target and not has_prefix:
+        forwarded = [
+            "--target",
+            str(_uv_synthetic_target_path(pip_args)),
+            *forwarded,
+        ]
+    return [
+        "pip",
+        "install",
+        "--dry-run",
+        "-v",
+        "--no-progress",
+        "--no-config",
+        *forwarded,
+    ]
+
+
+def _uv_synthetic_target_path(pip_args: list[str]) -> Path:
+    digest = hashlib.sha256(
+        json.dumps(pip_args, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+    ).hexdigest()
+    configured = os.environ.get("SPIP_CACHE_DIR")
+    if configured:
+        root = Path(configured).expanduser()
+    else:
+        root = Path(tempfile.gettempdir()) / "spip-cache"
+    return root / "uv-dry-run-targets" / digest
 
 
 def _uv_install_plan_from_dry_run_output(
@@ -433,6 +539,7 @@ def _uv_install_plan_from_dry_run_output(
             {
                 "requested": package.requested,
                 "is_direct": package.is_direct,
+                "artifact_name": package.artifact_name,
                 "metadata": dict(package.metadata),
                 "download_info": {},
             }

@@ -9,6 +9,7 @@ from typing import Iterable
 
 DEFAULT_PYPI_BASE_URL = "https://pypi.org"
 DEFAULT_JSON_API_TIMEOUT_SECONDS = 2.5
+DEFAULT_RELEASE_METADATA_CACHE_TTL_SECONDS = 86400
 _RELEASE_CACHE_LOCK = threading.RLock()
 _EMAIL_DOMAIN_HISTORY_LOCK = threading.RLock()
 _METADATA_CACHE_LOCK = threading.RLock()
@@ -102,6 +103,10 @@ def _default_email_domain_history_path() -> Path:
     return _default_cache_root() / "pypi-email-domains.json"
 
 
+def _default_release_metadata_cache_dir() -> Path:
+    return _default_cache_root() / "release-metadata"
+
+
 class OfficialPyPIClient:
     __slots__ = (
         "base_url",
@@ -109,6 +114,7 @@ class OfficialPyPIClient:
         "cache_path",
         "release_cache_path",
         "email_domain_history_path",
+        "metadata_cache_dir",
     )
 
     def __init__(
@@ -118,6 +124,7 @@ class OfficialPyPIClient:
         cache_path: Path | None = None,
         release_cache_path: Path | None = None,
         email_domain_history_path: Path | None = None,
+        metadata_cache_dir: Path | None = None,
     ) -> None:
         self.base_url = base_url
         self.network_enabled = network_enabled
@@ -133,6 +140,11 @@ class OfficialPyPIClient:
             _default_email_domain_history_path()
             if email_domain_history_path is None
             else Path(email_domain_history_path)
+        )
+        self.metadata_cache_dir = (
+            _default_release_metadata_cache_dir()
+            if metadata_cache_dir is None
+            else Path(metadata_cache_dir)
         )
 
     def fetch_reference_package_names(self) -> list[str]:
@@ -218,15 +230,54 @@ class OfficialPyPIClient:
             cached = _METADATA_CACHE.get(cache_key)
         if cached is not None:
             return cached
+        cached = self.load_cached_release_metadata(name, version)
+        if cached is not None:
+            with _METADATA_CACHE_LOCK:
+                _METADATA_CACHE[cache_key] = cached
+            return cached
         request = Request(
             f"{self.base_url}/pypi/{name}/{version}/json",
             headers={"Accept": "application/json"},
         )
         with urlopen(request, timeout=DEFAULT_JSON_API_TIMEOUT_SECONDS) as response:
             payload = json.loads(response.read().decode("utf-8"))
+        self.store_cached_release_metadata(name, version, payload)
         with _METADATA_CACHE_LOCK:
             _METADATA_CACHE[cache_key] = payload
         return payload
+
+    def load_cached_release_metadata(self, name: str, version: str) -> dict | None:
+        cache_path = self._release_metadata_cache_path(name, version)
+        if not cache_path.exists():
+            return None
+        ttl_seconds = _release_metadata_cache_ttl_seconds()
+        if ttl_seconds > 0:
+            try:
+                age_seconds = datetime.now(timezone.utc).timestamp() - cache_path.stat().st_mtime
+            except OSError:
+                return None
+            if age_seconds > ttl_seconds:
+                return None
+        try:
+            payload = json.loads(cache_path.read_text(encoding="utf-8"))
+        except Exception:
+            return None
+        return payload if isinstance(payload, dict) else None
+
+    def store_cached_release_metadata(self, name: str, version: str, payload: dict) -> None:
+        cache_path = self._release_metadata_cache_path(name, version)
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        temporary_path = cache_path.with_name(
+            f".{cache_path.name}.{threading.get_ident()}.tmp"
+        )
+        try:
+            temporary_path.write_text(
+                json.dumps(payload, separators=(",", ":"), sort_keys=True),
+                encoding="utf-8",
+            )
+            os.replace(temporary_path, cache_path)
+        finally:
+            temporary_path.unlink(missing_ok=True)
 
     def fetch_release_upload_time(
         self,
@@ -386,6 +437,14 @@ class OfficialPyPIClient:
             f"|{filename or ''}"
         )
 
+    def _release_metadata_cache_path(self, name: str, version: str) -> Path:
+        digest = _metadata_cache_key_digest(
+            self.base_url.rstrip("/").lower(),
+            name.lower(),
+            version,
+        )
+        return self.metadata_cache_dir / digest[:2] / f"{digest}.json"
+
 
 def _is_timeout_error(exc: Exception) -> bool:
     import socket
@@ -404,6 +463,24 @@ def _parse_upload_time(value: str | None) -> datetime | None:
         return None
     normalized = value.replace("Z", "+00:00")
     return datetime.fromisoformat(normalized)
+
+
+def _release_metadata_cache_ttl_seconds() -> int:
+    configured = os.environ.get("SPIP_RELEASE_METADATA_CACHE_TTL_SECONDS")
+    if configured is None:
+        return DEFAULT_RELEASE_METADATA_CACHE_TTL_SECONDS
+    try:
+        return max(0, int(configured))
+    except ValueError:
+        return DEFAULT_RELEASE_METADATA_CACHE_TTL_SECONDS
+
+
+def _metadata_cache_key_digest(base_url: str, name: str, version: str) -> str:
+    import hashlib
+
+    return hashlib.sha256(
+        f"{base_url}|{name}|{version}".encode("utf-8")
+    ).hexdigest()
 
 
 def _path_signature(path: Path) -> tuple[int, int] | None:

@@ -893,6 +893,35 @@ class ReleaseCheckTests(unittest.TestCase):
         )
         self.assertEqual(client.metadata_calls, [("demo-package", "1.0.0")])
 
+    def test_metadata_checks_use_disk_cached_release_metadata(self) -> None:
+        package = FakePackage(
+            name="demo-package",
+            version="1.0.0",
+            download_url="https://files.pythonhosted.org/packages/demo-package-1.0.0.whl",
+            artifact_name="demo-package-1.0.0.whl",
+        )
+        tmpdir = self.make_temp_dir()
+        client = OfficialPyPIClient(metadata_cache_dir=tmpdir / "release-metadata")
+        client.store_cached_release_metadata(
+            "demo-package",
+            "1.0.0",
+            {
+                "info": {
+                    "summary": "",
+                    "description": "",
+                },
+                "urls": [],
+            },
+        )
+
+        with patch(
+            "secpipw.pypi_api.urlopen",
+            side_effect=AssertionError("network should not be used"),
+        ):
+            alerts = detect_empty_description_alerts([package], client=client)
+
+        self.assertEqual(len(alerts), 1)
+
     def test_repository_mismatch_alerts_when_repo_name_is_unrelated(self) -> None:
         package = FakePackage(
             name="demo-package",

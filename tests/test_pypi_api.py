@@ -17,6 +17,7 @@ from secpipw.pypi_api import (
     BOOTSTRAP_PROJECT_NAMES,
     DEFAULT_PYPI_BASE_URL,
     DEFAULT_JSON_API_TIMEOUT_SECONDS,
+    DEFAULT_RELEASE_METADATA_CACHE_TTL_SECONDS,
     OfficialPyPIClient,
     client_from_pip_args,
     resolve_index_url,
@@ -51,6 +52,12 @@ def build_http_error(code: int) -> HTTPError:
 
 
 class OfficialPyPIClientTests(unittest.TestCase):
+    def setUp(self) -> None:
+        pypi_api._METADATA_CACHE.clear()
+        pypi_api._PROJECT_NAME_CACHE.clear()
+        pypi_api._RELEASE_CACHE_PAYLOAD_CACHE.clear()
+        pypi_api._EMAIL_DOMAIN_HISTORY_CACHE.clear()
+
     def make_temp_dir(self) -> Path:
         root = Path.cwd() / ".tmp-tests"
         root.mkdir(exist_ok=True)
@@ -194,6 +201,10 @@ class OfficialPyPIClientTests(unittest.TestCase):
                 pypi_api._default_email_domain_history_path(),
                 tmpdir / "pypi-email-domains.json",
             )
+            self.assertEqual(
+                pypi_api._default_release_metadata_cache_dir(),
+                tmpdir / "release-metadata",
+            )
 
     def test_project_exists_returns_true_when_json_endpoint_resolves(self) -> None:
         client = OfficialPyPIClient(base_url="https://example.test")
@@ -281,7 +292,11 @@ class OfficialPyPIClientTests(unittest.TestCase):
         self.assertNotIn("\n", history_path.read_text(encoding="utf-8"))
 
     def test_fetch_release_metadata_uses_shorter_timeout(self) -> None:
-        client = OfficialPyPIClient(base_url="https://example.test")
+        tmpdir = self.make_temp_dir()
+        client = OfficialPyPIClient(
+            base_url="https://example.test",
+            metadata_cache_dir=tmpdir / "release-metadata",
+        )
 
         with patch(
             "secpipw.pypi_api.urlopen", return_value=FakeHTTPResponse({"urls": []})
@@ -291,6 +306,51 @@ class OfficialPyPIClientTests(unittest.TestCase):
         self.assertEqual(
             mocked.call_args.kwargs["timeout"], DEFAULT_JSON_API_TIMEOUT_SECONDS
         )
+
+    def test_fetch_release_metadata_uses_disk_cache_before_network(self) -> None:
+        tmpdir = self.make_temp_dir()
+        cache_dir = tmpdir / "release-metadata"
+        client = OfficialPyPIClient(
+            base_url="https://example.test",
+            metadata_cache_dir=cache_dir,
+        )
+        payload = {"info": {"summary": "cached"}, "urls": []}
+
+        client.store_cached_release_metadata("demo", "1.0.0", payload)
+
+        with patch(
+            "secpipw.pypi_api.urlopen",
+            side_effect=AssertionError("network should not be used"),
+        ):
+            loaded = client.fetch_release_metadata("demo", "1.0.0")
+
+        self.assertEqual(loaded, payload)
+
+    def test_store_cached_release_metadata_round_trip(self) -> None:
+        tmpdir = self.make_temp_dir()
+        cache_dir = tmpdir / "release-metadata"
+        client = OfficialPyPIClient(metadata_cache_dir=cache_dir)
+        payload = {"info": {"summary": "demo"}, "urls": []}
+
+        client.store_cached_release_metadata("demo", "1.0.0", payload)
+        loaded = client.load_cached_release_metadata("demo", "1.0.0")
+
+        self.assertEqual(loaded, payload)
+
+    def test_load_cached_release_metadata_respects_ttl(self) -> None:
+        tmpdir = self.make_temp_dir()
+        cache_dir = tmpdir / "release-metadata"
+        client = OfficialPyPIClient(metadata_cache_dir=cache_dir)
+        payload = {"info": {"summary": "demo"}, "urls": []}
+
+        client.store_cached_release_metadata("demo", "1.0.0", payload)
+        cache_file = next(cache_dir.rglob("*.json"))
+        expired = datetime.now(timezone.utc).timestamp() - (
+            DEFAULT_RELEASE_METADATA_CACHE_TTL_SECONDS + 10
+        )
+        os.utime(cache_file, (expired, expired))
+
+        self.assertIsNone(client.load_cached_release_metadata("demo", "1.0.0"))
 
     def test_fetch_release_upload_time_prefers_download_url_match(self) -> None:
         client = OfficialPyPIClient()

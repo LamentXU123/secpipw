@@ -370,6 +370,10 @@ class InstallPlanTests(unittest.TestCase):
         self.assertEqual(plan.packages[0].requires_dist, ("urllib3>=1.26, <3",))
         self.assertIsNone(plan.packages[0].download_url)
         self.assertEqual(
+            plan.packages[0].artifact_name,
+            "requests-2.34.2-py3-none-any.whl",
+        )
+        self.assertEqual(
             run.call_args.args[0],
             ["uv", "pip", "install", "--dry-run", "-v", "--no-progress", "requests"],
         )
@@ -419,6 +423,86 @@ class InstallPlanTests(unittest.TestCase):
 
         self.assertEqual([package.name for package in plan.packages], ["requests"])
         self.assertEqual(run.call_count, 2)
+
+    def test_install_plan_from_report_accepts_explicit_artifact_name(self) -> None:
+        report = {
+            "version": "uv-dry-run-v1",
+            "install": [
+                {
+                    "requested": True,
+                    "is_direct": False,
+                    "artifact_name": "ruff-0.15.16-py3-none-win_amd64.whl",
+                    "metadata": {"name": "ruff", "version": "0.15.16"},
+                    "download_info": {},
+                }
+            ],
+        }
+
+        from secpipw.install_plan import install_plan_from_report
+
+        plan = install_plan_from_report(report)
+
+        self.assertEqual(plan.packages[0].artifact_name, "ruff-0.15.16-py3-none-win_amd64.whl")
+
+    def test_resolve_install_plan_can_use_uv_fast_path_for_pipx(self) -> None:
+        completed = type(
+            "Completed",
+            (),
+            {
+                "returncode": 0,
+                "stdout": "Would install 1 package\n + ruff==0.15.16\n",
+                "stderr": "\n".join(
+                    [
+                        "DEBUG Adding direct dependency: ruff*",
+                        "DEBUG Selecting: ruff==0.15.16 [compatible] (ruff-0.15.16-py3-none-win_amd64.whl)",
+                    ]
+                ),
+            },
+        )()
+
+        with patch("secpipw.install_plan.subprocess.run", return_value=completed) as run:
+            plan = resolve_install_plan(
+                ["ruff"],
+                ignore_installed=True,
+                use_cache=False,
+                tool="pipx",
+                tool_args=["install", "ruff"],
+            )
+
+        self.assertEqual([package.name for package in plan.packages], ["ruff"])
+        command = run.call_args.args[0]
+        self.assertEqual(command[:6], ["uv", "pip", "install", "--dry-run", "-v", "--no-progress"])
+        self.assertIn("--no-config", command)
+
+    def test_resolve_install_plan_can_use_uv_fast_path_for_poetry(self) -> None:
+        completed = type(
+            "Completed",
+            (),
+            {
+                "returncode": 0,
+                "stdout": "Would install 1 package\n + ruff==0.15.16\n",
+                "stderr": "\n".join(
+                    [
+                        "DEBUG Adding direct dependency: ruff*",
+                        "DEBUG Selecting: ruff==0.15.16 [compatible] (ruff-0.15.16-py3-none-win_amd64.whl)",
+                    ]
+                ),
+            },
+        )()
+
+        with patch("secpipw.install_plan.subprocess.run", return_value=completed) as run:
+            plan = resolve_install_plan(
+                ["ruff"],
+                ignore_installed=True,
+                use_cache=False,
+                tool="poetry",
+                tool_args=["add", "ruff"],
+            )
+
+        self.assertEqual([package.name for package in plan.packages], ["ruff"])
+        command = run.call_args.args[0]
+        self.assertEqual(command[:6], ["uv", "pip", "install", "--dry-run", "-v", "--no-progress"])
+        self.assertIn("--no-config", command)
 
 
 if __name__ == "__main__":
