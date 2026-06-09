@@ -9,6 +9,7 @@ from unittest.mock import patch
 from secpipw import Severity
 from secpipw import cli
 from secpipw.install_plan import InstallPlan
+from secpipw.pip_guard import _can_use_resolved_install_fast_path
 from secpipw.pip_bridge import (
     OutputEvent,
     build_pip_command,
@@ -565,23 +566,24 @@ class PipBridgeTests(unittest.TestCase):
     def test_install_with_guard_uses_guarded_pip_then_checks_pth(self) -> None:
         monitor = SimpleNamespace(inspect=lambda: ["alert"])
         with patch("secpipw.cli._create_pth_monitor", return_value=monitor):
-            with patch(
-                "secpipw.cli.run_guarded_pip_install", return_value=0
-            ) as guarded:
+            with patch("secpipw.cli.load_cached_install_plan", return_value=None):
                 with patch(
-                    "secpipw.cli.handle_suspicious_pth_alerts"
-                ) as handle_post:
-                    handle_post.return_value = GateDecision(
-                        allow_install=True,
-                        exit_code=0,
-                    )
+                    "secpipw.cli.run_guarded_pip_install", return_value=0
+                ) as guarded:
+                    with patch(
+                        "secpipw.cli.handle_suspicious_pth_alerts"
+                    ) as handle_post:
+                        handle_post.return_value = GateDecision(
+                            allow_install=True,
+                            exit_code=0,
+                        )
 
-                    rc = cli._install_with_guard(
-                        ["requests", "--target", "vendor"],
-                        ignore_warning=False,
-                        debug=False,
-                        sensitivity=Severity.LOW,
-                    )
+                        rc = cli._install_with_guard(
+                            ["requests", "--target", "vendor"],
+                            ignore_warning=False,
+                            debug=False,
+                            sensitivity=Severity.LOW,
+                        )
 
         self.assertEqual(rc, 0)
         guarded.assert_called_once()
@@ -595,14 +597,15 @@ class PipBridgeTests(unittest.TestCase):
 
     def test_install_with_guard_skips_empty_pth_alert_handler(self) -> None:
         with patch("secpipw.cli._create_pth_monitor", return_value=FakeMonitor()):
-            with patch("secpipw.cli.run_guarded_pip_install", return_value=0):
-                with patch("secpipw.cli.handle_suspicious_pth_alerts") as handle_post:
-                    rc = cli._install_with_guard(
-                        ["requests", "--target", "vendor"],
-                        ignore_warning=False,
-                        debug=False,
-                        sensitivity=Severity.LOW,
-                    )
+            with patch("secpipw.cli.load_cached_install_plan", return_value=None):
+                with patch("secpipw.cli.run_guarded_pip_install", return_value=0):
+                    with patch("secpipw.cli.handle_suspicious_pth_alerts") as handle_post:
+                        rc = cli._install_with_guard(
+                            ["requests", "--target", "vendor"],
+                            ignore_warning=False,
+                            debug=False,
+                            sensitivity=Severity.LOW,
+                        )
 
         self.assertEqual(rc, 0)
         handle_post.assert_not_called()
@@ -617,25 +620,26 @@ class PipBridgeTests(unittest.TestCase):
             return 0
 
         with patch("secpipw.cli._create_pth_monitor", return_value=FakeMonitor()):
-            with patch("secpipw.cli.run_install_checks") as run_checks:
-                run_checks.return_value = GateDecision(allow_install=True, exit_code=0)
-                with patch(
-                    "secpipw.cli.run_guarded_pip_install",
-                    side_effect=guarded,
-                ):
+            with patch("secpipw.cli.load_cached_install_plan", return_value=None):
+                with patch("secpipw.cli.run_install_checks") as run_checks:
+                    run_checks.return_value = GateDecision(allow_install=True, exit_code=0)
                     with patch(
-                        "secpipw.cli.inspect_package_artifact_history",
-                        return_value=[],
-                    ) as inspect_history:
+                        "secpipw.cli.run_guarded_pip_install",
+                        side_effect=guarded,
+                    ):
                         with patch(
-                            "secpipw.cli.handle_package_artifact_history_alerts"
-                        ) as handle_history:
-                            rc = cli._install_with_guard(
-                                ["requests", "--target", "vendor"],
-                                ignore_warning=False,
-                                debug=False,
-                                sensitivity=Severity.LOW,
-                            )
+                            "secpipw.cli.inspect_package_artifact_history",
+                            return_value=[],
+                        ) as inspect_history:
+                            with patch(
+                                "secpipw.cli.handle_package_artifact_history_alerts"
+                            ) as handle_history:
+                                rc = cli._install_with_guard(
+                                    ["requests", "--target", "vendor"],
+                                    ignore_warning=False,
+                                    debug=False,
+                                    sensitivity=Severity.LOW,
+                                )
 
         self.assertEqual(rc, 0)
         inspect_history.assert_called_once_with(
@@ -644,6 +648,164 @@ class PipBridgeTests(unittest.TestCase):
             pip_args=["requests", "--target", "vendor"],
         )
         handle_history.assert_not_called()
+
+    def test_install_with_guard_uses_cached_plan_fast_path(self) -> None:
+        plan = _plan(
+            FakePackage(
+                name="requests",
+                version="2.31.0",
+                requested=True,
+                download_url="https://example.test/requests.whl",
+                artifact_name="requests.whl",
+            )
+        )
+        monitor = SimpleNamespace(inspect=lambda: [])
+        with patch("secpipw.cli._create_pth_monitor", return_value=monitor):
+            with patch("secpipw.cli.load_cached_install_plan", return_value=plan):
+                with patch(
+                    "secpipw.cli.run_install_checks",
+                    return_value=GateDecision(allow_install=True, exit_code=0),
+                ) as run_checks:
+                    with patch(
+                        "secpipw.cli.inspect_install_plan_artifacts",
+                        return_value=[],
+                    ) as inspect_plan_artifacts:
+                        with patch(
+                            "secpipw.package_install.install_resolved_packages",
+                            return_value=0,
+                        ) as install_resolved:
+                            with patch(
+                                "secpipw.cli.inspect_package_artifact_history",
+                                return_value=[],
+                            ) as inspect_history:
+                                with patch(
+                                    "secpipw.cli.run_guarded_pip_install"
+                                ) as guarded:
+                                    rc = cli._install_with_guard(
+                                        ["requests", "--target", "vendor"],
+                                        ignore_warning=False,
+                                        debug=False,
+                                        sensitivity=Severity.LOW,
+                                    )
+
+        self.assertEqual(rc, 0)
+        guarded.assert_not_called()
+        run_checks.assert_called_once_with(
+            plan,
+            ["requests", "--target", "vendor"],
+            ignore_warning=False,
+            ignore_severity=None,
+            sensitivity=Severity.LOW,
+            debug=False,
+        )
+        inspect_plan_artifacts.assert_called_once_with(plan)
+        install_resolved.assert_called_once_with(
+            plan.packages,
+            ["requests", "--target", "vendor"],
+        )
+        inspect_history.assert_called_once_with(
+            plan.packages,
+            (),
+            pip_args=["requests", "--target", "vendor"],
+        )
+
+    def test_install_with_guard_plan_artifact_hook_uses_install_plan_artifacts(
+        self,
+    ) -> None:
+        plan = _plan(
+            FakePackage(
+                name="requests",
+                version="2.31.0",
+                requested=True,
+                download_url="https://example.test/requests.whl",
+                artifact_name="requests.whl",
+            )
+        )
+
+        def guarded(pip_args, plan_hook, artifact_hook=None):
+            decision = plan_hook(plan)
+            if not decision.allow_install:
+                return decision.exit_code
+            assert artifact_hook is not None
+            artifact_decision = artifact_hook(plan)
+            if not artifact_decision.allow_install:
+                return artifact_decision.exit_code
+            return 0
+
+        with patch("secpipw.cli._create_pth_monitor", return_value=FakeMonitor()):
+            with patch(
+                "secpipw.cli.run_install_checks",
+                return_value=GateDecision(allow_install=True, exit_code=0),
+            ):
+                with patch(
+                    "secpipw.cli.run_guarded_pip_install",
+                    side_effect=guarded,
+                ):
+                    with patch(
+                        "secpipw.cli.inspect_install_plan_artifacts",
+                        return_value=[],
+                    ) as inspect_plan_artifacts:
+                        with patch(
+                            "secpipw.cli.inspect_install_artifacts",
+                            side_effect=AssertionError("requirements artifact path should not be used"),
+                        ):
+                            rc = cli._install_with_guard(
+                                ["requests", "--target", "vendor"],
+                                ignore_warning=False,
+                                debug=False,
+                                sensitivity=Severity.LOW,
+                            )
+
+        self.assertEqual(rc, 0)
+        inspect_plan_artifacts.assert_called_once_with(plan)
+
+    def test_can_use_resolved_install_fast_path_for_remote_wheels(self) -> None:
+        plan = _plan(
+            FakePackage(
+                name="requests",
+                version="2.31.0",
+                requested=True,
+                download_url="https://example.test/requests.whl",
+                artifact_name="requests.whl",
+            )
+        )
+
+        self.assertTrue(
+            _can_use_resolved_install_fast_path(
+                plan,
+                pip_args=["requests"],
+            )
+        )
+
+    def test_can_use_resolved_install_fast_path_rejects_local_inputs(self) -> None:
+        plan = _plan(
+            FakePackage(
+                name="demo",
+                version="1.0.0",
+                requested=True,
+                download_url="https://example.test/demo.whl",
+                artifact_name="demo.whl",
+            )
+        )
+
+        self.assertFalse(
+            _can_use_resolved_install_fast_path(
+                plan,
+                pip_args=["-r", "requirements.txt"],
+            )
+        )
+        self.assertFalse(
+            _can_use_resolved_install_fast_path(
+                plan,
+                pip_args=["--editable", "."],
+            )
+        )
+        self.assertFalse(
+            _can_use_resolved_install_fast_path(
+                plan,
+                pip_args=["./local-project"],
+            )
+        )
 
     def test_install_with_guard_refuses_to_run_without_pth_monitor(self) -> None:
         stderr = io.StringIO()

@@ -102,6 +102,18 @@ def resolve_install_plan(*args, **kwargs):
     return impl(*args, **kwargs)
 
 
+def load_cached_install_plan(*args, **kwargs):
+    from secpipw.install_plan import load_cached_install_plan as impl
+
+    return impl(*args, **kwargs)
+
+
+def store_cached_install_plan(*args, **kwargs):
+    from secpipw.install_plan import store_cached_install_plan as impl
+
+    return impl(*args, **kwargs)
+
+
 def inspect_install_plan_artifacts(*args, **kwargs):
     from secpipw.tool_bridge import inspect_install_plan_artifacts as impl
 
@@ -360,6 +372,16 @@ def _install_with_guard(
             "Refusing to continue because post-install .pth protection would be disabled.\n"
         )
         return 2
+    cached_fast_path = _install_with_cached_plan_fast_path(
+        pip_args,
+        monitor=monitor,
+        ignore_warning=ignore_warning,
+        ignore_severity=ignore_severity,
+        sensitivity=sensitivity,
+        debug=debug,
+    )
+    if cached_fast_path is not None:
+        return cached_fast_path
     resolved_plan = None
 
     def plan_hook(plan):
@@ -377,6 +399,13 @@ def _install_with_guard(
     def artifact_hook(requirements):
         if _severity_ignored(ignore_severity, _severity_medium()):
             return _allow_install_decision()
+        if hasattr(requirements, "packages"):
+            return gate_suspicious_pth_alerts(
+                inspect_install_plan_artifacts(requirements),
+                ignore_warning=ignore_warning,
+                ignore_severity=ignore_severity,
+                sensitivity=sensitivity,
+            )
         return gate_suspicious_pth_alerts(
             inspect_install_artifacts(requirements),
             ignore_warning=ignore_warning,
@@ -415,6 +444,83 @@ def _install_with_guard(
     history_alerts = inspect_package_artifact_history(
         resolved_plan.packages,
         getattr(monitor, "directories", ()),
+        pip_args=pip_args,
+    )
+    if not history_alerts:
+        return decision_exit_code
+    history_decision = handle_package_artifact_history_alerts(
+        history_alerts,
+        ignore_warning=ignore_warning,
+        ignore_severity=ignore_severity,
+        sensitivity=sensitivity,
+    )
+    return history_decision.exit_code
+
+
+def _install_with_cached_plan_fast_path(
+    pip_args: list[str],
+    *,
+    monitor,
+    ignore_warning: bool,
+    ignore_severity: Severity | None,
+    sensitivity: Severity,
+    debug: bool,
+) -> int | None:
+    from secpipw.package_install import install_resolved_packages
+    from secpipw.pip_guard import _can_use_resolved_install_fast_path
+
+    cached_plan = load_cached_install_plan(pip_args)
+    if cached_plan is None:
+        return None
+    if not _can_use_resolved_install_fast_path(cached_plan, pip_args=pip_args):
+        return None
+
+    decision = run_install_checks(
+        cached_plan,
+        pip_args,
+        ignore_warning=ignore_warning,
+        ignore_severity=ignore_severity,
+        sensitivity=sensitivity,
+        debug=debug,
+    )
+    if not decision.allow_install:
+        return decision.exit_code
+
+    if not _severity_ignored(ignore_severity, _severity_medium()):
+        artifact_decision = gate_suspicious_pth_alerts(
+            inspect_install_plan_artifacts(cached_plan),
+            ignore_warning=ignore_warning,
+            ignore_severity=ignore_severity,
+            sensitivity=sensitivity,
+        )
+        if not artifact_decision.allow_install:
+            return artifact_decision.exit_code
+
+    rc = install_resolved_packages(cached_plan.packages, pip_args)
+    if rc != 0:
+        return rc
+
+    if monitor is None:
+        decision_exit_code = 0
+    else:
+        pth_alerts = monitor.inspect()
+        if pth_alerts:
+            decision = handle_suspicious_pth_alerts(
+                pth_alerts,
+                ignore_warning=ignore_warning,
+                ignore_severity=ignore_severity,
+            )
+            if not decision.allow_install:
+                return decision.exit_code
+            decision_exit_code = decision.exit_code
+        else:
+            decision_exit_code = 0
+
+    if _severity_ignored(ignore_severity, _severity_medium()):
+        return decision_exit_code
+    history_alerts = inspect_package_artifact_history(
+        cached_plan.packages,
+        getattr(monitor, "directories", ()) if monitor is not None else (),
         pip_args=pip_args,
     )
     if not history_alerts:

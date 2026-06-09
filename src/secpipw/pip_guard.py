@@ -356,6 +356,7 @@ def run_guarded_pip_install(
         plan_hook=plan_hook,
         artifact_hook=artifact_hook,
     )
+    command._spip_pip_args = tuple(pip_args)
     return int(command.main(pip_args))
 
 
@@ -649,7 +650,16 @@ def _build_guarded_install_command_class():
 
                 from secpipw.install_plan import install_plan_from_report
 
-                decision = self._plan_hook(install_plan_from_report(report_dict))
+                resolved_plan = install_plan_from_report(report_dict)
+                if isinstance(report_dict, dict):
+                    from secpipw.install_plan import store_cached_install_plan
+
+                    store_cached_install_plan(
+                        list(getattr(self, "_spip_pip_args", ())),
+                        report_dict,
+                        ignore_installed=False,
+                    )
+                decision = self._plan_hook(resolved_plan)
                 if not decision.allow_install:
                     return decision.exit_code
 
@@ -664,6 +674,28 @@ def _build_guarded_install_command_class():
                             "Would install %s",
                             " ".join("-".join(item) for item in would_install_items),
                         )
+                    _ensure_status_imports()
+                    return SUCCESS
+
+                if _can_use_resolved_install_fast_path(
+                    resolved_plan,
+                    pip_args=list(getattr(self, "_spip_pip_args", ())),
+                ):
+                    artifact_decision = self._artifact_hook(resolved_plan)
+                    if not artifact_decision.allow_install:
+                        return artifact_decision.exit_code
+
+                    from secpipw.package_install import install_resolved_packages
+
+                    rc = install_resolved_packages(
+                        resolved_plan.packages,
+                        list(getattr(self, "_spip_pip_args", ())),
+                    )
+                    if rc != 0:
+                        return rc
+                    if options.root_user_action == "warn":
+                        _ensure_root_warning_imports()
+                        warn_if_run_as_root()
                     _ensure_status_imports()
                     return SUCCESS
 
@@ -825,3 +857,93 @@ def _allow_install_artifact_hook(requirements: list[object]) -> GateDecision:
     from secpipw.warning_gate import GateDecision
 
     return GateDecision(allow_install=True, exit_code=0)
+
+
+def _can_use_resolved_install_fast_path(
+    plan: InstallPlan,
+    *,
+    pip_args: list[str],
+) -> bool:
+    if not plan.packages:
+        return False
+    if not pip_args:
+        return False
+    if _pip_args_contain_local_or_editable_targets(pip_args):
+        return False
+    return all(
+        package.download_url
+        and not package.is_direct
+        and package.artifact_name
+        and package.artifact_name.lower().endswith(".whl")
+        for package in plan.packages
+    )
+
+
+def _pip_args_contain_local_or_editable_targets(pip_args: list[str]) -> bool:
+    from urllib.parse import urlparse
+
+    i = 0
+    while i < len(pip_args):
+        arg = pip_args[i]
+        option_name = arg.split("=", 1)[0]
+        if arg == "--":
+            return any(_looks_like_local_target(value) for value in pip_args[i + 1 :])
+        if arg in {"-e", "--editable"}:
+            return True
+        if arg.startswith("--editable="):
+            return True
+        if option_name in {"-r", "--requirement", "-c", "--constraint"}:
+            return True
+        if arg.startswith("-"):
+            i += 2 if _pip_option_expects_value(option_name) and "=" not in arg else 1
+            continue
+        if _looks_like_local_target(arg):
+            return True
+        parsed = urlparse(arg)
+        if parsed.scheme and parsed.scheme not in {"http", "https"}:
+            return True
+        i += 1
+    return False
+
+
+def _pip_option_expects_value(option_name: str) -> bool:
+    return option_name in {
+        "-c",
+        "--constraint",
+        "-f",
+        "--find-links",
+        "-i",
+        "--index-url",
+        "-r",
+        "--requirement",
+        "-t",
+        "--target",
+        "--prefix",
+        "--python",
+        "--extra-index-url",
+        "--trusted-host",
+        "--progress-bar",
+        "--root",
+        "--root-user-action",
+        "--config-settings",
+        "--global-option",
+        "--install-option",
+    }
+
+
+def _looks_like_local_target(value: str) -> bool:
+    from pathlib import Path
+
+    if value in {".", ".."}:
+        return True
+    if value.startswith(("./", "../", ".\\", "..\\")):
+        return True
+    path = Path(value)
+    if path.is_absolute() or path.exists():
+        return True
+    suffixes = path.suffixes
+    if suffixes[-1:] == [".whl"]:
+        return True
+    if suffixes[-2:] == [".tar", ".gz"] or suffixes[-1:] == [".zip"]:
+        return True
+    return False

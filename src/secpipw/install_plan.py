@@ -230,6 +230,34 @@ def resolve_install_plan(
     return install_plan_from_report(report)
 
 
+def load_cached_install_plan(
+    pip_args: list[str],
+    *,
+    ignore_installed: bool = False,
+) -> InstallPlan | None:
+    effective_args = _normalized_plan_args(
+        pip_args,
+        ignore_installed=ignore_installed,
+    )
+    cached_report = _load_cached_install_plan_report(effective_args)
+    if cached_report is None:
+        return None
+    return install_plan_from_report(cached_report)
+
+
+def store_cached_install_plan(
+    pip_args: list[str],
+    report: dict,
+    *,
+    ignore_installed: bool = False,
+) -> None:
+    effective_args = _normalized_plan_args(
+        pip_args,
+        ignore_installed=ignore_installed,
+    )
+    _store_cached_install_plan_report(effective_args, report)
+
+
 def install_plan_from_report(report: dict) -> InstallPlan:
     packages = tuple(
         package
