@@ -1,4 +1,5 @@
 import json
+import os
 import shutil
 import unittest
 from pathlib import Path
@@ -115,6 +116,70 @@ class InstallPlanTests(unittest.TestCase):
             run.assert_called_once()
         finally:
             shutil.rmtree(cache_root, ignore_errors=True)
+
+    def test_resolve_install_plan_cache_is_reused_across_working_directories(
+        self,
+    ) -> None:
+        report = {
+            "version": "1",
+            "install": [
+                {
+                    "requested": True,
+                    "is_direct": False,
+                    "metadata": {"name": "requests", "version": "2.31.0"},
+                    "download_info": {"url": "https://example.com/requests.whl"},
+                }
+            ],
+        }
+        completed = type(
+            "Completed",
+            (),
+            {
+                "returncode": 0,
+                "stdout": json.dumps(report),
+                "stderr": "",
+            },
+        )()
+        cache_root = (Path(".tmp-tests") / f"install-plan-cache-{uuid4().hex}").resolve()
+        work_a = (Path(".tmp-tests") / f"install-plan-work-a-{uuid4().hex}").resolve()
+        work_b = (Path(".tmp-tests") / f"install-plan-work-b-{uuid4().hex}").resolve()
+        cache_root.mkdir(parents=True, exist_ok=True)
+        work_a.mkdir(parents=True, exist_ok=True)
+        work_b.mkdir(parents=True, exist_ok=True)
+        previous_cwd = Path.cwd()
+        try:
+            with patch(
+                "secpipw.install_plan._install_plan_cache_root",
+                return_value=cache_root,
+            ):
+                os.chdir(work_a)
+                with patch(
+                    "secpipw.install_plan.subprocess.run",
+                    return_value=completed,
+                ) as run:
+                    resolve_install_plan(
+                        ["requests==2.31.0"],
+                        use_cache=True,
+                    )
+
+                os.chdir(work_b)
+                with patch(
+                    "secpipw.install_plan.subprocess.run",
+                    side_effect=AssertionError(
+                        "cache should not depend on the current working directory"
+                    ),
+                ):
+                    resolve_install_plan(
+                        ["requests==2.31.0"],
+                        use_cache=True,
+                    )
+
+            run.assert_called_once()
+        finally:
+            os.chdir(previous_cwd)
+            shutil.rmtree(cache_root, ignore_errors=True)
+            shutil.rmtree(work_a, ignore_errors=True)
+            shutil.rmtree(work_b, ignore_errors=True)
 
     def test_resolve_install_plan_parses_report(self) -> None:
         report = {

@@ -453,7 +453,6 @@ def _install_plan_cache_path(pip_args: list[str]) -> Path:
     payload = {
         "argv": _cache_key_plan_args(pip_args),
         "config_signatures": _pip_config_signatures(os.environ),
-        "cwd": str(Path.cwd()),
         "env": {
             key: value
             for key in _PLAN_CACHE_ENV_KEYS
