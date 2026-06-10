@@ -187,7 +187,7 @@ def resolve_install_plan(
         if cached_report is not None:
             return install_plan_from_report(cached_report)
 
-    if tool in {"uv", "pipx", "poetry"}:
+    if tool in {"uv", "pipx", "poetry", "pip"}:
         uv_plan = _resolve_install_plan_via_uv(
             effective_args,
             tool=tool,
@@ -409,14 +409,17 @@ def _resolve_install_plan_via_uv(
     if command_args is None:
         return None
 
-    completed = subprocess.run(
-        ["uv", *command_args],
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        check=False,
-        env=_pip_report_env(),
-    )
+    try:
+        completed = subprocess.run(
+            ["uv", *command_args],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+            env=_pip_report_env(),
+        )
+    except OSError:
+        return None
     if completed.returncode != 0:
         return None
     return _uv_install_plan_from_dry_run_output(

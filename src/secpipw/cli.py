@@ -382,6 +382,16 @@ def _install_with_guard(
     )
     if cached_fast_path is not None:
         return cached_fast_path
+    resolved_fast_path = _install_with_resolved_plan_fast_path(
+        pip_args,
+        monitor=monitor,
+        ignore_warning=ignore_warning,
+        ignore_severity=ignore_severity,
+        sensitivity=sensitivity,
+        debug=debug,
+    )
+    if resolved_fast_path is not None:
+        return resolved_fast_path
     resolved_plan = None
 
     def plan_hook(plan):
@@ -466,7 +476,6 @@ def _install_with_cached_plan_fast_path(
     sensitivity: Severity,
     debug: bool,
 ) -> int | None:
-    from secpipw.package_install import install_resolved_packages
     from secpipw.pip_guard import _can_use_resolved_install_fast_path
 
     cached_plan = load_cached_install_plan(pip_args)
@@ -474,9 +483,67 @@ def _install_with_cached_plan_fast_path(
         return None
     if not _can_use_resolved_install_fast_path(cached_plan, pip_args=pip_args):
         return None
+    return _install_with_plan_fast_path(
+        cached_plan,
+        pip_args,
+        monitor=monitor,
+        ignore_warning=ignore_warning,
+        ignore_severity=ignore_severity,
+        sensitivity=sensitivity,
+        debug=debug,
+    )
+
+
+def _install_with_resolved_plan_fast_path(
+    pip_args: list[str],
+    *,
+    monitor,
+    ignore_warning: bool,
+    ignore_severity: Severity | None,
+    sensitivity: Severity,
+    debug: bool,
+) -> int | None:
+    from secpipw.pip_guard import _can_use_resolved_install_fast_path
+
+    try:
+        resolved_plan = resolve_install_plan(
+            pip_args,
+            ignore_installed=False,
+            use_cache=False,
+            tool="pip",
+            tool_args=pip_args,
+        )
+    except Exception:
+        return None
+    if not _can_use_resolved_install_fast_path(resolved_plan, pip_args=pip_args):
+        return None
+    if isinstance(resolved_plan.raw_report, dict):
+        store_cached_install_plan(pip_args, resolved_plan.raw_report)
+    return _install_with_plan_fast_path(
+        resolved_plan,
+        pip_args,
+        monitor=monitor,
+        ignore_warning=ignore_warning,
+        ignore_severity=ignore_severity,
+        sensitivity=sensitivity,
+        debug=debug,
+    )
+
+
+def _install_with_plan_fast_path(
+    plan,
+    pip_args: list[str],
+    *,
+    monitor,
+    ignore_warning: bool,
+    ignore_severity: Severity | None,
+    sensitivity: Severity,
+    debug: bool,
+) -> int:
+    from secpipw.package_install import install_resolved_packages
 
     decision = run_install_checks(
-        cached_plan,
+        plan,
         pip_args,
         ignore_warning=ignore_warning,
         ignore_severity=ignore_severity,
@@ -488,7 +555,7 @@ def _install_with_cached_plan_fast_path(
 
     if not _severity_ignored(ignore_severity, _severity_medium()):
         artifact_decision = gate_suspicious_pth_alerts(
-            inspect_install_plan_artifacts(cached_plan),
+            inspect_install_plan_artifacts(plan),
             ignore_warning=ignore_warning,
             ignore_severity=ignore_severity,
             sensitivity=sensitivity,
@@ -496,7 +563,7 @@ def _install_with_cached_plan_fast_path(
         if not artifact_decision.allow_install:
             return artifact_decision.exit_code
 
-    rc = install_resolved_packages(cached_plan.packages, pip_args)
+    rc = install_resolved_packages(plan.packages, pip_args)
     if rc != 0:
         return rc
 
@@ -519,7 +586,7 @@ def _install_with_cached_plan_fast_path(
     if _severity_ignored(ignore_severity, _severity_medium()):
         return decision_exit_code
     history_alerts = inspect_package_artifact_history(
-        cached_plan.packages,
+        plan.packages,
         getattr(monitor, "directories", ()) if monitor is not None else (),
         pip_args=pip_args,
     )
