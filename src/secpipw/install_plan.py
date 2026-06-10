@@ -653,8 +653,6 @@ def _install_plan_cacheable(pip_args: list[str]) -> bool:
         "--constraint",
         "-e",
         "--editable",
-        "-f",
-        "--find-links",
         "-r",
         "--requirement",
         "--report",
