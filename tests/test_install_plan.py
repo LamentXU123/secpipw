@@ -117,6 +117,72 @@ class InstallPlanTests(unittest.TestCase):
         finally:
             shutil.rmtree(cache_root, ignore_errors=True)
 
+    def test_resolve_install_plan_cache_allows_find_links_wheelhouse(self) -> None:
+        report = {
+            "version": "1",
+            "install": [
+                {
+                    "requested": True,
+                    "is_direct": False,
+                    "metadata": {"name": "requests", "version": "2.31.0"},
+                    "download_info": {
+                        "url": "file:///tmp/wheelhouse/requests-2.31.0-py3-none-any.whl"
+                    },
+                }
+            ],
+        }
+        completed = type(
+            "Completed",
+            (),
+            {
+                "returncode": 0,
+                "stdout": json.dumps(report),
+                "stderr": "",
+            },
+        )()
+        cache_root = Path(".tmp-tests") / f"install-plan-cache-{uuid4().hex}"
+        cache_root.mkdir(parents=True, exist_ok=True)
+        try:
+            with patch(
+                "secpipw.install_plan._install_plan_cache_root",
+                return_value=cache_root,
+            ):
+                with patch(
+                    "secpipw.install_plan.subprocess.run",
+                    return_value=completed,
+                ) as run:
+                    resolve_install_plan(
+                        [
+                            "--no-index",
+                            "--find-links",
+                            "wheelhouse",
+                            "--target",
+                            "vendor-a",
+                            "requests==2.31.0",
+                        ],
+                        use_cache=True,
+                    )
+
+                with patch(
+                    "secpipw.install_plan.subprocess.run",
+                    side_effect=AssertionError("wheelhouse plan should come from cache"),
+                ):
+                    resolve_install_plan(
+                        [
+                            "--no-index",
+                            "--find-links",
+                            "wheelhouse",
+                            "--target",
+                            "vendor-b",
+                            "requests==2.31.0",
+                        ],
+                        use_cache=True,
+                    )
+
+            run.assert_called_once()
+        finally:
+            shutil.rmtree(cache_root, ignore_errors=True)
+
     def test_resolve_install_plan_cache_is_reused_across_working_directories(
         self,
     ) -> None:

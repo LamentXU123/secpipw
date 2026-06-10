@@ -187,7 +187,7 @@ def resolve_install_plan(
         if cached_report is not None:
             return install_plan_from_report(cached_report)
 
-    if tool in {"uv", "pipx", "poetry"}:
+    if tool in {"uv", "pipx", "poetry", "pip"}:
         uv_plan = _resolve_install_plan_via_uv(
             effective_args,
             tool=tool,
@@ -228,6 +228,34 @@ def resolve_install_plan(
     if use_cache:
         _store_cached_install_plan_report(effective_args, report)
     return install_plan_from_report(report)
+
+
+def load_cached_install_plan(
+    pip_args: list[str],
+    *,
+    ignore_installed: bool = False,
+) -> InstallPlan | None:
+    effective_args = _normalized_plan_args(
+        pip_args,
+        ignore_installed=ignore_installed,
+    )
+    cached_report = _load_cached_install_plan_report(effective_args)
+    if cached_report is None:
+        return None
+    return install_plan_from_report(cached_report)
+
+
+def store_cached_install_plan(
+    pip_args: list[str],
+    report: dict,
+    *,
+    ignore_installed: bool = False,
+) -> None:
+    effective_args = _normalized_plan_args(
+        pip_args,
+        ignore_installed=ignore_installed,
+    )
+    _store_cached_install_plan_report(effective_args, report)
 
 
 def install_plan_from_report(report: dict) -> InstallPlan:
@@ -381,14 +409,17 @@ def _resolve_install_plan_via_uv(
     if command_args is None:
         return None
 
-    completed = subprocess.run(
-        ["uv", *command_args],
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        check=False,
-        env=_pip_report_env(),
-    )
+    try:
+        completed = subprocess.run(
+            ["uv", *command_args],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+            env=_pip_report_env(),
+        )
+    except OSError:
+        return None
     if completed.returncode != 0:
         return None
     return _uv_install_plan_from_dry_run_output(
@@ -622,8 +653,6 @@ def _install_plan_cacheable(pip_args: list[str]) -> bool:
         "--constraint",
         "-e",
         "--editable",
-        "-f",
-        "--find-links",
         "-r",
         "--requirement",
         "--report",

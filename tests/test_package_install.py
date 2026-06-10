@@ -82,6 +82,8 @@ class PackageInstallTests(unittest.TestCase):
                 "vendor",
                 "--python",
                 "C:\\Python312\\python.exe",
+                "--timeout",
+                "120",
                 "--user",
                 "requests",
             ]
@@ -89,7 +91,15 @@ class PackageInstallTests(unittest.TestCase):
 
         self.assertEqual(
             forwarded,
-            ["--target", "vendor", "--python", "C:\\Python312\\python.exe", "--user"],
+            [
+                "--target",
+                "vendor",
+                "--python",
+                "C:\\Python312\\python.exe",
+                "--timeout",
+                "120",
+                "--user",
+            ],
         )
 
     def test_download_artifact_copies_file_url(self) -> None:
@@ -180,6 +190,8 @@ class PackageInstallTests(unittest.TestCase):
                     "requests",
                     "--target",
                     "vendor",
+                    "--timeout",
+                    "120",
                     "--index-url",
                     "https://example/simple",
                 ],
@@ -193,6 +205,8 @@ class PackageInstallTests(unittest.TestCase):
                 "--no-deps",
                 "--target",
                 "vendor",
+                "--timeout",
+                "120",
                 "https://files.pythonhosted.org/packages/urllib3.whl#sha256=urlhash",
                 "https://files.pythonhosted.org/packages/requests.whl#sha256=reqhash",
             ]
