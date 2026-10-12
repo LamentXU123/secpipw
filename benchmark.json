@@ -1,12 +1,12 @@
 {
-  "benchmark_url": "https://github.com/LamentXU123/secpipw/actions/runs/37288090680/job/111691713155",
-  "generated_at": "2026-10-05T09:14:18.220208Z",
+  "benchmark_url": "https://github.com/LamentXU123/secpipw/actions/runs/38228836966/job/114742972295",
+  "generated_at": "2026-10-12T09:21:35.390520Z",
   "mode": "local wheelhouse install, --no-index, --no-deps, fresh --target per run",
   "primary_metric": "median",
   "records": [
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -23,7 +23,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-0-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2666335870000012,
+      "duration_seconds": 1.2273222060000109,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -33,7 +33,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -51,7 +51,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-0-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3312369039999794,
+      "duration_seconds": 1.3015630069999986,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -61,7 +61,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -79,7 +79,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-0-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.862948547999991,
+      "duration_seconds": 4.698506447,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -89,7 +89,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -106,7 +106,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-0-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.874331042999984,
+      "duration_seconds": 4.641164739000004,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -116,7 +116,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -133,7 +133,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-0-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6018719169999827,
+      "duration_seconds": 0.556890948000003,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -143,7 +143,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -161,7 +161,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-0-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.6473713000000032,
+      "duration_seconds": 0.5956024030000009,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -171,7 +171,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -189,7 +189,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-1-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.847018267999999,
+      "duration_seconds": 4.884760268999997,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -199,7 +199,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -216,7 +216,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-1-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.865019763999982,
+      "duration_seconds": 4.639046751999999,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -226,7 +226,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -243,7 +243,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-1-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6016161219999958,
+      "duration_seconds": 0.5569317180000013,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -253,7 +253,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -271,7 +271,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-1-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.6430775100000119,
+      "duration_seconds": 0.5948275519999981,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -281,7 +281,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -299,7 +299,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-1-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3252240739999763,
+      "duration_seconds": 1.303907658,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -309,7 +309,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -326,7 +326,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-1-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2504357519999871,
+      "duration_seconds": 1.229910297999993,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -336,7 +336,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -353,7 +353,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-2-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6003492090000009,
+      "duration_seconds": 0.558879484000002,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -363,7 +363,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -381,7 +381,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-2-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.6407824810000022,
+      "duration_seconds": 0.5956949519999881,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -391,7 +391,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -409,7 +409,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-2-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.342937844000005,
+      "duration_seconds": 1.2999522060000004,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -419,7 +419,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -436,7 +436,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-2-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2481938809999917,
+      "duration_seconds": 1.2294608830000016,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -446,7 +446,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -463,7 +463,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-2-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.806103797999981,
+      "duration_seconds": 4.648866736000002,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -473,7 +473,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -491,7 +491,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-2-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.867295017999993,
+      "duration_seconds": 4.750531968000004,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -501,7 +501,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -519,7 +519,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-3-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3250716839999939,
+      "duration_seconds": 1.3018447219999985,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -529,7 +529,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -546,7 +546,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-3-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2556646040000032,
+      "duration_seconds": 1.225816578000007,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -556,7 +556,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -573,7 +573,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-3-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.7721146819999944,
+      "duration_seconds": 4.657079256999992,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -583,7 +583,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -601,7 +601,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-3-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.805171967000007,
+      "duration_seconds": 4.7060751739999915,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -611,7 +611,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -629,7 +629,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-3-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.6419582959999843,
+      "duration_seconds": 0.5966169229999991,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -639,7 +639,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -656,7 +656,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-3-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.600385507999988,
+      "duration_seconds": 0.5589950020000174,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -666,7 +666,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -683,7 +683,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-4-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.757296600000018,
+      "duration_seconds": 4.637214262000015,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -693,7 +693,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -711,7 +711,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-4-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.891042203000012,
+      "duration_seconds": 4.697516988000018,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -721,7 +721,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -739,7 +739,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-4-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.6395875320000073,
+      "duration_seconds": 0.5947927249999907,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -749,7 +749,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -766,7 +766,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-4-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.5999790959999984,
+      "duration_seconds": 0.5563616580000144,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -776,7 +776,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -793,7 +793,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-4-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.247915264999989,
+      "duration_seconds": 1.3042627370000162,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -803,7 +803,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -821,7 +821,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-4-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.318562073999999,
+      "duration_seconds": 1.898613049000005,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -831,7 +831,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -849,7 +849,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-5-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.6418388520000065,
+      "duration_seconds": 0.7132347030000119,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -859,7 +859,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -876,7 +876,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-5-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.598868877000001,
+      "duration_seconds": 0.5786557159999859,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -886,7 +886,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -903,7 +903,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-5-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2492381349999846,
+      "duration_seconds": 1.2533515260000172,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -913,7 +913,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -931,7 +931,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-5-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.31349886000001,
+      "duration_seconds": 1.2986396309999861,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -941,7 +941,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -959,7 +959,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-5-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.80351333599998,
+      "duration_seconds": 4.708686542999999,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -969,7 +969,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -986,7 +986,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-5-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.745998973000013,
+      "duration_seconds": 4.646632122,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -996,7 +996,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1013,7 +1013,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-6-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2684926299999972,
+      "duration_seconds": 1.2305513700000006,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1023,7 +1023,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1041,7 +1041,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-6-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 2.196102661999987,
+      "duration_seconds": 1.300202425000009,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1051,7 +1051,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1069,7 +1069,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-6-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.790971302000003,
+      "duration_seconds": 4.72259977600001,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1079,7 +1079,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1096,7 +1096,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-6-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.775505972000019,
+      "duration_seconds": 4.994958556,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1106,7 +1106,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1123,7 +1123,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-6-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6035404900000003,
+      "duration_seconds": 0.5638627719999931,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1133,7 +1133,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1151,7 +1151,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-6-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.643186524999976,
+      "duration_seconds": 0.5955245670000124,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1161,7 +1161,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1179,7 +1179,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-7-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.814411557,
+      "duration_seconds": 4.706009937000005,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1189,7 +1189,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1206,7 +1206,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-7-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.734820911999975,
+      "duration_seconds": 4.638774635000004,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1216,7 +1216,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1233,7 +1233,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-7-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6025715559999867,
+      "duration_seconds": 0.5613039690000221,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1243,7 +1243,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1261,7 +1261,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-7-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.6403570940000236,
+      "duration_seconds": 0.5986953830000061,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1271,7 +1271,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1289,7 +1289,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-7-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.61135872899996,
+      "duration_seconds": 1.3067558559999952,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1299,7 +1299,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1316,7 +1316,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-7-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.260385546000009,
+      "duration_seconds": 1.2467810500000098,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1326,7 +1326,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1343,7 +1343,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-8-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6018097900000043,
+      "duration_seconds": 0.5606037649999962,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1353,7 +1353,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1371,7 +1371,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-8-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.6472574920000511,
+      "duration_seconds": 0.5960060049999925,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1381,7 +1381,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1399,7 +1399,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-8-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3255480110000235,
+      "duration_seconds": 1.3046150469999986,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1409,7 +1409,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1426,7 +1426,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-8-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2621420450000187,
+      "duration_seconds": 1.2305119890000071,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1436,7 +1436,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1453,7 +1453,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-8-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.758636664000051,
+      "duration_seconds": 4.653142198000012,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1463,7 +1463,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1481,7 +1481,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-8-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.818279512000004,
+      "duration_seconds": 4.742349267000009,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1491,7 +1491,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1509,7 +1509,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-9-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3286735730000032,
+      "duration_seconds": 1.299061929000004,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1519,7 +1519,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1536,7 +1536,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-9-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2487813019999976,
+      "duration_seconds": 1.2273145329999977,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1546,7 +1546,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1563,7 +1563,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-9-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.711216160999982,
+      "duration_seconds": 4.640917000000002,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1573,7 +1573,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1591,7 +1591,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-9-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.9489820139999665,
+      "duration_seconds": 4.695234143999983,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1601,7 +1601,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1619,7 +1619,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-9-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.6659948029999896,
+      "duration_seconds": 0.5975812709999957,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1629,7 +1629,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1646,7 +1646,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-9-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6072427970000263,
+      "duration_seconds": 0.5596017919999952,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1656,7 +1656,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1673,7 +1673,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-10-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.838619308000034,
+      "duration_seconds": 4.634166463999975,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1683,7 +1683,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1701,7 +1701,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-10-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.858517704000008,
+      "duration_seconds": 4.696423858999992,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1711,7 +1711,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1729,7 +1729,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-10-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.6544351019999795,
+      "duration_seconds": 0.5990207970000085,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1739,7 +1739,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1756,7 +1756,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-10-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6054255170000147,
+      "duration_seconds": 0.5587504780000074,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1766,7 +1766,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1783,7 +1783,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-10-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2553295000000162,
+      "duration_seconds": 1.241356345000014,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1793,7 +1793,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1811,7 +1811,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-10-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.336722185000042,
+      "duration_seconds": 1.8439054040000258,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1821,7 +1821,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1839,7 +1839,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-11-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.6512968400000432,
+      "duration_seconds": 0.6491360589999999,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -1849,7 +1849,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1866,7 +1866,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-11-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.606982639000023,
+      "duration_seconds": 0.5933853519999843,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -1876,7 +1876,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1893,7 +1893,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-11-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3076207299999965,
+      "duration_seconds": 1.237071813,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1903,7 +1903,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1921,7 +1921,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-11-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.4002531200000021,
+      "duration_seconds": 1.3051150670000027,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -1931,7 +1931,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -1949,7 +1949,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-11-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 5.149577145999956,
+      "duration_seconds": 4.704043920999993,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1959,7 +1959,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -1976,7 +1976,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-11-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.938265583000032,
+      "duration_seconds": 4.638118254999995,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -1986,7 +1986,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2003,7 +2003,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-12-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2690219759999763,
+      "duration_seconds": 1.2269184740000014,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -2013,7 +2013,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2031,7 +2031,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-12-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3488352010000426,
+      "duration_seconds": 1.300347338000023,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -2041,7 +2041,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2059,7 +2059,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-12-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.91416257000003,
+      "duration_seconds": 4.697512792999987,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -2069,7 +2069,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2086,7 +2086,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-12-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.894568971000012,
+      "duration_seconds": 4.695916950999987,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -2096,7 +2096,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2113,7 +2113,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-12-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6093940900000234,
+      "duration_seconds": 0.5591431160000013,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -2123,7 +2123,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2141,7 +2141,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-12-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.6553375560000063,
+      "duration_seconds": 0.5964671799999905,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -2151,7 +2151,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2169,7 +2169,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-13-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 5.009172141000022,
+      "duration_seconds": 4.7559098239999855,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -2179,7 +2179,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2196,7 +2196,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-13-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.9450319960000115,
+      "duration_seconds": 4.637763221999961,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -2206,7 +2206,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2223,7 +2223,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-13-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6146622620000244,
+      "duration_seconds": 0.5598457969999799,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -2233,7 +2233,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2251,7 +2251,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-13-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.6657657840000297,
+      "duration_seconds": 0.5966894579999575,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -2261,7 +2261,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2279,7 +2279,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-13-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3629532360000098,
+      "duration_seconds": 1.3043701429999714,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -2289,7 +2289,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2306,7 +2306,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-13-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2705844529999695,
+      "duration_seconds": 1.2408431590000077,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -2316,7 +2316,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2333,7 +2333,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-14-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6195121890000337,
+      "duration_seconds": 0.5648916179999901,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -2343,7 +2343,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2361,7 +2361,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-14-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.8286245350000172,
+      "duration_seconds": 0.596696943999973,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -2371,7 +2371,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2389,7 +2389,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-14-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 2.053398377999997,
+      "duration_seconds": 1.3079322219999767,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -2399,7 +2399,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2416,7 +2416,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-14-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3065251170000352,
+      "duration_seconds": 1.2363248540000313,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -2426,7 +2426,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2443,7 +2443,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-14-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.875750756000002,
+      "duration_seconds": 5.5479690459999915,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -2453,7 +2453,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2471,7 +2471,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-14-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.961458687999993,
+      "duration_seconds": 4.709374281999999,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -2481,7 +2481,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2499,7 +2499,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-15-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3448644549999926,
+      "duration_seconds": 1.309181854999963,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -2509,7 +2509,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2526,7 +2526,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-15-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.263007751000032,
+      "duration_seconds": 1.235028614999976,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -2536,7 +2536,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2553,7 +2553,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-15-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.955031010000027,
+      "duration_seconds": 4.658413102999987,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -2563,7 +2563,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2581,7 +2581,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-15-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 5.54048588500001,
+      "duration_seconds": 4.71418149699997,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -2591,7 +2591,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2609,7 +2609,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-15-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 1.6802339370000254,
+      "duration_seconds": 0.5974422789999494,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -2619,7 +2619,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2636,7 +2636,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-15-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6279139160000113,
+      "duration_seconds": 0.5595972520000032,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -2646,7 +2646,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2663,7 +2663,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-16-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.988844875999973,
+      "duration_seconds": 4.669220070999984,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -2673,7 +2673,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2691,7 +2691,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-16-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 5.033044969000002,
+      "duration_seconds": 4.719315266000024,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -2701,7 +2701,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2719,7 +2719,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-16-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.6745696579999958,
+      "duration_seconds": 0.5974003539999444,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -2729,7 +2729,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2746,7 +2746,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-16-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6314151309999829,
+      "duration_seconds": 0.5642654610000477,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -2756,7 +2756,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2773,7 +2773,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-16-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2853038970000057,
+      "duration_seconds": 1.23337135700001,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -2783,7 +2783,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2801,7 +2801,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-16-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3600268850000248,
+      "duration_seconds": 1.6806622290000064,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -2811,7 +2811,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2829,7 +2829,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-17-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.6822228170000244,
+      "duration_seconds": 0.6017706249999719,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -2839,7 +2839,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2856,7 +2856,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-17-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6310800800000038,
+      "duration_seconds": 0.5623037469999872,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -2866,7 +2866,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2883,7 +2883,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-17-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2867230939999672,
+      "duration_seconds": 1.244065495999962,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -2893,7 +2893,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2911,7 +2911,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-17-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3987774069999546,
+      "duration_seconds": 1.3829151979999779,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -2921,7 +2921,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -2939,7 +2939,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-17-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 5.011558336999997,
+      "duration_seconds": 4.732664118999992,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -2949,7 +2949,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2966,7 +2966,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-17-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.996473089999995,
+      "duration_seconds": 4.67265820800003,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -2976,7 +2976,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -2993,7 +2993,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-18-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2753213010000195,
+      "duration_seconds": 1.2357578259999968,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -3003,7 +3003,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -3021,7 +3021,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-18-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3564254699999765,
+      "duration_seconds": 1.3109399559999702,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -3031,7 +3031,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -3049,7 +3049,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-18-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 4.970702774000017,
+      "duration_seconds": 4.721425189999991,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -3059,7 +3059,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -3076,7 +3076,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-18-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.895981952999989,
+      "duration_seconds": 4.68003964799999,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -3086,7 +3086,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -3103,7 +3103,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-18-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6162141639999845,
+      "duration_seconds": 0.5604777390000208,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -3113,7 +3113,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -3131,7 +3131,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-18-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.6747462099999666,
+      "duration_seconds": 1.1531892190000121,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -3141,7 +3141,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -3159,7 +3159,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-19-scipy-spip-target",
         "scipy"
       ],
-      "duration_seconds": 5.068530351999982,
+      "duration_seconds": 4.734983018999969,
       "label": "spip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -3169,7 +3169,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -3186,7 +3186,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-19-scipy-pip-target",
         "scipy"
       ],
-      "duration_seconds": 4.971161716999973,
+      "duration_seconds": 4.656520036000018,
       "label": "pip",
       "pair": "scipy",
       "requirement": "scipy",
@@ -3196,7 +3196,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -3213,7 +3213,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-19-uv-pip-target",
         "uv"
       ],
-      "duration_seconds": 0.6191162119999944,
+      "duration_seconds": 0.5595895710000036,
       "label": "pip",
       "pair": "uv",
       "requirement": "uv",
@@ -3223,7 +3223,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -3241,7 +3241,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-19-uv-spip-target",
         "uv"
       ],
-      "duration_seconds": 0.6738817059999747,
+      "duration_seconds": 0.5953219429999876,
       "label": "spip",
       "pair": "uv",
       "requirement": "uv",
@@ -3251,7 +3251,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "secpipw",
         "install",
@@ -3269,7 +3269,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-19-opencv-python-spip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.3907057889999805,
+      "duration_seconds": 1.3047379100000285,
       "label": "spip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -3279,7 +3279,7 @@
     },
     {
       "command": [
-        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
         "-m",
         "pip",
         "install",
@@ -3296,7 +3296,7 @@
         "/home/runner/work/secpipw/secpipw/.tmp-benchmark/run-19-opencv-python-pip-target",
         "opencv-python"
       ],
-      "duration_seconds": 1.2940228670000238,
+      "duration_seconds": 1.2360646569999858,
       "label": "pip",
       "pair": "opencv-python",
       "requirement": "opencv-python",
@@ -3317,125 +3317,125 @@
       "key": "opencv-python",
       "label": "opencv-python",
       "overhead": {
-        "avg_percent": 13.400288072951788,
-        "avg_seconds": 0.16999165539999694,
-        "median_percent": 6.485437897283444,
-        "median_seconds": 0.08202915900000107
+        "avg_percent": 11.679182420605093,
+        "avg_seconds": 0.1446588542999947,
+        "median_percent": 5.608194771538967,
+        "median_seconds": 0.0692832580000271
       },
       "pip": {
-        "avg": 1.268567171650001,
-        "max": 1.3076207299999965,
-        "median": 1.2648206690000166,
-        "min": 1.247915264999989
+        "avg": 1.2386042883000024,
+        "max": 1.3042627370000162,
+        "median": 1.2353932204999865,
+        "min": 1.225816578000007
       },
       "ratio": {
-        "avg": 1.134002880729518,
-        "avg_label": "x1.1340",
-        "median": 1.0648543789728344,
-        "median_label": "x1.0649"
+        "avg": 1.1167918242060508,
+        "avg_label": "x1.1168",
+        "median": 1.0560819477153898,
+        "median_label": "x1.0561"
       },
       "requirement": "opencv-python",
       "spip": {
-        "avg": 1.438558827049998,
-        "max": 2.196102661999987,
-        "median": 1.3468498280000176,
-        "min": 1.31349886000001
+        "avg": 1.383263142599997,
+        "max": 1.898613049000005,
+        "median": 1.3046764785000136,
+        "min": 1.2986396309999861
       }
     },
     {
       "key": "scipy",
       "label": "scipy",
       "overhead": {
-        "avg_percent": 1.9217874260056604,
-        "avg_seconds": 0.0933035230999959,
-        "median_percent": 0.6761638152796154,
-        "median_seconds": 0.03292698300003849
+        "avg_percent": 0.22221463001972389,
+        "avg_seconds": 0.010476151099998887,
+        "median_percent": 1.306673062371353,
+        "median_seconds": 0.060773422499977414
       },
       "pip": {
-        "avg": 4.8550386914500026,
-        "max": 4.996473089999995,
-        "median": 4.869675403499983,
-        "min": 4.711216160999982
+        "avg": 4.714429063049997,
+        "max": 5.5479690459999915,
+        "median": 4.651004467000007,
+        "min": 4.634166463999975
       },
       "ratio": {
-        "avg": 1.0192178742600566,
-        "avg_label": "x1.0192",
-        "median": 1.0067616381527962,
-        "median_label": "x1.0068"
+        "avg": 1.0022221463001972,
+        "avg_label": "x1.0022",
+        "median": 1.0130667306237136,
+        "median_label": "x1.0131"
       },
       "requirement": "scipy",
       "spip": {
-        "avg": 4.9483422145499985,
-        "max": 5.54048588500001,
-        "median": 4.902602386500021,
-        "min": 4.790971302000003
+        "avg": 4.724905214149996,
+        "max": 4.884760268999997,
+        "median": 4.711777889499984,
+        "min": 4.695234143999983
       }
     },
     {
       "key": "uv",
       "label": "uv",
       "overhead": {
-        "avg_percent": 17.152317838030655,
-        "avg_seconds": 0.10462872340000196,
-        "median_percent": 7.69739015183448,
-        "median_seconds": 0.04666189299999246
+        "avg_percent": 12.50517371771482,
+        "avg_seconds": 0.07036871934998667,
+        "median_percent": 6.604937446513814,
+        "median_seconds": 0.03696940649997771
       },
       "pip": {
-        "avg": 0.609997578100004,
-        "max": 0.6314151309999829,
-        "median": 0.6062040780000189,
-        "min": 0.598868877000001
+        "avg": 0.5627168477500029,
+        "max": 0.5933853519999843,
+        "median": 0.5597237944999875,
+        "min": 0.5563616580000144
       },
       "ratio": {
-        "avg": 1.1715231783803066,
-        "avg_label": "x1.1715",
-        "median": 1.0769739015183448,
-        "median_label": "x1.0770"
+        "avg": 1.1250517371771482,
+        "avg_label": "x1.1251",
+        "median": 1.0660493744651383,
+        "median_label": "x1.0660"
       },
       "requirement": "uv",
       "spip": {
-        "avg": 0.714626301500006,
-        "max": 1.6802339370000254,
-        "median": 0.6528659710000113,
-        "min": 0.6395875320000073
+        "avg": 0.6330855670999895,
+        "max": 1.1531892190000121,
+        "median": 0.5966932009999653,
+        "min": 0.5947927249999907
       }
     }
   ],
   "source": {
     "job_name": "install-benchmark",
-    "job_url": "https://github.com/LamentXU123/secpipw/actions/runs/37288090680/job/111691713155",
+    "job_url": "https://github.com/LamentXU123/secpipw/actions/runs/38228836966/job/114742972295",
     "repository": "LamentXU123/secpipw",
     "run_attempt": "1",
-    "run_id": "37288090680",
-    "run_url": "https://github.com/LamentXU123/secpipw/actions/runs/37288090680"
+    "run_id": "38228836966",
+    "run_url": "https://github.com/LamentXU123/secpipw/actions/runs/38228836966"
   },
   "summary": {
     "key": "opencv-python",
     "label": "opencv-python",
     "overhead": {
-      "avg_percent": 13.400288072951788,
-      "avg_seconds": 0.16999165539999694,
-      "median_percent": 6.485437897283444,
-      "median_seconds": 0.08202915900000107
+      "avg_percent": 11.679182420605093,
+      "avg_seconds": 0.1446588542999947,
+      "median_percent": 5.608194771538967,
+      "median_seconds": 0.0692832580000271
     },
     "pip": {
-      "avg": 1.268567171650001,
-      "max": 1.3076207299999965,
-      "median": 1.2648206690000166,
-      "min": 1.247915264999989
+      "avg": 1.2386042883000024,
+      "max": 1.3042627370000162,
+      "median": 1.2353932204999865,
+      "min": 1.225816578000007
     },
     "ratio": {
-      "avg": 1.134002880729518,
-      "avg_label": "x1.1340",
-      "median": 1.0648543789728344,
-      "median_label": "x1.0649"
+      "avg": 1.1167918242060508,
+      "avg_label": "x1.1168",
+      "median": 1.0560819477153898,
+      "median_label": "x1.0561"
     },
     "requirement": "opencv-python",
     "spip": {
-      "avg": 1.438558827049998,
-      "max": 2.196102661999987,
-      "median": 1.3468498280000176,
-      "min": 1.31349886000001
+      "avg": 1.383263142599997,
+      "max": 1.898613049000005,
+      "median": 1.3046764785000136,
+      "min": 1.2986396309999861
     }
   },
   "warmups": 1
